@@ -1,0 +1,15 @@
+{
+  "name":"otti-live-final-v2",
+  "version":"1.0.0",
+  "private":true,
+  "engines":{"node":">=20"},
+  "scripts":{"start":"node server.js"},
+  "dependencies":{
+    "bcryptjs":"^3.0.2",
+    "connect-pg-simple":"^10.0.0",
+    "express":"^4.21.2",
+    "express-session":"^1.18.1",
+    "pg":"^8.16.3",
+    "ws":"^8.18.0"
+  }
+}
