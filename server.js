@@ -87,7 +87,7 @@ async function init(){
   );
 
   await pool.query(
-    'SELECT 1 FROM room LIMIT 1'
+    'SELECT 1 FROM rooms LIMIT 1'
   );
 
   await pool.query(
@@ -569,7 +569,7 @@ function loginSession(req,userId){
 app.post('/api/bootstrap',requireAuth,async(req,res)=>{
   try{
     let r=await pool.query(
-      "SELECT r.id FROM room r WHERE r.kind='lobby' AND r.name='Otti' LIMIT 1"
+      "SELECT r.id FROM rooms r WHERE r.kind='lobby' AND r.name='Otti' LIMIT 1"
     );
 
     let roomId;
@@ -578,7 +578,7 @@ app.post('/api/bootstrap',requireAuth,async(req,res)=>{
       roomId=uuid();
 
       await pool.query(
-        'INSERT INTO room(id,name,kind,created_by) VALUES($1,$2,$3,$4)',
+        'INSERT INTO rooms(id,name,kind,created_by) VALUES($1,$2,$3,$4)',
         [
           roomId,
           'Otti',
@@ -677,7 +677,7 @@ app.get('/api/rooms',requireAuth,async(req,res)=>{
       r.kind,
       r.created_at,
       gm.icon
-    FROM room r
+    FROM rooms r
     JOIN room_members rm
       ON rm.room_id=r.id
     LEFT JOIN groups_meta gm
@@ -709,7 +709,7 @@ app.post('/api/groups',requireAuth,async(req,res)=>{
       '◇';
 
     await client.query(
-      'INSERT INTO room(id,name,kind,created_by) VALUES($1,$2,$3,$4)',
+      'INSERT INTO rooms(id,name,kind,created_by) VALUES($1,$2,$3,$4)',
       [
         roomId,
         name,
@@ -924,7 +924,7 @@ app.post('/api/contacts',requireAuth,async(req,res)=>{
         r.id,
         r.name,
         r.kind
-      FROM room r
+      FROM rooms r
       JOIN room_members a
         ON a.room_id=r.id
        AND a.user_id=$1
@@ -943,7 +943,7 @@ app.post('/api/contacts',requireAuth,async(req,res)=>{
       const name=u.rows[0].name;
 
       await pool.query(
-        'INSERT INTO room(id,name,kind,created_by) VALUES($1,$2,$3,$4)',
+        'INSERT INTO rooms(id,name,kind,created_by) VALUES($1,$2,$3,$4)',
         [
           roomId,
           name,
@@ -1034,7 +1034,7 @@ app.post('/api/groups/:roomId/members',requireAuth,async(req,res)=>{
 
   try{
     const owner=await pool.query(
-      "SELECT 1 FROM room WHERE id=$1 AND kind='group' AND created_by=$2",
+      "SELECT 1 FROM rooms WHERE id=$1 AND kind='group' AND created_by=$2",
       [
         req.params.roomId,
         req.session.userId
