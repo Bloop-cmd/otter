@@ -66,11 +66,86 @@ button:disabled{opacity:.55;cursor:not-allowed}
 @keyframes ottiFloat{0%,100%{transform:translate(-50%,0) rotate(-1deg)}50%{transform:translate(-50%,-5px) rotate(1deg)}}@keyframes ottiPeek{0%,100%{transform:translate(-50%,0) rotate(0)}50%{transform:translate(-50%,-4px) rotate(-4deg) scale(1.03)}}@keyframes ottiHappy{0%{transform:translate(-50%,4px) scale(.92)}45%{transform:translate(-50%,-10px) scale(1.1) rotate(4deg)}100%{transform:translate(-50%,0) scale(1)}}@keyframes ottiDive{0%{transform:translate(-50%,0) scale(1)}60%{transform:translate(-50%,35px) scale(.55,.45);opacity:.45}100%{transform:translate(-50%,60px) scale(.35,.25);opacity:.08}}@keyframes ottiReturn{0%{transform:translate(-50%,60px) scale(.35,.25);opacity:.08}55%{transform:translate(-50%,-12px) scale(1.08)}100%{transform:translate(-50%,0) scale(1);opacity:1}}
 .state{position:absolute;right:12px;bottom:8px;z-index:4;font-size:11px;font-weight:900;padding:6px 9px;border-radius:99px;background:#e8f2ff;color:#1762c0}
 .messages{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 14px;background:linear-gradient(#fff8ea,#fff7e9);scroll-behavior:smooth}
-.bubble{max-width:82%;padding:10px 13px;border-radius:18px;background:#fff;margin:7px 0;box-shadow:0 3px 10px #17212b12;line-height:1.35;word-break:break-word}.bubble.mine{margin-left:auto;background:#ffe2a8}.bubble.ghost{background:#eef1f4;color:var(--ghost);font-family:monospace;letter-spacing:1px}.message-name{font-size:10px;color:var(--mist);font-weight:800;margin-bottom:3px}
+.bubble{max-width:82%;padding:10px 13px;border-radius:18px;background:#fff;margin:7px 0;box-shadow:0 3px 10px #17212b12;line-height:1.35;word-break:break-word}.bubble.mine{margin-left:auto;background:#ffe2a8}.bubble.ghost{background:linear-gradient(135deg,#fff8e3,#fff1bf);color:#d9a02f;font-family:Georgia,"Times New Roman",serif;font-weight:900;letter-spacing:1.6px;-webkit-text-fill-color:#d9a02f;text-shadow:0 0 3px rgba(255,215,92,.95),0 0 8px rgba(240,177,47,.65),0 0 16px rgba(255,199,64,.35);border:1px solid rgba(218,166,55,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 0 12px rgba(232,180,58,.20);animation:ghostGoldShimmer 2.6s ease-in-out infinite}
+@keyframes ghostGoldShimmer{0%,100%{filter:brightness(1);text-shadow:0 0 3px rgba(255,215,92,.8),0 0 8px rgba(240,177,47,.5),0 0 15px rgba(255,199,64,.28)}50%{filter:brightness(1.10);text-shadow:0 0 4px rgba(255,228,128,1),0 0 12px rgba(240,177,47,.75),0 0 22px rgba(255,199,64,.42)}}.message-name{font-size:10px;color:var(--mist);font-weight:800;margin-bottom:3px}
 .composer{display:flex;gap:8px;padding:8px 9px;background:#fffaf0;border-top:1px solid var(--line);min-height:58px}.composer input{flex:1;min-width:0;border:1px solid #d8cbb8;border-radius:17px;padding:11px 12px;outline:none;font-size:15px}.send{width:48px;border:0;background:var(--blue);color:#fff;border-radius:15px;font-size:20px;font-weight:900}
 .chat-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:7px 8px calc(8px + env(safe-area-inset-bottom));background:#fffaf0}.chat-actions button{min-height:43px;border:0;border-radius:14px;padding:9px 5px;font-weight:900;background:#eee8dc;color:var(--ink)}.chat-actions .dive{background:var(--ink);color:#fff}.chat-actions .return{background:#e7f7f8;color:#166c75}
 .typing-note{font-size:11px;color:var(--mist);padding:2px 4px 6px}
 @media(max-width:380px){.chat-actions button{font-size:12px}.connection{font-size:9px}.chat-title{max-width:125px}}
+
+/* ---------- OTTI VISUAL WORLDS: LIGHT DOODLES / DARK CODEX ---------- */
+:root{
+  --doodle-opacity:.34;
+  --page-bg:#dbe7f0;
+}
+.app::before,.auth-wrap::before{
+  content:"◇  ✦  ♡  〰  ✧  ○  ●🌊  ≈  ☾  ◉  ✦  ♡  ◇";
+  position:absolute;inset:0;z-index:0;pointer-events:none;
+  color:#f39a31;opacity:var(--doodle-opacity);font-size:19px;font-weight:900;
+  letter-spacing:25px;line-height:4.7;transform:rotate(-7deg) scale(1.08);
+  text-shadow:3px 3px 0 rgba(255,143,179,.14),-2px 2px 0 rgba(40,124,255,.10);
+}
+.app>*{position:relative;z-index:1}.app>.bottom-nav{z-index:20}.app>.toast{z-index:100}
+.app::after,.auth-wrap::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.28;
+  background:
+    radial-gradient(circle at 9% 17%,transparent 0 12px,#ff8fb3 13px 15px,transparent 16px),
+    radial-gradient(circle at 88% 25%,transparent 0 9px,#287cff 10px 12px,transparent 13px),
+    radial-gradient(circle at 76% 80%,transparent 0 13px,#62d8e7 14px 16px,transparent 17px),
+    radial-gradient(circle at 17% 77%,transparent 0 7px,#ffb84d 8px 10px,transparent 11px);
+}
+.theme-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;background:#eee8dc;color:var(--ink);border-radius:17px;padding:14px 15px;font-weight:900;margin:9px 0}
+.theme-toggle small{display:block;color:var(--mist);font-weight:700;font-size:11px;text-align:left;margin-top:2px}
+.theme-pill{padding:7px 10px;border-radius:99px;background:#fff;color:#7b8793;font-size:11px;white-space:nowrap}
+body.dark{
+  --cream:#17120b;--cream2:#21180d;--white:#241a0d;--ink:#f8e8bd;--mist:#bda979;--line:#594322;
+  --ghost:#d8c28d;--green:#7ed8a0;--red:#ff8c8c;--shadow:0 10px 30px rgba(0,0,0,.34);
+  --page-bg:#090704;--orange:#b77a20;--orange2:#d99a37;--blue:#c9953e;--aqua:#80632d;
+}
+body.dark{background:#090704;color:var(--ink)}
+body.dark .app{background:var(--cream)}
+body.dark .app::before,.auth-wrap.dark::before{content:"◉  ◇  ✦  ☾  ●  〰  ✧  ◇  ●🌊  ◉  ✦  ☾  ◇";color:#d7a84c;opacity:.16;letter-spacing:21px;line-height:4.1;transform:rotate(-4deg) scale(1.08)}
+body.dark .app::after,.auth-wrap.dark::after{opacity:.16;background:none}
+body.dark .top,body.dark .bottom-nav,body.dark .composer,body.dark .chat-actions{background:#21180d;border-color:#594322}
+body.dark .card,body.dark .status-card,body.dark .search-result{background:#2a1e0f;border-color:#594322}
+body.dark .icon,body.dark .secondary,body.dark .refresh,body.dark .chat-actions button{background:#382812;color:#f8e8bd}
+body.dark .primary{background:#d1a34b;color:#1b1207}
+body.dark .input,body.dark .composer input{background:#1a130a;color:#f8e8bd;border-color:#69512a}
+body.dark .input::placeholder,body.dark .composer input::placeholder{color:#a99062}
+body.dark .auth-wrap{background:radial-gradient(circle at top,#3a2910 0,#171009 45%,#070504 100%)}
+body.dark .auth-card{background:#241a0d;border:1px solid #594322}
+body.dark .otti-stage{background:linear-gradient(#33230d,#1d1409)}
+body.dark .wave{background:#5d451d;opacity:.72}
+body.dark .state{background:#3a2a10;color:#e7c26c}
+body.dark .messages{background:linear-gradient(#1b1309,#120c06)}
+body.dark .bubble{background:#2a1e10;color:#f7e8c1;box-shadow:0 3px 12px rgba(0,0,0,.28)}
+body.dark .bubble.mine{background:#4b3414}
+body.dark .bubble.ghost{background:linear-gradient(135deg,#2d210e,#3d2a10);color:#f2c75d;-webkit-text-fill-color:#f2c75d;border-color:rgba(232,185,74,.65);text-shadow:0 0 4px rgba(255,222,115,1),0 0 10px rgba(222,166,51,.8),0 0 20px rgba(255,196,64,.45)}
+body.dark .connection{background:#2a1e0f;border-color:#594322;color:#bda979}
+body.dark .connection.ok{background:#1d3022;color:#8ee1a8}
+body.dark .chat-actions .dive{background:#d1a34b;color:#1a1006}
+body.dark .chat-actions .return{background:#302714;color:#e7c26c}
+body.dark .theme-toggle{background:#382812;color:#f8e8bd}
+body.dark .theme-pill{background:#21180d;color:#e2bf70}
+/* Premium golden mandala: layered geometry, intentionally subtle behind content */
+body.dark .app::before{font-family:Georgia,serif}
+body.dark .app::after{
+  content:"";display:block;inset:-16%;z-index:0;opacity:.22;
+  background:
+    repeating-conic-gradient(from 15deg at 50% 44%,rgba(215,168,76,.32) 0deg 1deg,transparent 1deg 12deg),
+    radial-gradient(circle at 50% 44%,transparent 0 88px,rgba(215,168,76,.42) 89px 91px,transparent 92px 125px,rgba(215,168,76,.28) 126px 128px,transparent 129px 176px,rgba(215,168,76,.20) 177px 179px,transparent 180px),
+    radial-gradient(circle at 50% 44%,rgba(215,168,76,.08) 0 2px,transparent 3px);
+  -webkit-mask-image:radial-gradient(circle at 50% 44%,black 0 62%,transparent 88%);mask-image:radial-gradient(circle at 50% 44%,black 0 62%,transparent 88%);
+  transform:rotate(8deg);animation:mandalaDrift 42s linear infinite;
+}
+@keyframes mandalaDrift{to{transform:rotate(368deg)}}
+body.dark .otti-stage::after{
+  content:"✦  ◇  ✧  ☾  ◉  ◇  ✦";position:absolute;inset:8px;z-index:3;pointer-events:none;color:#e2b65b;opacity:.38;font-size:10px;letter-spacing:14px;text-align:center;top:auto;bottom:12px;
+}
+body.dark .mini,body.dark .avatar{background:#8c6120;box-shadow:inset -4px -4px #62420f}
+body.dark .profile-otti{background:#4c3417;box-shadow:0 12px 28px rgba(0,0,0,.42)}
+body.dark .nav-btn{color:#9f8a64}.nav-btn.active{color:var(--ink)}
+
 </style>
 </head>
 <body>
@@ -132,6 +207,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
     <div class="content">
       <div class="card profile-hero"><div class="profile-otti"><img class="mascot-img"></div><h2 id="profileName" style="margin:8px 0 2px">Your Otti</h2><div id="profileEmail" class="sub"></div></div>
       <div class="card"><b>Privacy</b><div class="option"><b>〰 DIVE</b><span>Instantly transform visible conversation into Otti symbols.</span></div><div class="option"><b>◉ Viewer detection</b><span>Permissioned camera/on-device detection can be added without changing the chat architecture.</span></div></div>
+      <button class="theme-toggle" onclick="toggleTheme()"><span>✦ Appearance<small>Light doodles ↔ Golden Codex</small></span><span id="themePill" class="theme-pill">Light</span></button>
       <button class="secondary" onclick="logout()">Log out</button>
     </div>
   </section>
@@ -351,7 +427,7 @@ async function connectWebSocket(roomId){
   try{
     if(socket){try{socket.close()}catch(_){}socket=null}
     setConnection("connecting");
-    const tr=await fetch("/api/ws-token",{method:"POST",credentials:"include",cache:"no-store"});
+    const tr=await fetch("/api/ws-token?roomId="+encodeURIComponent(roomId),{method:"POST",credentials:"include",cache:"no-store"});
     const td=await tr.json();if(!tr.ok||!td.token)throw new Error(td.error||"WS token unavailable");
     const proto=location.protocol==="https:"?"wss:":"ws:";
     const ws=new WebSocket(proto+"//"+location.host+"/ws?token="+encodeURIComponent(td.token));
@@ -365,8 +441,11 @@ async function connectWebSocket(roomId){
       try{handleSocketMessage(JSON.parse(e.data))}catch(err){console.error("WS message",err)}
     };
     ws.onerror=()=>setConnection("failed");
-    ws.onclose=()=>{
+    ws.onclose=(event)=>{
       if(socket===ws)socket=null;reconnectBusy=false;
+      // 4001 means the server intentionally replaced an older socket for
+      // this same user/room; do not start a reconnect storm.
+      if(event.code===4001)return;
       if(currentRoomId===roomId){setConnection("failed");scheduleReconnect(roomId)}
     };
   }catch(e){
@@ -458,6 +537,19 @@ async function logout(){
   if(socket){try{socket.close()}catch(_){}}
   stopMessagePolling();currentUser=null;currentRoomId=null;socket=null;$("app").classList.add("hidden");$("authScreen").classList.remove("hidden");
 }
+
+function applyTheme(theme){
+  const dark=theme==='dark';
+  document.body.classList.toggle('dark',dark);
+  const pill=document.getElementById('themePill');if(pill)pill.textContent=dark?'Dark · Codex':'Light · Doodles';
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content',dark?'#17120b':'#fff8ea');
+  try{localStorage.setItem('otti-theme',dark?'dark':'light')}catch(_){}
+}
+function toggleTheme(){
+  const next=document.body.classList.contains('dark')?'light':'dark';
+  applyTheme(next);toast(next==='dark'?'☾ Ancient Codex mode':'✦ Light Otti doodles');
+}
+applyTheme((()=>{try{return localStorage.getItem('otti-theme')||'light'}catch(_){return 'light'}})());
 checkSession();
 </script>
 </body>

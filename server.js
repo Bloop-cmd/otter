@@ -212,6 +212,8 @@ app.post('/api/rooms/:roomId/messages',requireAuth,async(req,res)=>{
     const r=await pool.query(`SELECT $1::uuid AS id,$2::uuid AS room_id,$3::uuid AS user_id,$4::text AS text,$5::boolean AS is_hidden,NOW() AS created_at,u.name FROM users u WHERE u.id=$3`,[id,roomId,req.session.userId,text,hidden]);
     await pool.query('INSERT INTO messages(id,room_id,user_id,text,is_hidden) VALUES($1,$2,$3,$4,$5)',[id,roomId,req.session.userId,text,hidden]);
     const message={...r.rows[0],client_id:safe(req.body.client_id,100)||null};
+    broadcast(roomId,{type:'message',room:roomId,...message});
+    console.log('REST message persisted',id,'room',roomId);
     res.json({ok:true,message});
   }catch(e){console.error('REST message error',e);res.status(500).json({error:'MESSAGE_SEND_ERROR'})}
 });
@@ -261,16 +263,35 @@ app.post('/api/groups/:roomId/members',requireAuth,async(req,res)=>{
 
 /* ---------- Robust WebSocket ---------- */
 const wsTokens=new Map();
-app.post('/api/ws-token',requireAuth,(req,res)=>{
-  const token=crypto.randomBytes(32).toString('hex');
-  wsTokens.set(token,{userId:req.session.userId,expires:Date.now()+60000});
-  res.json({token});
+app.post('/api/ws-token',requireAuth,async(req,res)=>{
+  try{
+    const roomId=safe(req.query.roomId||req.body?.roomId,80);
+    if(!roomId)return res.status(400).json({error:'ROOM_REQUIRED'});
+    const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[roomId,req.session.userId]);
+    if(!access.rowCount)return res.status(403).json({error:'FORBIDDEN'});
+    const token=crypto.randomBytes(32).toString('hex');
+    wsTokens.set(token,{userId:req.session.userId,roomId,expires:Date.now()+60000});
+    res.json({token,roomId});
+  }catch(e){console.error('WS token error',e);res.status(500).json({error:'WS_TOKEN_ERROR'})}
 });
 setInterval(()=>{const now=Date.now();for(const [k,v] of wsTokens)if(v.expires<now)wsTokens.delete(k)},30000).unref();
 
 const roomSockets=new Map();
-function joinSocket(roomId,ws){if(!roomSockets.has(roomId))roomSockets.set(roomId,new Set());roomSockets.get(roomId).add(ws)}
-function leaveSocket(roomId,ws){const s=roomSockets.get(roomId);if(!s)return;s.delete(ws);if(!s.size)roomSockets.delete(roomId)}
+const userRoomSockets=new Map();
+function joinSocket(roomId,ws){
+  if(!roomSockets.has(roomId))roomSockets.set(roomId,new Set());
+  roomSockets.get(roomId).add(ws);
+  const key=`${ws.user.id}:${roomId}`;
+  const previous=userRoomSockets.get(key);
+  if(previous&&previous!==ws){try{previous.close(4001,'replaced')}catch(_){} }
+  userRoomSockets.set(key,ws);
+}
+function leaveSocket(roomId,ws){
+  const s=roomSockets.get(roomId);
+  if(s){s.delete(ws);if(!s.size)roomSockets.delete(roomId)}
+  const key=`${ws.user?.id}:${roomId}`;
+  if(userRoomSockets.get(key)===ws)userRoomSockets.delete(key);
+}
 function broadcast(roomId,payload){for(const ws of roomSockets.get(roomId)||[]){if(ws.readyState===1)ws.send(JSON.stringify(payload))}}
 
 async function authorizeWs(token){
@@ -278,7 +299,8 @@ async function authorizeWs(token){
   if(!x||x.expires<Date.now()){if(token)wsTokens.delete(token);return null}
   wsTokens.delete(token);
   const r=await pool.query('SELECT id,name FROM users WHERE id=$1',[x.userId]);
-  return r.rows[0]||null;
+  if(!r.rowCount)return null;
+  return {...r.rows[0],roomId:x.roomId};
 }
 
 server.on('upgrade',(req,socket,head)=>{
@@ -298,6 +320,24 @@ wss.on('connection',async(ws,req,token)=>{
   ws.user=user;ws.roomId=null;ws.isAlive=true;
   console.log('WS connected for user',user.id);
 
+  // Auto-join the room carried by the one-time token. This removes the
+  // fragile dependency on the browser sending a second 'join' frame.
+  const tokenRoomId=user.roomId;
+  if(tokenRoomId){
+    const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[tokenRoomId,user.id]);
+    if(access.rowCount){
+      ws.roomId=tokenRoomId;
+      joinSocket(tokenRoomId,ws);
+      console.log('WS auto-joined room',tokenRoomId,'user',user.id);
+      const history=await pool.query(`SELECT m.id,m.text,m.is_hidden AS is_hidden,m.created_at,u.id user_id,u.name FROM messages m LEFT JOIN users u ON u.id=m.user_id WHERE m.room_id=$1 ORDER BY m.created_at DESC LIMIT 200`,[tokenRoomId]);
+      ws.send(JSON.stringify({type:'room-state',room:tokenRoomId,messages:history.rows.reverse()}));
+      broadcast(tokenRoomId,{type:'presence',room:tokenRoomId,user:user.name,count:roomSockets.get(tokenRoomId).size});
+    }else{
+      ws.send(JSON.stringify({type:'error',error:'FORBIDDEN'}));
+      ws.close(1008,'forbidden');return;
+    }
+  }
+
   ws.on('pong',()=>{ws.isAlive=true});
   ws.on('message',async raw=>{
     try{
@@ -307,12 +347,12 @@ wss.on('connection',async(ws,req,token)=>{
 
       if(m.type==='join'){
         const roomId=safe(m.room,80);
+        if(roomId===ws.roomId)return;
         const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[roomId,user.id]);
         if(!access.rowCount){ws.send(JSON.stringify({type:'error',error:'FORBIDDEN'}));return}
         if(ws.roomId)leaveSocket(ws.roomId,ws);
         ws.roomId=roomId;joinSocket(roomId,ws);
         console.log('WS joined room',roomId,'user',user.id);
-
         const history=await pool.query(`SELECT m.id,m.text,m.is_hidden AS is_hidden,m.created_at,u.id user_id,u.name FROM messages m LEFT JOIN users u ON u.id=m.user_id WHERE m.room_id=$1 ORDER BY m.created_at DESC LIMIT 200`,[roomId]);
         ws.send(JSON.stringify({type:'room-state',room:roomId,messages:history.rows.reverse()}));
         broadcast(roomId,{type:'presence',room:roomId,user:user.name,count:roomSockets.get(roomId).size});
