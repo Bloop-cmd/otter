@@ -56,7 +56,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 #chat{display:none;grid-template-rows:64px 124px minmax(0,1fr) auto auto;min-height:0}
 #chat.active{display:grid}
 .chat-top{min-width:0}.chat-title{min-width:0;max-width:155px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.connection{font-size:10px;font-weight:850;padding:6px 8px;border-radius:99px;background:#fff;color:var(--mist);border:1px solid var(--line);white-space:nowrap}
+.chat-top-tools{display:flex;align-items:center;gap:6px;min-width:0}.codex-trigger{border:1px solid rgba(23,48,71,.16);background:#fffaf0;color:#477087;border-radius:99px;padding:6px 9px;font-size:10px;font-weight:900;white-space:nowrap}.connection{font-size:10px;font-weight:850;padding:6px 8px;border-radius:99px;background:#fff;color:var(--mist);border:1px solid var(--line);white-space:nowrap}
 .connection.ok{color:var(--green);background:#eaf7ef}.connection.bad{color:var(--red);background:#fff0f0}
 .otti-stage{position:relative;overflow:hidden;background:linear-gradient(#d8f5f7,#b4eaf0);min-height:124px}
 .wave{position:absolute;left:-10%;right:-10%;bottom:-55px;height:105px;background:var(--aqua);border-radius:50% 50% 0 0/40% 40% 0 0}
@@ -67,11 +67,11 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .state{position:absolute;right:12px;bottom:8px;z-index:4;font-size:11px;font-weight:900;padding:6px 9px;border-radius:99px;background:#e8f2ff;color:#1762c0}
 .messages{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 14px;background:linear-gradient(#fff8ea,#fff7e9);scroll-behavior:smooth}
 .bubble{max-width:82%;padding:10px 13px;border-radius:18px;background:#fff;margin:7px 0;box-shadow:0 3px 10px #17212b12;line-height:1.35;word-break:break-word}.bubble.mine{margin-left:auto;background:#ffe2a8}.bubble.ghost{background:linear-gradient(135deg,#fff8e3,#fff1bf);color:#d9a02f;font-family:Georgia,"Times New Roman",serif;font-weight:900;letter-spacing:1.6px;-webkit-text-fill-color:#d9a02f;text-shadow:0 0 3px rgba(255,215,92,.95),0 0 8px rgba(240,177,47,.65),0 0 16px rgba(255,199,64,.35);border:1px solid rgba(218,166,55,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 0 12px rgba(232,180,58,.20);animation:ghostGoldShimmer 2.6s ease-in-out infinite}
-@keyframes ghostGoldShimmer{0%,100%{filter:brightness(1);text-shadow:0 0 3px rgba(255,215,92,.8),0 0 8px rgba(240,177,47,.5),0 0 15px rgba(255,199,64,.28)}50%{filter:brightness(1.10);text-shadow:0 0 4px rgba(255,228,128,1),0 0 12px rgba(240,177,47,.75),0 0 22px rgba(255,199,64,.42)}}.message-name{font-size:10px;color:var(--mist);font-weight:800;margin-bottom:3px}
+@keyframes ghostGoldShimmer{0%,100%{filter:brightness(1);text-shadow:0 0 3px rgba(255,215,92,.8),0 0 8px rgba(240,177,47,.5),0 0 15px rgba(255,199,64,.28)}50%{filter:brightness(1.10);text-shadow:0 0 4px rgba(255,228,128,1),0 0 12px rgba(240,177,47,.75),0 0 22px rgba(255,199,64,.42)}}.message-name{font-size:10px;color:var(--mist);font-weight:800;margin-bottom:3px}.otti-language-line{display:flex;align-items:center;gap:6px;margin-top:7px;padding-top:6px;border-top:1px solid rgba(23,48,71,.10);font-size:10px;line-height:1.25}.otti-language-symbols{font-weight:950;letter-spacing:1px;color:#d06a39}.otti-language-translation{color:var(--mist);font-weight:750}.otti-language-line small{display:block;color:var(--mist);font-size:9px;opacity:.72;margin-top:1px}.bubble.ghost .otti-language-line{display:none}
 .composer{display:flex;gap:8px;padding:8px 9px;background:#fffaf0;border-top:1px solid var(--line);min-height:58px}.composer input{flex:1;min-width:0;border:1px solid #d8cbb8;border-radius:17px;padding:11px 12px;outline:none;font-size:15px}.send{width:48px;border:0;background:var(--blue);color:#fff;border-radius:15px;font-size:20px;font-weight:900}
 .chat-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;padding:7px 8px calc(8px + env(safe-area-inset-bottom));background:#fffaf0}.chat-actions button{min-height:43px;border:0;border-radius:14px;padding:9px 5px;font-weight:900;background:#eee8dc;color:var(--ink)}.chat-actions .dive{background:var(--ink);color:#fff}.chat-actions .return{background:#e7f7f8;color:#166c75}
 .typing-note{font-size:11px;color:var(--mist);padding:2px 4px 6px}
-@media(max-width:380px){.chat-actions button{font-size:12px}.connection{font-size:9px}.chat-title{max-width:125px}}
+.otti-codex{position:absolute;inset:64px 0 0;z-index:40;background:rgba(7,27,45,.45);backdrop-filter:blur(8px);display:none;align-items:flex-end}.otti-codex.show{display:flex}.otti-codex-sheet{width:100%;max-height:82%;overflow:auto;background:#fffaf0;border-radius:24px 24px 0 0;padding:14px 14px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -18px 45px rgba(0,0,0,.25)}.otti-codex-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.otti-codex-head b{font-size:16px;letter-spacing:.04em}.otti-codex-live{display:flex;align-items:center;gap:12px;padding:13px;border-radius:18px;background:linear-gradient(145deg,#ffe5bd,#fff6df);border:1px solid #f1c989;margin-bottom:10px}.otti-codex-live>span{font-size:21px;font-weight:950;letter-spacing:1px;color:#a95e28}.otti-codex-live b{display:block;font-size:13px}.otti-codex-live small{display:block;color:var(--mist);font-size:10px;margin-top:3px}.otti-codex-search{display:grid;grid-template-columns:1fr auto;gap:7px}.otti-codex-search .primary{width:auto;padding:10px 13px}.otti-codex-preview{margin:9px 0 12px;padding:11px 12px;border-radius:15px;background:#eef7f8;color:#477087;font-size:11px;line-height:1.4}.otti-glyph-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.otti-glyph-grid button{border:1px solid #e6d8c1;background:#fff;border-radius:15px;padding:10px;text-align:left;cursor:pointer}.otti-glyph-grid b{display:block;font-size:17px;color:#d06a39}.otti-glyph-grid span{display:block;font-size:10px;color:var(--mist);margin-top:3px}.chat-top-tools .connection{max-width:82px;overflow:hidden;text-overflow:ellipsis}@media(max-width:380px){.chat-actions button{font-size:12px}.connection{font-size:9px}.chat-title{max-width:105px}.codex-trigger{padding:6px 7px;font-size:9px}}
 
 /* ---------- OTTI visual worlds ---------- */
 body.dark{background:#063f3d;color:#f5d77a}
@@ -363,7 +363,7 @@ body:not(.dark) .bubble.ghost *{color:#f7f4ea!important}
     <div class="top chat-top">
       <button class="icon" onclick="closeChat()">←</button>
       <div class="brand"><div class="mini"><img class="mascot-img"></div><span id="chatName" class="chat-title">Otti</span></div>
-      <div id="connection" class="connection">○ connecting</div>
+      <div class="chat-top-tools"><button class="codex-trigger" onclick="openOttiCodex()">◇ Codex</button><div id="connection" class="connection">○ connecting</div></div>
     </div>
 
     <div class="otti-stage">
@@ -383,6 +383,25 @@ body:not(.dark) .bubble.ghost *{color:#f7f4ea!important}
       <button class="dive" onclick="toggleGhost()">〰 DIVE</button>
       <button onclick="simulateViewer()">◉ Viewer</button>
       <button class="return" onclick="returnSurface()">⌁ Return</button>
+    </div>
+
+    <div id="ottiCodex" class="otti-codex" aria-hidden="true">
+      <div class="otti-codex-sheet">
+        <div class="otti-codex-head"><div><b>◇ OTTI CODEX</b><div class="sub">Ancient symbols. Modern meanings.</div></div><button class="icon" onclick="closeOttiCodex()">×</button></div>
+        <div class="otti-codex-live"><span id="codexLiveSymbols">●🌊♡</span><div><b id="codexLiveTranslation">come talk privately</b><small id="codexLiveMeaning">private friendship / affection</small></div></div>
+        <div class="otti-codex-search"><input id="codexInput" class="input" placeholder="Try: keep this lowkey…" oninput="previewOttiCodex()"><button class="primary" onclick="previewOttiCodex()">Translate</button></div>
+        <div id="codexPreview" class="otti-codex-preview">Type a phrase and Otti will show the closest canonical symbol combination.</div>
+        <div class="otti-glyph-grid">
+          <button onclick="codexUse('◇')"><b>◇</b><span>say less</span></button>
+          <button onclick="codexUse('●🌊')"><b>●🌊</b><span>keep it lowkey</span></button>
+          <button onclick="codexUse('✦')"><b>✦</b><span>let's go</span></button>
+          <button onclick="codexUse('♡')"><b>♡</b><span>love</span></button>
+          <button onclick="codexUse('≈')"><b>≈</b><span>nahhh</span></button>
+          <button onclick="codexUse('☾')"><b>☾</b><span>eepy</span></button>
+          <button onclick="codexUse('◉〰')"><b>◉〰</b><span>DIVE</span></button>
+          <button onclick="codexUse('⌁🌊')"><b>⌁🌊</b><span>back on surface</span></button>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -650,13 +669,22 @@ function glyph(text){
   // mapped by the v1.1 dictionary, use the official privacy/hidden glyph stack.
   return '〰 ◇🌊';
 }
+function getOttiPresentation(text){
+  try{
+    const encoded=window.OTTI&&OTTI.encodeOTTI?OTTI.encodeOTTI(text):null;
+    if(encoded&&encoded.otti){
+      return {symbols:encoded.otti,translation:encoded.translation||encoded.meaning||"OTTI phrase",meaning:encoded.meaning||""};
+    }
+  }catch(_){}
+  return null;
+}
 function updateGhostUI(){
   $("state").textContent=ghost?"〰 DIVE":"● Private";
   $("msg").placeholder=ghost?"Send privately…":"Message privately…";
   document.querySelectorAll("#messages .bubble").forEach(b=>{
-    const plain=b.dataset.plain||"",stored=b.dataset.hidden==="true",t=b.lastElementChild;
-    if(ghost||stored){t.textContent=glyph(plain);b.classList.add("ghost")}
-    else{t.textContent=plain;b.classList.remove("ghost")}
+    const plain=b.dataset.plain||"",stored=b.dataset.hidden==="true",body=b.querySelector(".message-body"),line=b.querySelector(".otti-language-line");
+    if(ghost||stored){if(body)body.textContent=glyph(plain);b.classList.add("ghost");if(line)line.style.display="none"}
+    else{if(body)body.textContent=plain;b.classList.remove("ghost");if(line)line.style.display="flex"}
   });
 }
 function renderMessage(m){
@@ -669,11 +697,35 @@ function renderMessage(m){
   const mine=currentUser&&String(m.user_id)===String(currentUser.id);
   b.className="bubble"+(mine?" mine":"");b.dataset.plain=m.text||"";b.dataset.hidden=m.is_hidden?"true":"false";
   if(!mine&&m.name){const n=document.createElement("div");n.className="message-name";n.textContent=m.name;b.appendChild(n)}
-  const t=document.createElement("div");
-  t.textContent=(ghost||m.is_hidden)?glyph(m.text||""):(m.text||"");
+  const t=document.createElement("div");t.className="message-body";t.textContent=(ghost||m.is_hidden)?glyph(m.text||""):(m.text||"");
   if(ghost||m.is_hidden)b.classList.add("ghost");
-  b.appendChild(t);$("messages").appendChild(b);return b;
+  b.appendChild(t);
+  const p=getOttiPresentation(m.text||"");
+  if(p){
+    const line=document.createElement("div");line.className="otti-language-line";line.innerHTML='<span class="otti-language-symbols"></span><span><span class="otti-language-translation"></span><small></small></span>';
+    line.querySelector(".otti-language-symbols").textContent=p.symbols;line.querySelector(".otti-language-translation").textContent=p.translation;line.querySelector("small").textContent=p.meaning||"canonical OTTI meaning";
+    if(ghost||m.is_hidden)line.style.display="none";b.appendChild(line);
+  }
+  $("messages").appendChild(b);return b;
 }
+function openOttiCodex(){
+  const p=$("ottiCodex");if(!p)return;p.classList.add("show");p.setAttribute("aria-hidden","false");
+  const input=$("codexInput");if(input){input.value="";input.focus()}
+}
+function closeOttiCodex(){const p=$("ottiCodex");if(!p)return;p.classList.remove("show");p.setAttribute("aria-hidden","true")}
+function previewOttiCodex(){
+  const value=$("codexInput").value.trim();if(!value){$("codexPreview").textContent="Type a phrase and Otti will show the closest canonical symbol combination.";return}
+  const d=window.OTTI&&OTTI.encodeOTTI?OTTI.encodeOTTI(value):null;
+  if(d&&d.otti){
+    $("codexLiveSymbols").textContent=d.otti;$("codexLiveTranslation").textContent=d.translation||d.meaning||"OTTI phrase";$("codexLiveMeaning").textContent=d.meaning||"composable OTTI meaning";
+    $("codexPreview").textContent=(d.status==="canonical"?"Canonical OTTI · " : "Composable OTTI · " )+d.otti+" · "+(d.translation||d.meaning||"");
+  }else $("codexPreview").textContent="◇ This phrase is not yet mapped to an OTTI combination.";
+}
+function codexUse(symbols){
+  const d=window.OTTI&&OTTI.decodeOTTI?OTTI.decodeOTTI(symbols):null;
+  if(d&&d.ok){$("codexLiveSymbols").textContent=d.symbols;$("codexLiveTranslation").textContent=d.translation||d.meaning||"OTTI phrase";$("codexLiveMeaning").textContent=d.meaning||"OTTI meaning";$("codexPreview").textContent=d.symbols+" · "+(d.translation||d.meaning||"")}
+}
+
 function applyTheme(){document.body.classList.toggle("dark",localStorage.getItem("otti-theme")==="dark")}
 function toggleTheme(){const dark=!document.body.classList.contains("dark");localStorage.setItem("otti-theme",dark?"dark":"light");applyTheme();toast(dark?"☾ Otti night on.":"✦ Otti light on.")}
 function toggleGhost(){
