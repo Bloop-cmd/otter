@@ -73,6 +73,42 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .typing-note{font-size:11px;color:var(--mist);padding:2px 4px 6px}
 @media(max-width:380px){.chat-actions button{font-size:12px}.connection{font-size:9px}.chat-title{max-width:125px}}
 
+/* ---------- OTTI visual worlds ---------- */
+body.dark{background:#063f3d;color:#f5d77a}
+body.dark .app{background:#063f3d;color:#f5d77a}
+body.dark .top,body.dark .bottom-nav{background:#064a47;border-color:#b88a2b}
+body.dark .icon,body.dark .secondary,body.dark .refresh,body.dark .chat-actions button{background:#0b5a56;color:#f5d77a;border:1px solid #9b7525}
+body.dark .primary,body.dark .nav-add{background:#d6ae45;color:#063f3d}
+body.dark .content{background:#063f3d}
+body.dark .card,body.dark .search-result{background:#07534f;border-color:#a77d25;color:#f5d77a}
+body.dark .input,body.dark .composer input{background:#043c39;color:#f5d77a;border-color:#9b7525}
+body.dark .sub,body.dark .contact-email,body.dark .status-text,body.dark .message-name{color:#d9c47b}
+body.dark .contact{border-color:#9b7525}
+body.dark .messages{background-color:#064b48;color:#f5d77a;position:relative;background-image:radial-gradient(circle at 15% 20%,rgba(230,190,75,.13) 0 2px,transparent 3px),radial-gradient(circle at 80% 70%,rgba(230,190,75,.12) 0 2px,transparent 3px)}
+body.dark .messages:before{content:'✦  ◇  ☾  ✧  ●  ≈  ⌁  ♡  ◉  〰     ◇  ✦  ●🌊  ☾  ○  ✧     ♡  ≈  ◉  ◇  〰  ✦';position:absolute;inset:0;pointer-events:none;opacity:.20;color:#f1ca54;font-size:24px;line-height:2.8;letter-spacing:18px;word-spacing:12px;overflow:hidden;padding:8px;transform:rotate(-7deg) scale(1.12);transform-origin:center}
+body.dark .bubble{position:relative;z-index:1;background:#075b56;color:#f7d76d;border:1px solid rgba(226,186,70,.35);box-shadow:0 3px 12px rgba(0,0,0,.18)}
+body.dark .bubble.mine{background:#0a6962;color:#ffe28a;border-color:#d5aa3e}
+body.dark .bubble.ghost{background:#07534f;color:#ffd45a;border-color:#d3a73f;text-shadow:0 0 7px rgba(245,205,82,.75);font-family:monospace}
+body.dark .composer,body.dark .chat-actions{background:#06433f;border-color:#a77d25}
+body.dark .send{background:#d6ae45;color:#063f3d}
+body.dark .otti-stage{background:#07514e}
+body.dark .wave{background:#08645f}
+body.dark .state{background:#0a625d;color:#f5d77a;border:1px solid #b88a2b}
+body.dark .connection{background:#07534f;color:#f5d77a;border-color:#a77d25}
+body.dark .connection.ok{background:#0a625d;color:#f5d77a}
+body.dark .nav-btn{color:#cdbb79}body.dark .nav-btn.active{color:#f5d77a}
+body.dark .status-card{background:#07534f;color:#f5d77a;border:1px solid #a77d25}
+body.dark .option{border-color:#9b7525}
+body.dark .chat-actions .dive{background:#d6ae45;color:#063f3d}
+body.dark .chat-actions .return{background:#0a625d;color:#f5d77a}
+body.dark .toast{background:#d6ae45;color:#063f3d}
+
+/* Light mode: Otti's own doodle field, inspired by chat-app density but not WhatsApp artwork. */
+.messages{position:relative;background-color:#fff8ea;background-image:radial-gradient(circle at 8% 12%,rgba(255,184,77,.16) 0 2px,transparent 3px),radial-gradient(circle at 90% 34%,rgba(98,216,231,.18) 0 2px,transparent 3px)}
+.messages:before{content:'◇  ✦  ♡  ●🌊  ☾  ≈  ⌁  ○  ✧  ◉  〰     ✦  ◇  ♡  ☾  ●  ≈  ✧  ○  🌊  ⌁';position:absolute;inset:0;pointer-events:none;opacity:.14;color:#7b5b27;font-size:22px;line-height:2.8;letter-spacing:15px;word-spacing:10px;overflow:hidden;padding:8px;transform:rotate(-6deg) scale(1.12);transform-origin:center}
+.messages>*{position:relative;z-index:1}
+.bubble.ghost{background:#fff1c7;color:#b57a00;font-family:monospace;letter-spacing:1px;text-shadow:0 0 6px rgba(222,164,36,.65);border:1px solid rgba(213,164,45,.45)}
+
 /* ---------- OTTI VISUAL WORLDS: LIGHT DOODLES / DARK CODEX ---------- */
 :root{
   --doodle-opacity:.34;
@@ -206,7 +242,7 @@ body.dark .nav-btn{color:#9f8a64}.nav-btn.active{color:var(--ink)}
     <div class="top"><button class="icon" onclick="showScreen('chats')">←</button><b>Your Otti</b><span></span></div>
     <div class="content">
       <div class="card profile-hero"><div class="profile-otti"><img class="mascot-img"></div><h2 id="profileName" style="margin:8px 0 2px">Your Otti</h2><div id="profileEmail" class="sub"></div></div>
-      <div class="card"><b>Privacy</b><div class="option"><b>〰 DIVE</b><span>Instantly transform visible conversation into Otti symbols.</span></div><div class="option"><b>◉ Viewer detection</b><span>Permissioned camera/on-device detection can be added without changing the chat architecture.</span></div></div>
+      <div class="card"><b>Privacy</b><div class="option"><b>〰 DIVE</b><span>Instantly transform visible conversation into Otti symbols.</span></div><div class="option" onclick="toggleTheme()"><b>☾ Dark Otti</b><span>Switch between the warm doodle world and teal + gold Otti night.</span></div><div class="option"><b>◉ Viewer detection</b><span>Permissioned camera/on-device detection can be added without changing the chat architecture.</span></div></div>
       <button class="theme-toggle" onclick="toggleTheme()"><span>✦ Appearance<small>Light doodles ↔ Golden Codex</small></span><span id="themePill" class="theme-pill">Light</span></button>
       <button class="secondary" onclick="logout()">Log out</button>
     </div>
@@ -311,6 +347,8 @@ function renderMessage(m){
   if(ghost||m.is_hidden)b.classList.add("ghost");
   b.appendChild(t);$("messages").appendChild(b);return b;
 }
+function applyTheme(){document.body.classList.toggle("dark",localStorage.getItem("otti-theme")==="dark")}
+function toggleTheme(){const dark=!document.body.classList.contains("dark");localStorage.setItem("otti-theme",dark?"dark":"light");applyTheme();toast(dark?"☾ Otti night on.":"✦ Otti light on.")}
 function toggleGhost(){
   ghost=!ghost;updateGhostUI();setOttiState(ghost?"dive":"idle");
   sendSocket({type:ghost?"dive":"return"});toast(ghost?"〰 Otti dove.":"⌁ Back on the surface.");
@@ -412,9 +450,12 @@ function startMessagePolling(roomId){
       const r=await fetch('/api/rooms/'+encodeURIComponent(roomId)+'/messages?limit=50',{credentials:'include',cache:'no-store'});
       if(!r.ok)return;
       const d=await r.json();
-      (d.messages||[]).forEach(renderMessage);
-      scrollMessages();
-      if(!socket||socket.readyState!==WebSocket.OPEN)setConnection('synced');
+      // WS is the live channel. Poll only acts as a fallback while WS is down.
+      if(!socket||socket.readyState!==WebSocket.OPEN){
+        (d.messages||[]).forEach(renderMessage);
+        scrollMessages();
+        setConnection('synced');
+      }
     }catch(_){}
   },1800);
 }
@@ -485,27 +526,21 @@ function sendMessage(){
   const input=$("msg"),text=input.value.trim();if(!text)return;
   const client_id="c-"+Date.now()+"-"+Math.random().toString(16).slice(2);
   const payload={type:"message",text,is_hidden:ghost,client_id};
-  renderMessage({client_id,text,is_hidden:ghost,user_id:currentUser.id,name:currentUser.name});
-  scrollMessages();input.value="";setOttiState("sent");
-  if(socket&&socket.readyState===WebSocket.OPEN){
-    socket.send(JSON.stringify(payload));
-  }else{
-    sendMessageREST(payload);
-  }
+  input.value="";setOttiState("sent");
+  // REST is the single authoritative send path. WebSocket remains the live
+  // delivery channel, preventing optimistic + WS + polling duplicates.
+  sendMessageREST(payload);
 }
 async function sendMessageREST(payload){
   try{
     const r=await fetch('/api/rooms/'+encodeURIComponent(currentRoomId)+'/messages',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
     const d=await r.json();
     if(!r.ok)throw new Error(d.error||'Message send failed');
-    pendingMessages=pendingMessages.filter(x=>x.client_id!==payload.client_id);
-    const local=document.querySelector('#messages .bubble[data-client-id=\"'+CSS.escape(String(payload.client_id))+'\"]');
-    if(local)local.remove();
-    renderedClientIds.delete(String(payload.client_id));
-    renderMessage(d.message);scrollMessages();
-  }catch(e){
-    toast('◇ Message could not be sent');
-  }
+    // The server broadcasts the saved message over WS. If WS is unavailable,
+    // polling will pick it up. Either way, renderMessage's id/client_id sets
+    // prevent duplicate DOM entries.
+    scrollMessages();
+  }catch(e){toast('◇ Message could not be sent');}
 }
 async function loadStatuses(){
   try{
@@ -550,6 +585,7 @@ function toggleTheme(){
   applyTheme(next);toast(next==='dark'?'☾ Ancient Codex mode':'✦ Light Otti doodles');
 }
 applyTheme((()=>{try{return localStorage.getItem('otti-theme')||'light'}catch(_){return 'light'}})());
+applyTheme();
 checkSession();
 </script>
 </body>
