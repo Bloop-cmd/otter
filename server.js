@@ -201,6 +201,21 @@ app.get('/api/rooms/:roomId/messages',requireAuth,async(req,res)=>{
   res.json({messages:r.rows});
 });
 
+app.post('/api/rooms/:roomId/messages',requireAuth,async(req,res)=>{
+  try{
+    const roomId=safe(req.params.roomId,80);
+    const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[roomId,req.session.userId]);
+    if(!access.rowCount)return res.status(403).json({error:'FORBIDDEN'});
+    const text=safe(req.body.text);
+    if(!text)return res.status(400).json({error:'MESSAGE_REQUIRED'});
+    const id=uuid(),hidden=!!req.body.is_hidden;
+    const r=await pool.query(`SELECT $1::uuid AS id,$2::uuid AS room_id,$3::uuid AS user_id,$4::text AS text,$5::boolean AS is_hidden,NOW() AS created_at,u.name FROM users u WHERE u.id=$3`,[id,roomId,req.session.userId,text,hidden]);
+    await pool.query('INSERT INTO messages(id,room_id,user_id,text,is_hidden) VALUES($1,$2,$3,$4,$5)',[id,roomId,req.session.userId,text,hidden]);
+    const message={...r.rows[0],client_id:safe(req.body.client_id,100)||null};
+    res.json({ok:true,message});
+  }catch(e){console.error('REST message error',e);res.status(500).json({error:'MESSAGE_SEND_ERROR'})}
+});
+
 app.get('/api/statuses',requireAuth,async(req,res)=>{
   const r=await pool.query(`SELECT s.id,s.symbol,s.text,s.created_at,u.id user_id,u.name,u.email FROM statuses s JOIN users u ON u.id=s.user_id WHERE s.created_at>NOW()-INTERVAL '24 hours' ORDER BY s.created_at DESC LIMIT 100`);
   res.json({statuses:r.rows});
@@ -271,15 +286,17 @@ server.on('upgrade',(req,socket,head)=>{
     const u=new URL(req.url||'',`http://${req.headers.host||'localhost'}`);
     if(u.pathname!=='/ws')return socket.destroy();
     const token=u.searchParams.get('token');
-    if(!token)return socket.destroy();
+    if(!token){console.error('WS upgrade rejected: missing token');return socket.destroy();}
+    console.log('WS upgrade received');
     wss.handleUpgrade(req,socket,head,ws=>wss.emit('connection',ws,req,token));
   }catch(e){console.error('WS upgrade error',e);socket.destroy()}
 });
 
 wss.on('connection',async(ws,req,token)=>{
   const user=await authorizeWs(token);
-  if(!user){ws.close(1008,'unauthorized');return}
+  if(!user){console.error('WS authorization failed');ws.close(1008,'unauthorized');return}
   ws.user=user;ws.roomId=null;ws.isAlive=true;
+  console.log('WS connected for user',user.id);
 
   ws.on('pong',()=>{ws.isAlive=true});
   ws.on('message',async raw=>{
@@ -294,6 +311,7 @@ wss.on('connection',async(ws,req,token)=>{
         if(!access.rowCount){ws.send(JSON.stringify({type:'error',error:'FORBIDDEN'}));return}
         if(ws.roomId)leaveSocket(ws.roomId,ws);
         ws.roomId=roomId;joinSocket(roomId,ws);
+        console.log('WS joined room',roomId,'user',user.id);
 
         const history=await pool.query(`SELECT m.id,m.text,m.is_hidden AS is_hidden,m.created_at,u.id user_id,u.name FROM messages m LEFT JOIN users u ON u.id=m.user_id WHERE m.room_id=$1 ORDER BY m.created_at DESC LIMIT 200`,[roomId]);
         ws.send(JSON.stringify({type:'room-state',room:roomId,messages:history.rows.reverse()}));
@@ -308,6 +326,7 @@ wss.on('connection',async(ws,req,token)=>{
         if(!text)return;
         const id=uuid(),hidden=!!m.is_hidden;
         await pool.query('INSERT INTO messages(id,room_id,user_id,text,is_hidden) VALUES($1,$2,$3,$4,$5)',[id,ws.roomId,user.id,text,hidden]);
+        console.log('WS message persisted',id,'room',ws.roomId);
         broadcast(ws.roomId,{type:'message',room:ws.roomId,id,text,is_hidden:hidden,client_id:safe(m.client_id,100)||null,created_at:new Date().toISOString(),user_id:user.id,name:user.name});
         return;
       }
