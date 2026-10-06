@@ -3,21 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#fff8ea">
 <title>OTTI — Private, but make it cute.</title>
 
 <style>
 :root{
   --cream:#fff8ea;
+  --cream2:#fffaf1;
   --white:#fff;
   --ink:#17212b;
   --orange:#ffb84d;
   --blue:#287cff;
   --aqua:#63d8e8;
+  --mist:#718096;
   --line:#eadfce;
-  --muted:#718096;
-  --ghost:#718096;
+  --ghost:#73859a;
   --green:#21834a;
   --red:#d94c4c;
+  --pink:#ff8fb3;
 }
 
 *{box-sizing:border-box}
@@ -31,36 +34,57 @@ html,body{
   color:var(--ink);
 }
 
-button,input{font:inherit}
-button{cursor:pointer}
+body{
+  overscroll-behavior:none;
+}
 
-.hidden{display:none!important}
+button,input{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.hidden{
+  display:none!important;
+}
 
 .app{
   width:min(430px,100vw);
-  min-height:100vh;
+  height:100vh;
+  min-height:650px;
   margin:auto;
   background:var(--cream);
-  position:relative;
   overflow:hidden;
+  position:relative;
 }
 
 .screen{
   display:none;
-  min-height:100vh;
+  height:100%;
   flex-direction:column;
 }
 
-.screen.active{display:flex}
+.screen.active{
+  display:flex;
+}
+
+/* ================= TOP ================= */
 
 .top{
-  height:70px;
-  min-height:70px;
+  height:68px;
+  min-height:68px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:10px 15px;
-  background:#fffaf0;
+  background:var(--cream2);
   border-bottom:1px solid var(--line);
 }
 
@@ -68,7 +92,8 @@ button{cursor:pointer}
   display:flex;
   align-items:center;
   gap:9px;
-  font-weight:900;
+  font-weight:950;
+  letter-spacing:.2px;
 }
 
 .mini{
@@ -79,6 +104,7 @@ button{cursor:pointer}
   display:grid;
   place-items:center;
   font-size:23px;
+  box-shadow:inset -4px -4px #e79a39;
 }
 
 .icon{
@@ -86,44 +112,45 @@ button{cursor:pointer}
   background:#eee8dc;
   border-radius:13px;
   padding:10px 12px;
-  font-weight:800;
+  color:var(--ink);
+  font-weight:850;
 }
 
 .content{
-  padding:18px;
+  padding:17px;
   overflow:auto;
   flex:1;
+  padding-bottom:90px;
 }
 
 .title{
   font-size:28px;
-  font-weight:900;
-  margin:5px 0;
+  font-weight:950;
+  margin:4px 0;
 }
 
 .sub{
-  color:var(--muted);
+  color:var(--mist);
   font-size:13px;
 }
 
 .card{
-  background:#fff;
-  border-radius:22px;
-  padding:18px;
+  background:var(--white);
+  border-radius:21px;
+  padding:17px;
   box-shadow:0 7px 22px #17212b12;
-  margin-bottom:14px;
+  margin-bottom:13px;
 }
 
 .primary{
   width:100%;
-  margin-top:12px;
+  margin-top:11px;
   border:0;
   background:var(--ink);
   color:#fff;
   padding:14px;
   border-radius:17px;
-  font-weight:850;
-  font-size:15px;
+  font-weight:900;
 }
 
 .secondary{
@@ -133,7 +160,7 @@ button{cursor:pointer}
   color:var(--ink);
   border-radius:16px;
   padding:13px;
-  font-weight:800;
+  font-weight:850;
   margin-top:9px;
 }
 
@@ -147,30 +174,87 @@ button{cursor:pointer}
   font-size:16px;
 }
 
-.input:focus{border-color:var(--blue)}
-
-.option{
-  padding:15px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  margin:9px 0;
-  cursor:pointer;
+.input:focus{
+  border-color:var(--blue);
 }
 
-.option b{display:block}
+/* ================= BOTTOM NAV ================= */
 
-.option span{
+.bottom-nav{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:72px;
+  background:#fffaf2;
+  border-top:1px solid var(--line);
+  display:flex;
+  z-index:20;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+.nav-btn{
+  flex:1;
+  border:0;
+  background:transparent;
+  color:#7b8793;
+  font-size:11px;
+  font-weight:800;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+}
+
+.nav-btn span:first-child{
+  font-size:21px;
+}
+
+.nav-btn.active{
+  color:var(--ink);
+}
+
+.nav-add{
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  background:var(--ink);
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:25px;
+}
+
+/* ================= HOME / CHAT LIST ================= */
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin-bottom:12px;
+}
+
+.refresh{
+  border:0;
+  background:#eee8dc;
+  border-radius:12px;
+  padding:8px 10px;
   font-size:12px;
-  color:var(--muted);
+  font-weight:800;
 }
 
 .contact{
   display:flex;
   align-items:center;
   gap:12px;
-  padding:13px 4px;
+  padding:13px 3px;
   border-bottom:1px solid var(--line);
   cursor:pointer;
+}
+
+.contact:last-child{
+  border-bottom:0;
 }
 
 .avatar{
@@ -182,6 +266,7 @@ button{cursor:pointer}
   place-items:center;
   font-size:23px;
   flex:none;
+  box-shadow:inset -4px -4px #e79a39;
 }
 
 .contact-main{
@@ -190,15 +275,110 @@ button{cursor:pointer}
 }
 
 .contact-name{
-  font-weight:850;
+  font-weight:900;
 }
 
 .contact-email{
-  color:var(--muted);
+  color:var(--mist);
   font-size:12px;
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
+}
+
+.contact-state{
+  color:var(--blue);
+  font-size:11px;
+  font-weight:850;
+}
+
+/* ================= STATUS ================= */
+
+.status-row{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+  padding:4px 0 13px;
+}
+
+.status-card{
+  min-width:95px;
+  height:120px;
+  border-radius:19px;
+  background:#fff;
+  box-shadow:0 5px 15px #17212b12;
+  padding:10px;
+  position:relative;
+  overflow:hidden;
+}
+
+.status-symbol{
+  font-size:28px;
+}
+
+.status-name{
+  position:absolute;
+  left:10px;
+  bottom:9px;
+  right:7px;
+  font-size:11px;
+  font-weight:850;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.status-text{
+  font-size:11px;
+  color:var(--mist);
+  margin-top:4px;
+  line-height:1.2;
+}
+
+.status-composer{
+  display:flex;
+  gap:8px;
+}
+
+.status-composer .input{
+  flex:1;
+  min-width:0;
+}
+
+.status-send{
+  border:0;
+  border-radius:15px;
+  background:var(--ink);
+  color:#fff;
+  padding:0 15px;
+  font-weight:900;
+}
+
+/* ================= ADD / SEARCH ================= */
+
+.option{
+  padding:15px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  margin:9px 0;
+  cursor:pointer;
+}
+
+.option b{
+  display:block;
+}
+
+.option span{
+  font-size:12px;
+  color:var(--mist);
+}
+
+.search-result{
+  background:#fff;
+  border-radius:19px;
+  padding:13px;
+  margin-top:11px;
+  box-shadow:0 5px 16px #17212b10;
 }
 
 .add-small{
@@ -207,14 +387,21 @@ button{cursor:pointer}
   color:#fff;
   padding:9px 12px;
   border-radius:13px;
-  font-weight:800;
+  font-weight:850;
+}
+
+/* ================= CHAT ================= */
+
+.chat-screen{
+  position:relative;
 }
 
 .messages{
   flex:1;
-  padding:16px;
+  padding:15px;
   overflow:auto;
   background:#fff8ea;
+  scroll-behavior:smooth;
 }
 
 .bubble{
@@ -238,6 +425,13 @@ button{cursor:pointer}
   color:var(--ghost);
   font-family:monospace;
   letter-spacing:1px;
+}
+
+.message-name{
+  font-size:10px;
+  color:var(--mist);
+  font-weight:800;
+  margin-bottom:3px;
 }
 
 .composer{
@@ -276,9 +470,9 @@ button{cursor:pointer}
 .chat-actions button{
   flex:1;
   border:0;
-  border-radius:15px;
-  padding:11px 7px;
-  font-weight:800;
+  border-radius:14px;
+  padding:10px 6px;
+  font-weight:850;
   background:#eee8dc;
 }
 
@@ -287,8 +481,31 @@ button{cursor:pointer}
   color:#fff;
 }
 
+.connection{
+  font-size:10px;
+  font-weight:850;
+  padding:5px 8px;
+  border-radius:99px;
+  background:#fff;
+  color:var(--mist);
+  border:1px solid var(--line);
+}
+
+.connection.ok{
+  color:var(--green);
+  background:#eaf7ef;
+}
+
+.connection.bad{
+  color:var(--red);
+  background:#fff0f0;
+}
+
+/* ================= OTTI STAGE ================= */
+
 .otti-stage{
   height:105px;
+  min-height:105px;
   background:linear-gradient(#d8f5f7,#a9e7ed);
   position:relative;
   overflow:hidden;
@@ -325,7 +542,7 @@ button{cursor:pointer}
 }
 
 .otti.ghost{
-  top:50px;
+  top:49px;
   filter:saturate(.5);
 }
 
@@ -357,28 +574,25 @@ button{cursor:pointer}
   bottom:8px;
   z-index:3;
   font-size:11px;
-  font-weight:850;
+  font-weight:900;
   padding:6px 9px;
   border-radius:99px;
   background:#e8f2ff;
   color:#1762c0;
 }
 
-.toast{
-  position:fixed;
-  left:50%;
-  transform:translateX(-50%);
-  bottom:22px;
-  width:min(390px,calc(100vw - 28px));
-  background:#17212b;
-  color:#fff;
-  padding:13px 15px;
-  border-radius:15px;
-  display:none;
-  z-index:100;
-  font-size:13px;
-  font-weight:750;
+/* ================= PROFILE ================= */
+
+.profile-hero{
+  text-align:center;
+  padding:20px;
 }
+
+.profile-otti{
+  font-size:68px;
+}
+
+/* ================= AUTH ================= */
 
 .auth-wrap{
   min-height:100vh;
@@ -411,16 +625,18 @@ button{cursor:pointer}
 
 .auth-sub{
   text-align:center;
-  color:var(--muted);
+  color:var(--mist);
   font-size:13px;
   margin:5px 0 20px;
 }
 
-.auth-card .input{margin-top:9px}
+.auth-card .input{
+  margin-top:9px;
+}
 
 .auth-divider{
   text-align:center;
-  color:var(--muted);
+  color:var(--mist);
   font-size:12px;
   margin:17px 0 5px;
 }
@@ -436,12 +652,44 @@ button{cursor:pointer}
   font-size:13px;
   margin-top:9px;
 }
+
+/* ================= TOAST ================= */
+
+.toast{
+  position:absolute;
+  left:14px;
+  right:14px;
+  bottom:86px;
+  background:var(--ink);
+  color:#fff;
+  padding:13px 15px;
+  border-radius:15px;
+  display:none;
+  z-index:100;
+  font-size:13px;
+  font-weight:800;
+}
+
+/* ================= EMPTY ================= */
+
+.empty{
+  text-align:center;
+  padding:35px 15px;
+  color:var(--mist);
+}
+
+.empty-symbol{
+  font-size:40px;
+  margin-bottom:8px;
+}
 </style>
 </head>
 
 <body>
 
-<!-- ================= AUTH ================= -->
+<!-- =====================================================
+     AUTH
+===================================================== -->
 
 <div id="authScreen" class="auth-wrap">
 
@@ -493,14 +741,14 @@ button{cursor:pointer}
 
     <button
       class="secondary"
-      onclick="window.location.href='/auth/google'"
+      onclick="location.href='/auth/google'"
     >
       Google
     </button>
 
     <button
       class="secondary"
-      onclick="window.location.href='/auth/github'"
+      onclick="location.href='/auth/github'"
     >
       GitHub
     </button>
@@ -512,14 +760,16 @@ button{cursor:pointer}
 </div>
 
 
-<!-- ================= APP ================= -->
+<!-- =====================================================
+     MAIN APP
+===================================================== -->
 
 <div id="app" class="app hidden">
 
 
-  <!-- HOME -->
+  <!-- ================= CHATS ================= -->
 
-  <section id="home" class="screen active">
+  <section id="chats" class="screen active">
 
     <div class="top">
 
@@ -530,7 +780,7 @@ button{cursor:pointer}
 
       <button
         class="icon"
-        onclick="show('profile')"
+        onclick="showScreen('profile')"
       >
         ●
       </button>
@@ -539,39 +789,103 @@ button{cursor:pointer}
 
     <div class="content">
 
-      <div class="title">
-        Your Ottis
-      </div>
+      <div class="section-head">
 
-      <div class="sub">
-        People you can talk to privately.
+        <div>
+          <div class="title">
+            Chats
+          </div>
+
+          <div class="sub">
+            Your private Ottis.
+          </div>
+        </div>
+
+        <button
+          class="refresh"
+          onclick="loadContacts()"
+        >
+          ↻
+        </button>
+
       </div>
 
       <div
         id="contacts"
-        style="margin-top:12px"
+        class="card"
       ></div>
-
-      <button
-        class="primary"
-        onclick="show('add')"
-      >
-        ＋ Add an Otti
-      </button>
-
-      <button
-        class="secondary"
-        onclick="loadContacts()"
-      >
-        ↻ Refresh contacts
-      </button>
 
     </div>
 
   </section>
 
 
-  <!-- ADD -->
+  <!-- ================= STATUS ================= -->
+
+  <section id="status" class="screen">
+
+    <div class="top">
+
+      <div class="brand">
+        <div class="mini">🦦</div>
+        Status
+      </div>
+
+      <button
+        class="icon"
+        onclick="loadStatuses()"
+      >
+        ↻
+      </button>
+
+    </div>
+
+    <div class="content">
+
+      <div class="title">
+        Otti Status
+      </div>
+
+      <div class="sub">
+        24-hour thoughts, moods & symbols.
+      </div>
+
+      <div
+        class="card"
+        style="margin-top:14px"
+      >
+
+        <div class="status-composer">
+
+          <input
+            id="statusText"
+            class="input"
+            maxlength="300"
+            placeholder="What's your Otti mood?"
+          >
+
+          <button
+            class="status-send"
+            onclick="postStatus()"
+          >
+            ✦
+          </button>
+
+        </div>
+
+      </div>
+
+      <div
+        id="statuses"
+        class="status-row"
+      ></div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= ADD ================= -->
 
   <section id="add" class="screen">
 
@@ -579,7 +893,7 @@ button{cursor:pointer}
 
       <button
         class="icon"
-        onclick="show('home')"
+        onclick="showScreen('chats')"
       >
         ←
       </button>
@@ -610,8 +924,19 @@ button{cursor:pointer}
         >
           <b>🔗 Share Otti invite</b>
           <span>
-            Invite someone to join Otti.
+            Share your Otti app link.
           </span>
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <b>Otti language</b>
+
+        <div class="sub" style="margin-top:7px">
+          ◇ say less · ●🌊 lowkey · ✦ lesgooo ·
+          ♡ love · ≈ chaos · ☾ eepy
         </div>
 
       </div>
@@ -621,7 +946,7 @@ button{cursor:pointer}
   </section>
 
 
-  <!-- SEARCH -->
+  <!-- ================= SEARCH ================= -->
 
   <section id="search" class="screen">
 
@@ -629,7 +954,7 @@ button{cursor:pointer}
 
       <button
         class="icon"
-        onclick="show('add')"
+        onclick="showScreen('add')"
       >
         ←
       </button>
@@ -645,7 +970,7 @@ button{cursor:pointer}
       <div class="card">
 
         <div class="sub">
-          Search an existing Otti by name or email.
+          Search by name or email.
         </div>
 
         <input
@@ -672,7 +997,7 @@ button{cursor:pointer}
   </section>
 
 
-  <!-- PROFILE -->
+  <!-- ================= PROFILE ================= -->
 
   <section id="profile" class="screen">
 
@@ -680,7 +1005,7 @@ button{cursor:pointer}
 
       <button
         class="icon"
-        onclick="show('home')"
+        onclick="showScreen('chats')"
       >
         ←
       </button>
@@ -693,16 +1018,16 @@ button{cursor:pointer}
 
     <div class="content">
 
-      <div
-        class="card"
-        style="text-align:center"
-      >
+      <div class="card profile-hero">
 
-        <div style="font-size:65px">
+        <div class="profile-otti">
           🦦
         </div>
 
-        <h2 id="profileName">
+        <h2
+          id="profileName"
+          style="margin:5px 0"
+        >
           Your Otti
         </h2>
 
@@ -722,7 +1047,7 @@ button{cursor:pointer}
           <b>〰 DIVE</b>
 
           <span>
-            Hide visible conversation whenever you want privacy.
+            Instantly transform visible conversation into Otti symbols.
           </span>
 
         </div>
@@ -732,7 +1057,7 @@ button{cursor:pointer}
           <b>◉ Viewer detection</b>
 
           <span>
-            Camera-based shoulder detection can be added as a later enhancement.
+            Shoulder detection can be added as an on-device enhancement.
           </span>
 
         </div>
@@ -751,7 +1076,7 @@ button{cursor:pointer}
   </section>
 
 
-  <!-- CHAT -->
+  <!-- ================= CHAT ================= -->
 
   <section id="chat" class="screen">
 
@@ -776,12 +1101,12 @@ button{cursor:pointer}
 
       </div>
 
-      <button
-        class="icon"
-        onclick="toggleGhost()"
+      <div
+        id="connection"
+        class="connection"
       >
-        〰
-      </button>
+        connecting
+      </div>
 
     </div>
 
@@ -792,11 +1117,9 @@ button{cursor:pointer}
         id="otti"
         class="otti"
       >
-
         <span class="eye e1"></span>
         <span class="eye e2"></span>
         <span class="nose"></span>
-
       </div>
 
       <div class="wave"></div>
@@ -861,44 +1184,89 @@ button{cursor:pointer}
 
   </section>
 
+
+  <!-- ================= BOTTOM NAV ================= -->
+
+  <nav
+    id="bottomNav"
+    class="bottom-nav"
+  >
+
+    <button
+      id="navChats"
+      class="nav-btn active"
+      onclick="showScreen('chats')"
+    >
+      <span>♡</span>
+      <span>Chats</span>
+    </button>
+
+    <button
+      id="navStatus"
+      class="nav-btn"
+      onclick="showScreen('status')"
+    >
+      <span>✦</span>
+      <span>Status</span>
+    </button>
+
+    <button
+      id="navAdd"
+      class="nav-btn"
+      onclick="showScreen('add')"
+    >
+      <span class="nav-add">＋</span>
+      <span>Add</span>
+    </button>
+
+    <button
+      id="navProfile"
+      class="nav-btn"
+      onclick="showScreen('profile')"
+    >
+      <span>●</span>
+      <span>Profile</span>
+    </button>
+
+  </nav>
+
+
+  <div
+    id="toast"
+    class="toast"
+  ></div>
+
 </div>
-
-
-<div
-  id="toast"
-  class="toast"
-></div>
 
 
 <script>
 
 /* =========================================================
-   OTTI V2 FRONTEND
-   Backend contract:
-   /api/me
-   /api/auth/email
-   /api/auth/logout
-   /api/contacts
-   /api/users/search
-   /api/rooms
-   /api/rooms/:roomId/messages
-   /api/ws-token
-   /ws
+   OTTI V2
+   Real backend integration
 ========================================================= */
 
 
 /* ================= STATE ================= */
 
 let currentUser = null;
+
+let contacts = [];
+
 let currentRoomId = null;
 let currentContact = null;
 
 let socket = null;
+
 let ghost = false;
 
 let authMode = "signin";
 
-let contacts = [];
+let reconnectTimer = null;
+let reconnectAttempts = 0;
+
+let renderedMessageIds = new Set();
+
 
 const $ = id =>
   document.getElementById(id);
@@ -906,19 +1274,69 @@ const $ = id =>
 
 /* ================= UI ================= */
 
-function show(id){
+function showScreen(id){
 
   document
     .querySelectorAll(".screen")
-    .forEach(screen =>
-      screen.classList.remove("active")
+    .forEach(
+      screen =>
+        screen.classList.remove("active")
     );
 
-  const screen = $(id);
+  const screen =
+    $(id);
 
-  if(screen){
-    screen.classList.add("active");
+  if(!screen)
+    return;
+
+  screen.classList.add("active");
+
+  updateNavigation(id);
+
+  if(id === "status"){
+    loadStatuses();
   }
+
+  if(id === "chats"){
+    loadContacts();
+  }
+
+}
+
+
+function updateNavigation(id){
+
+  const nav =
+    $("bottomNav");
+
+  /*
+    Bottom navigation stays hidden
+    inside a chat.
+  */
+
+  nav.style.display =
+    id === "chat"
+      ? "none"
+      : "flex";
+
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(
+      btn =>
+        btn.classList.remove("active")
+    );
+
+  if(id === "chats")
+    $("navChats").classList.add("active");
+
+  if(id === "status")
+    $("navStatus").classList.add("active");
+
+  if(id === "add")
+    $("navAdd").classList.add("active");
+
+  if(id === "profile")
+    $("navProfile").classList.add("active");
 
 }
 
@@ -944,7 +1362,7 @@ function toast(message){
         element.style.display =
           "none";
       },
-      1800
+      2000
     );
 
 }
@@ -968,14 +1386,6 @@ function toggleAuthMode(){
     authMode === "signup"
       ? "Already have an account? Sign in"
       : "Create an Otti";
-
-  $("authPassword").autocomplete =
-    authMode === "signup"
-      ? "new-password"
-      : "current-password";
-
-  $("authMessage").innerHTML =
-    "";
 
 }
 
@@ -1051,7 +1461,9 @@ async function submitAuth(){
 
     $("authMessage").innerHTML =
       '<div class="error">'+
-      escapeHtml(error.message)+
+      escapeHtml(
+        error.message
+      )+
       '</div>';
 
   }finally{
@@ -1063,8 +1475,6 @@ async function submitAuth(){
 
 }
 
-
-/* ================= SESSION ================= */
 
 async function checkSession(){
 
@@ -1093,7 +1503,7 @@ async function checkSession(){
   }catch(error){
 
     console.error(
-      "Session check failed:",
+      "Session:",
       error
     );
 
@@ -1118,7 +1528,7 @@ async function enterApp(){
     currentUser.email ||
     "";
 
-  show("home");
+  showScreen("chats");
 
   await loadContacts();
 
@@ -1142,6 +1552,12 @@ async function loadContacts(){
     const data =
       await response.json();
 
+    if(response.status === 401){
+
+      return logout();
+
+    }
+
     if(!response.ok){
 
       throw new Error(
@@ -1160,17 +1576,15 @@ async function loadContacts(){
   }catch(error){
 
     console.error(
-      "Contacts error:",
+      "Contacts:",
       error
     );
 
     $("contacts").innerHTML =
-      '<div class="card">'+
-      '<div class="error">'+
-      escapeHtml(
-        error.message
-      )+
-      '</div>'+
+      '<div class="empty">'+
+      '<div class="empty-symbol">◇</div>'+
+      '<b>Could not load chats</b>'+
+      '<div>'+escapeHtml(error.message)+'</div>'+
       '</div>';
 
   }
@@ -1189,11 +1603,10 @@ function renderContacts(){
   if(!contacts.length){
 
     container.innerHTML =
-      '<div class="card" style="margin-top:14px">'+
-      '<b>◇ No Ottis yet</b>'+
-      '<div class="sub" style="margin-top:6px">'+
-      'Find someone and start your first private chat.'+
-      '</div>'+
+      '<div class="empty">'+
+      '<div class="empty-symbol">🦦</div>'+
+      '<b>No Ottis yet</b>'+
+      '<div style="margin-top:5px">Add someone to start chatting.</div>'+
       '</div>';
 
     return;
@@ -1227,12 +1640,13 @@ function renderContacts(){
             )+
           '</div>'+
         '</div>'+
-        '<div class="sub">●</div>';
+        '<div class="contact-state">●</div>';
 
       row.onclick =
-        () => openContact(
-          contact
-        );
+        () =>
+          openContact(
+            contact
+          );
 
       container.appendChild(
         row
@@ -1244,7 +1658,7 @@ function renderContacts(){
 }
 
 
-/* ================= SEARCH ================= */
+/* ================= ADD / SEARCH ================= */
 
 function openSearch(){
 
@@ -1254,12 +1668,11 @@ function openSearch(){
   $("searchResults")
     .innerHTML = "";
 
-  show("search");
+  showScreen("search");
 
   setTimeout(
     () =>
-      $("searchInput")
-        .focus(),
+      $("searchInput").focus(),
     100
   );
 
@@ -1276,9 +1689,7 @@ async function searchUsers(){
   if(!query){
 
     $("searchResults").innerHTML =
-      '<div class="card">'+
-      '<div class="sub">Type a name or email first.</div>'+
-      '</div>';
+      '<div class="card">Enter a name or email.</div>';
 
     return;
 
@@ -1318,12 +1729,10 @@ async function searchUsers(){
   }catch(error){
 
     $("searchResults").innerHTML =
-      '<div class="card">'+
-      '<div class="error">'+
+      '<div class="card error">'+
       escapeHtml(
         error.message
       )+
-      '</div>'+
       '</div>';
 
   }
@@ -1331,7 +1740,9 @@ async function searchUsers(){
 }
 
 
-function renderSearchResults(users){
+function renderSearchResults(
+  users
+){
 
   const container =
     $("searchResults");
@@ -1344,7 +1755,7 @@ function renderSearchResults(users){
     container.innerHTML =
       '<div class="card">'+
       '<b>◇ No Otti found</b>'+
-      '<div class="sub" style="margin-top:6px">'+
+      '<div class="sub" style="margin-top:5px">'+
       'Try another name or email.'+
       '</div>'+
       '</div>';
@@ -1362,41 +1773,30 @@ function renderSearchResults(users){
         );
 
       card.className =
-        "card";
+        "search-result";
 
       card.innerHTML =
         '<div class="contact" style="border:0;padding:0">'+
-
           '<div class="avatar">🦦</div>'+
-
           '<div class="contact-main">'+
-
             '<div class="contact-name">'+
               escapeHtml(
                 user.name ||
                 "Otti"
               )+
             '</div>'+
-
             '<div class="contact-email">'+
               escapeHtml(
                 user.email ||
                 ""
               )+
             '</div>'+
-
           '</div>'+
-
-          '<button class="add-small">'+
-            "+ Add"+
-          '</button>'+
-
+          '<button class="add-small">+ Add</button>'+
         '</div>';
 
       card
-        .querySelector(
-          ".add-small"
-        )
+        .querySelector(".add-small")
         .onclick =
           event => {
 
@@ -1418,9 +1818,9 @@ function renderSearchResults(users){
 }
 
 
-/* ================= ADD CONTACT ================= */
-
-async function addContact(user){
+async function addContact(
+  user
+){
 
   try{
 
@@ -1458,23 +1858,11 @@ async function addContact(user){
 
     await loadContacts();
 
-    /*
-      The backend returns the actual
-      direct room created/found for
-      these two users.
-    */
-
     if(data.room){
 
       await openRoom(
         data.room.id,
-        {
-          id:data.user.id,
-          user_id:data.user.id,
-          name:data.user.name,
-          email:data.user.email,
-          avatar:data.user.avatar
-        }
+        data.user
       );
 
     }
@@ -1493,18 +1881,14 @@ async function addContact(user){
 
 /* ================= OPEN CONTACT ================= */
 
-async function openContact(contact){
+async function openContact(
+  contact
+){
 
   /*
-    The contacts GET endpoint intentionally
-    returns contact information, not room_id.
-
-    Therefore we use the backend's idempotent
-    POST /api/contacts endpoint to retrieve the
-    existing direct room.
-
-    The backend will NOT create another contact
-    or duplicate room when it already exists.
+    /api/contacts is idempotent.
+    We use it to retrieve the direct room
+    instead of guessing a room from its name.
   */
 
   const userId =
@@ -1553,19 +1937,13 @@ async function openContact(contact){
 
     await openRoom(
       data.room.id,
-      {
-        id:data.user.id,
-        user_id:data.user.id,
-        name:data.user.name,
-        email:data.user.email,
-        avatar:data.user.avatar
-      }
+      data.user
     );
 
   }catch(error){
 
     console.error(
-      "Open contact failed:",
+      "Open chat:",
       error
     );
 
@@ -1595,6 +1973,9 @@ async function openRoom(
   ghost =
     false;
 
+  renderedMessageIds =
+    new Set();
+
   $("chatName").textContent =
     contact.name ||
     "Otti";
@@ -1602,20 +1983,99 @@ async function openRoom(
   $("messages").innerHTML =
     "";
 
+  setConnection(
+    "connecting"
+  );
+
   updateGhostUI();
 
-  show("chat");
+  showScreen("chat");
 
-  await connectOttiSocket(
+  /*
+    Load history through HTTP first.
+    This means the chat can display existing
+    messages even while WebSocket connects.
+  */
+
+  await loadMessages(
+    roomId
+  );
+
+  connectWebSocket(
     roomId
   );
 
 }
 
 
+/* ================= MESSAGE HISTORY ================= */
+
+async function loadMessages(
+  roomId
+){
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/rooms/"+
+        encodeURIComponent(roomId)+
+        "/messages",
+        {
+          credentials:"include"
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if(!response.ok){
+
+      throw new Error(
+        data.error ||
+        "Unable to load messages"
+      );
+
+    }
+
+    $("messages").innerHTML =
+      "";
+
+    renderedMessageIds =
+      new Set();
+
+    const messages =
+      data.messages ||
+      [];
+
+    messages.forEach(
+      renderMessage
+    );
+
+    scrollMessages();
+
+  }catch(error){
+
+    console.error(
+      "Message history:",
+      error
+    );
+
+    $("messages").innerHTML =
+      '<div class="empty">'+
+      '<div class="empty-symbol">◇</div>'+
+      '<b>Could not load conversation</b>'+
+      '<div>'+escapeHtml(error.message)+'</div>'+
+      '</div>';
+
+  }
+
+}
+
+
 /* ================= WEBSOCKET ================= */
 
-async function connectOttiSocket(
+async function connectWebSocket(
   roomId
 ){
 
@@ -1632,18 +2092,30 @@ async function connectOttiSocket(
 
     }
 
+    setConnection(
+      "connecting"
+    );
+
     const tokenResponse =
       await fetch(
         "/api/ws-token",
         {
-          credentials:"include"
+          credentials:"include",
+          cache:"no-store"
         }
       );
 
     if(!tokenResponse.ok){
 
+      const text =
+        await tokenResponse.text();
+
       throw new Error(
-        "Unable to get WebSocket token"
+        "WS token HTTP "+
+        tokenResponse.status+
+        (text
+          ? " — "+text.slice(0,80)
+          : "")
       );
 
     }
@@ -1654,7 +2126,7 @@ async function connectOttiSocket(
     if(!tokenData.token){
 
       throw new Error(
-        "WebSocket token missing"
+        "WS token missing"
       );
 
     }
@@ -1664,7 +2136,7 @@ async function connectOttiSocket(
         ? "wss:"
         : "ws:";
 
-    const url =
+    const wsUrl =
       protocol+
       "//"+
       location.host+
@@ -1673,13 +2145,32 @@ async function connectOttiSocket(
         tokenData.token
       );
 
+    console.log(
+      "OTTI WebSocket connecting:",
+      wsUrl.replace(
+        /token=[^&]+/,
+        "token=***"
+      )
+    );
+
     socket =
       new WebSocket(
-        url
+        wsUrl
       );
 
     socket.onopen =
       () => {
+
+        console.log(
+          "OTTI WebSocket connected"
+        );
+
+        reconnectAttempts =
+          0;
+
+        setConnection(
+          "connected"
+        );
 
         socket.send(
           JSON.stringify({
@@ -1707,7 +2198,7 @@ async function connectOttiSocket(
         }catch(error){
 
           console.error(
-            "WebSocket message error:",
+            "WS message:",
             error
           );
 
@@ -1723,28 +2214,60 @@ async function connectOttiSocket(
           error
         );
 
+        setConnection(
+          "failed"
+        );
+
       };
 
     socket.onclose =
       event => {
 
-        console.log(
+        console.warn(
           "OTTI WebSocket closed:",
           event.code,
           event.reason
         );
+
+        setConnection(
+          "failed"
+        );
+
+        /*
+          Don't immediately loop forever.
+          Retry a few seconds later while the
+          user remains in the same chat.
+        */
+
+        if(
+          currentRoomId === roomId
+        ){
+
+          scheduleReconnect(
+            roomId
+          );
+
+        }
 
       };
 
   }catch(error){
 
     console.error(
-      "WebSocket connection failed:",
+      "WebSocket setup:",
       error
+    );
+
+    setConnection(
+      "failed"
     );
 
     toast(
       "◇ Chat connection failed"
+    );
+
+    scheduleReconnect(
+      roomId
     );
 
   }
@@ -1752,7 +2275,99 @@ async function connectOttiSocket(
 }
 
 
-/* ================= WS EVENTS ================= */
+function scheduleReconnect(
+  roomId
+){
+
+  if(
+    reconnectTimer ||
+    currentRoomId !== roomId
+  ){
+
+    return;
+
+  }
+
+  reconnectAttempts++;
+
+  const delay =
+    Math.min(
+      15000,
+      2000 *
+      reconnectAttempts
+    );
+
+  reconnectTimer =
+    setTimeout(
+      () => {
+
+        reconnectTimer =
+          null;
+
+        if(
+          currentRoomId ===
+          roomId
+        ){
+
+          connectWebSocket(
+            roomId
+          );
+
+        }
+
+      },
+      delay
+    );
+
+}
+
+
+function setConnection(
+  state
+){
+
+  const element =
+    $("connection");
+
+  if(!element)
+    return;
+
+  element.className =
+    "connection";
+
+  if(state === "connected"){
+
+    element.textContent =
+      "● live";
+
+    element.classList.add(
+      "ok"
+    );
+
+    return;
+
+  }
+
+  if(state === "failed"){
+
+    element.textContent =
+      "○ reconnecting";
+
+    element.classList.add(
+      "bad"
+    );
+
+    return;
+
+  }
+
+  element.textContent =
+    "○ connecting";
+
+}
+
+
+/* ================= SOCKET EVENTS ================= */
 
 function handleSocketMessage(
   data
@@ -1761,24 +2376,19 @@ function handleSocketMessage(
   if(data.type === "room-state"){
 
     /*
-      The server sends the authoritative
-      room history after join.
-
-      Replace the screen with that history
-      rather than duplicating the HTTP copy.
+      HTTP already loaded history.
+      Merge the authoritative WS history
+      without creating duplicates.
     */
 
-    $("messages").innerHTML =
-      "";
-
-    const history =
+    const messages =
       Array.isArray(
         data.messages
       )
         ? data.messages
         : [];
 
-    history.forEach(
+    messages.forEach(
       renderMessage
     );
 
@@ -1831,26 +2441,14 @@ function handleSocketMessage(
   }
 
 
-  if(data.type === "presence"){
-
-    return;
-
-  }
-
-
-  if(data.type === "typing"){
-
-    return;
-
-  }
-
-
   if(data.type === "error"){
 
     toast(
       "◇ "+
-      (data.error ||
-       "Something went wrong")
+      (
+        data.error ||
+        "Chat error"
+      )
     );
 
   }
@@ -1858,11 +2456,30 @@ function handleSocketMessage(
 }
 
 
-/* ================= MESSAGES ================= */
+/* ================= MESSAGE RENDER ================= */
 
 function renderMessage(
   message
 ){
+
+  if(
+    message.id &&
+    renderedMessageIds.has(
+      String(message.id)
+    )
+  ){
+
+    return;
+
+  }
+
+  if(message.id){
+
+    renderedMessageIds.add(
+      String(message.id)
+    );
+
+  }
 
   const bubble =
     document.createElement(
@@ -1892,11 +2509,38 @@ function renderMessage(
       : "false";
 
   if(
+    !mine &&
+    message.name
+  ){
+
+    const name =
+      document.createElement(
+        "div"
+      );
+
+    name.className =
+      "message-name";
+
+    name.textContent =
+      message.name;
+
+    bubble.appendChild(
+      name
+    );
+
+  }
+
+  const text =
+    document.createElement(
+      "div"
+    );
+
+  if(
     ghost ||
     message.is_hidden
   ){
 
-    bubble.textContent =
+    text.textContent =
       glyph(
         message.text ||
         ""
@@ -1908,51 +2552,20 @@ function renderMessage(
 
   }else{
 
-    bubble.textContent =
+    text.textContent =
       message.text ||
       "";
 
   }
 
+  bubble.appendChild(
+    text
+  );
+
   $("messages")
     .appendChild(
       bubble
     );
-
-}
-
-
-function renderOwnMessage(
-  text
-){
-
-  renderMessage({
-    id:
-      "local-"+Date.now(),
-
-    text:text,
-
-    is_hidden:ghost,
-
-    user_id:
-      currentUser.id,
-
-    name:
-      currentUser.name
-  });
-
-  scrollMessages();
-
-}
-
-
-function scrollMessages(){
-
-  const messages =
-    $("messages");
-
-  messages.scrollTop =
-    messages.scrollHeight;
 
 }
 
@@ -1968,11 +2581,8 @@ function sendMessage(){
     input.value
       .trim();
 
-  if(!text){
-
+  if(!text)
     return;
-
-  }
 
   if(
     !socket ||
@@ -1981,22 +2591,54 @@ function sendMessage(){
   ){
 
     toast(
-      "◇ Chat connection unavailable"
+      "◇ Chat is reconnecting…"
     );
+
+    /*
+      Try reconnecting instead of
+      simply losing the message.
+    */
+
+    if(currentRoomId){
+
+      connectWebSocket(
+        currentRoomId
+      );
+
+    }
 
     return;
 
   }
 
   /*
-    Render our own message immediately.
-    The server intentionally broadcasts to
-    OTHER sockets only.
+    Server broadcasts to other sockets,
+    not back to the sender.
+
+    Therefore render our message locally.
   */
 
-  renderOwnMessage(
-    text
+  const localId =
+    "local-"+Date.now();
+
+  renderedMessageIds.add(
+    localId
   );
+
+  const message =
+    {
+      id:localId,
+      text:text,
+      is_hidden:ghost,
+      user_id:currentUser.id,
+      name:currentUser.name
+    };
+
+  renderMessage(
+    message
+  );
+
+  scrollMessages();
 
   socket.send(
     JSON.stringify({
@@ -2012,9 +2654,11 @@ function sendMessage(){
 }
 
 
-/* ================= GHOST / DIVE ================= */
+/* ================= DIVE ================= */
 
-function glyph(text){
+function glyph(
+  text
+){
 
   const symbols = [
     "◇",
@@ -2045,7 +2689,7 @@ function glyph(text){
       )
     );
 
-  let output = [];
+  const result = [];
 
   for(
     let i=0;
@@ -2059,7 +2703,7 @@ function glyph(text){
         text.length
       );
 
-    output.push(
+    result.push(
       symbols[
         (
           code +
@@ -2071,89 +2715,7 @@ function glyph(text){
 
   }
 
-  return output.join(" ");
-}
-
-
-function hideMessages(){
-
-  document
-    .querySelectorAll(
-      "#messages .bubble"
-    )
-    .forEach(
-      bubble => {
-
-        if(
-          !bubble.dataset.plain
-        ){
-
-          bubble.dataset.plain =
-            bubble.textContent;
-
-        }
-
-        bubble.textContent =
-          glyph(
-            bubble.dataset.plain
-          );
-
-        bubble.classList.add(
-          "ghost"
-        );
-
-      }
-    );
-
-}
-
-
-function revealMessages(){
-
-  document
-    .querySelectorAll(
-      "#messages .bubble"
-    )
-    .forEach(
-      bubble => {
-
-        /*
-          is_hidden represents the
-          message's stored privacy state.
-          The current local DIVE state is
-          separate.
-        */
-
-        if(
-          bubble.dataset.hidden ===
-          "true"
-        ){
-
-          bubble.textContent =
-            glyph(
-              bubble.dataset.plain ||
-              ""
-            );
-
-          bubble.classList.add(
-            "ghost"
-          );
-
-          return;
-
-        }
-
-        bubble.textContent =
-          bubble.dataset.plain ||
-          "";
-
-        bubble.classList.remove(
-          "ghost"
-        );
-
-      }
-    );
-
+  return result.join(" ");
 }
 
 
@@ -2174,15 +2736,56 @@ function updateGhostUI(){
       ? "otti ghost"
       : "otti";
 
-  if(ghost){
+  document
+    .querySelectorAll(
+      "#messages .bubble"
+    )
+    .forEach(
+      bubble => {
 
-    hideMessages();
+        const plain =
+          bubble.dataset.plain ||
+          "";
 
-  }else{
+        /*
+          Don't alter a message that was
+          permanently stored as hidden.
+        */
 
-    revealMessages();
+        const storedHidden =
+          bubble.dataset.hidden ===
+          "true";
 
-  }
+        const textElement =
+          bubble.lastElementChild;
+
+        if(
+          ghost ||
+          storedHidden
+        ){
+
+          textElement.textContent =
+            glyph(
+              plain
+            );
+
+          bubble.classList.add(
+            "ghost"
+          );
+
+        }else{
+
+          textElement.textContent =
+            plain;
+
+          bubble.classList.remove(
+            "ghost"
+          );
+
+        }
+
+      }
+    );
 
 }
 
@@ -2222,11 +2825,8 @@ function toggleGhost(){
 
 function returnSurface(){
 
-  if(!ghost){
-
+  if(!ghost)
     return;
-
-  }
 
   ghost =
     false;
@@ -2299,33 +2899,179 @@ function simulateViewer(){
 }
 
 
-/* ================= CLOSE CHAT ================= */
+/* ================= STATUS ================= */
 
-function closeChat(){
+async function loadStatuses(){
 
-  if(socket){
+  try{
 
-    try{
-      socket.close();
-    }catch(_){}
+    const response =
+      await fetch(
+        "/api/statuses",
+        {
+          credentials:"include"
+        }
+      );
 
-    socket =
-      null;
+    const data =
+      await response.json();
+
+    if(!response.ok){
+
+      throw new Error(
+        data.error ||
+        "Unable to load statuses"
+      );
+
+    }
+
+    renderStatuses(
+      data.statuses ||
+      []
+    );
+
+  }catch(error){
+
+    console.error(
+      "Statuses:",
+      error
+    );
 
   }
 
-  currentRoomId =
-    null;
+}
 
-  currentContact =
-    null;
 
-  ghost =
-    false;
+function renderStatuses(
+  statuses
+){
 
-  show("home");
+  const container =
+    $("statuses");
 
-  loadContacts();
+  container.innerHTML =
+    "";
+
+  if(!statuses.length){
+
+    container.innerHTML =
+      '<div class="empty" style="width:100%">'+
+      '<div class="empty-symbol">✦</div>'+
+      '<b>No fresh status yet</b>'+
+      '</div>';
+
+    return;
+
+  }
+
+  statuses.forEach(
+    status => {
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+      card.className =
+        "status-card";
+
+      card.innerHTML =
+        '<div class="status-symbol">'+
+        escapeHtml(
+          status.symbol ||
+          "✦"
+        )+
+        '</div>'+
+        '<div class="status-text">'+
+        escapeHtml(
+          status.text ||
+          ""
+        )+
+        '</div>'+
+        '<div class="status-name">'+
+        escapeHtml(
+          status.name ||
+          "Otti"
+        )+
+        '</div>';
+
+      container.appendChild(
+        card
+      );
+
+    }
+  );
+
+}
+
+
+async function postStatus(){
+
+  const input =
+    $("statusText");
+
+  const text =
+    input.value
+      .trim();
+
+  if(!text){
+
+    toast(
+      "✦ Write something first."
+    );
+
+    return;
+
+  }
+
+  try{
+
+    const response =
+      await fetch(
+        "/api/statuses",
+        {
+          method:"POST",
+          credentials:"include",
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+          body:JSON.stringify({
+            symbol:"✦",
+            text:text
+          })
+        }
+      );
+
+    const data =
+      await response.json();
+
+    if(!response.ok){
+
+      throw new Error(
+        data.error ||
+        "Unable to post status"
+      );
+
+    }
+
+    input.value =
+      "";
+
+    toast(
+      "✦ Status dropped."
+    );
+
+    loadStatuses();
+
+  }catch(error){
+
+    toast(
+      "◇ "+
+      error.message
+    );
+
+  }
 
 }
 
@@ -2369,6 +3115,48 @@ function copyInvite(){
 }
 
 
+/* ================= CLOSE CHAT ================= */
+
+function closeChat(){
+
+  if(reconnectTimer){
+
+    clearTimeout(
+      reconnectTimer
+    );
+
+    reconnectTimer =
+      null;
+
+  }
+
+  if(socket){
+
+    try{
+      socket.close();
+    }catch(_){}
+
+    socket =
+      null;
+
+  }
+
+  currentRoomId =
+    null;
+
+  currentContact =
+    null;
+
+  ghost =
+    false;
+
+  showScreen(
+    "chats"
+  );
+
+}
+
+
 /* ================= LOGOUT ================= */
 
 async function logout(){
@@ -2396,17 +3184,28 @@ async function logout(){
 
   }
 
+  if(reconnectTimer){
+
+    clearTimeout(
+      reconnectTimer
+    );
+
+    reconnectTimer =
+      null;
+
+  }
+
   currentUser =
     null;
+
+  contacts =
+    [];
 
   currentRoomId =
     null;
 
   currentContact =
     null;
-
-  contacts =
-    [];
 
   $("app")
     .classList.add(
@@ -2424,21 +3223,28 @@ async function logout(){
   $("authPassword")
     .value = "";
 
-  toast(
-    "⌁ Logged out"
-  );
-
 }
 
 
-/* ================= ESCAPE HTML ================= */
+/* ================= HELPERS ================= */
+
+function scrollMessages(){
+
+  const messages =
+    $("messages");
+
+  messages.scrollTop =
+    messages.scrollHeight;
+
+}
+
 
 function escapeHtml(
   value
 ){
 
   return String(
-    value || ""
+    value ?? ""
   )
     .replace(
       /&/g,
