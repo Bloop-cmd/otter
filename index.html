@@ -190,8 +190,6 @@ body.dark .mini,body.dark .avatar{background:#8c6120;box-shadow:inset -4px -4px 
 body.dark .profile-otti{background:#4c3417;box-shadow:0 12px 28px rgba(0,0,0,.42)}
 body.dark .nav-btn{color:#9f8a64}.nav-btn.active{color:var(--ink)}
 
-.add-main{border:0;background:var(--ink);color:#fff;border-radius:13px;padding:8px 11px;font-size:12px;font-weight:900;box-shadow:0 5px 12px rgba(23,33,43,.12)}
-body.dark .add-main{background:#d1a34b;color:#1b1207;box-shadow:0 5px 14px rgba(0,0,0,.25)}
 </style>
 </head>
 <body>
@@ -215,7 +213,7 @@ body.dark .add-main{background:#d1a34b;color:#1b1207;box-shadow:0 5px 14px rgba(
   <section id="chats" class="screen active">
     <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><button class="icon" onclick="showScreen('profile')">●</button></div>
     <div class="content">
-      <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><div style="display:flex;gap:7px;align-items:center"><button class="refresh" onclick="loadContacts()">↻</button><button class="add-main" onclick="showScreen('add')">＋ Add</button></div></div>
+      <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><button class="refresh" onclick="loadContacts()">↻</button></div>
       <div id="contacts" class="card"></div>
     </div>
   </section>
