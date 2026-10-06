@@ -182,6 +182,121 @@ body.dark .mini,body.dark .avatar{background:#8c6120;box-shadow:inset -4px -4px 
 body.dark .profile-otti{background:#4c3417;box-shadow:0 12px 28px rgba(0,0,0,.42)}
 body.dark .nav-btn{color:#9f8a64}.nav-btn.active{color:var(--ink)}
 
+
+/* ===== OTTI KOREAN PREMIUM VISUAL SYSTEM ===== */
+:root{
+  --hanji:#f7f0df;
+  --hanji2:#fffaf0;
+  --ink-k:#24201b;
+  --jade-k:#527c70;
+  --coral-k:#b64b45;
+  --indigo-k:#283653;
+  --gold-k:#c79a3b;
+  --gold-bright:#f0cf72;
+  --night:#111521;
+  --night2:#181d2c;
+  --night3:#20263a;
+}
+/* Keep the entire app canvas filled; the doodle layer is no longer hidden behind opaque panels. */
+.app,.auth-wrap{background:var(--hanji);}
+.content{position:relative;background:transparent;overflow:auto;}
+.content::before{
+  content:"◇  ✦  ♡  〰  ✧  ○  ●🌊  ≈  ☾  ◉     ✦  ◇  ♡  ○  〰  ●  ✧  ☾     ◉  ≈  ♡  ✦  ◇  ●🌊";
+  position:absolute;inset:-20px -35px;pointer-events:none;z-index:0;
+  color:var(--coral-k);opacity:.16;font-size:21px;font-weight:900;
+  letter-spacing:17px;word-spacing:8px;line-height:4.5;
+  transform:rotate(-5deg) scale(1.05);text-shadow:0 1px 0 rgba(199,154,59,.22);
+}
+.content>*{position:relative;z-index:1}
+.top{background:rgba(255,250,240,.94);border-bottom:1px solid rgba(199,154,59,.28);backdrop-filter:blur(12px)}
+.appearance-main{display:flex;align-items:center;gap:5px;padding:8px 10px;font-size:11px;background:#efe3cb}
+.appearance-main span{font-weight:900}
+.card,.search-result{background:rgba(255,252,245,.93);border:1px solid rgba(199,154,59,.18);box-shadow:0 12px 30px rgba(54,39,23,.09)}
+.title{letter-spacing:-.5px;color:var(--ink-k)}
+.primary{background:var(--indigo-k)}
+.secondary,.icon,.refresh,.chat-actions button{background:#eee3d0}
+.nav-add{background:var(--indigo-k)}
+.bottom-nav{background:rgba(255,250,240,.96);border-top-color:rgba(199,154,59,.28)}
+.nav-btn.active{color:var(--indigo-k)}
+.contact-state{color:var(--jade-k)}
+.messages{
+  position:relative;overflow-y:auto;
+  background-color:#f7f0df;
+  background-image:
+    radial-gradient(circle at 12% 15%,rgba(182,75,69,.10) 0 2px,transparent 3px),
+    radial-gradient(circle at 84% 32%,rgba(82,124,112,.12) 0 2px,transparent 3px),
+    radial-gradient(circle at 72% 82%,rgba(199,154,59,.12) 0 2px,transparent 3px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.18) 0 1px,transparent 1px 5px);
+}
+.messages::before{
+  content:"◇   ✦   ♡   ●🌊   ☾   ≈   ⌁   ○   ✧   ◉   〰   ✦   ◇   ♡   ●   ☾   ○   ≈";
+  position:absolute;inset:-15px -25px;pointer-events:none;z-index:0;
+  color:#9e554d;opacity:.20;font-family:Georgia,serif;font-size:23px;font-weight:800;
+  letter-spacing:16px;word-spacing:8px;line-height:4.6;
+  transform:rotate(-6deg) scale(1.08);text-shadow:0 1px rgba(199,154,59,.25);
+}
+.messages>*{position:relative;z-index:1}
+.otti-stage{background:linear-gradient(135deg,#f1e5cf,#dce8df)}
+.wave{background:#9eb9ae}
+.state{background:#f3e5c7;color:#7f4e28;border:1px solid rgba(199,154,59,.4)}
+.composer,.chat-actions{background:#fbf5e8;border-color:rgba(199,154,59,.25)}
+.bubble{background:#fffdf8;border:1px solid rgba(199,154,59,.12);box-shadow:0 4px 12px rgba(54,39,23,.08)}
+.bubble.mine{background:#f2dfbc}
+.bubble.ghost{background:linear-gradient(135deg,#fff3c7,#f7df9d);color:#a56e18;border-color:#d0a646}
+/* Korean-inspired premium night: deep ink/navy, lacquer accents, warm gold. No teal. */
+body.dark{
+  --cream:var(--night);--cream2:#151a29;--white:#1b2030;--ink:#f4e5bb;--mist:#bcae8c;--line:#403a2b;
+  --ghost:#f0c85c;--shadow:0 14px 35px rgba(0,0,0,.42);
+  background:var(--night);color:var(--ink);
+}
+body.dark .app{background:var(--night)}
+body.dark .top,body.dark .bottom-nav{background:rgba(17,21,33,.96);border-color:rgba(199,154,59,.38)}
+body.dark .appearance-main{background:#28283a;color:#f0cf72;border-color:#7e6229}
+body.dark .icon,body.dark .secondary,body.dark .refresh,body.dark .chat-actions button{background:#242a3b;color:#f2dfad;border:1px solid rgba(199,154,59,.32)}
+body.dark .primary,body.dark .nav-add{background:linear-gradient(135deg,#e4bd61,#b88a2c);color:#17130d}
+body.dark .content{background:transparent}
+body.dark .content::before{
+  content:"◇  ✦  ♡  〰  ✧  ○  ●🌊  ≈  ☾  ◉     ✦  ◇  ♡  ○  〰  ●  ✧  ☾     ◉  ≈  ♡  ✦  ◇  ●🌊";
+  color:#e2bd5c;opacity:.15;text-shadow:0 0 10px rgba(226,189,92,.22);
+}
+body.dark .card,body.dark .search-result{background:rgba(27,32,48,.94);border-color:rgba(199,154,59,.3);box-shadow:0 14px 34px rgba(0,0,0,.34)}
+body.dark .title{color:#f4e5bb}
+body.dark .input,body.dark .composer input{background:#121725;color:#f4e5bb;border-color:#51452d}
+body.dark .input::placeholder,body.dark .composer input::placeholder{color:#897f68}
+body.dark .bottom-nav{background:#111521}
+body.dark .nav-btn{color:#9f957c}.nav-btn.active{color:#f0cf72}
+body.dark .messages{
+  background-color:#111521;
+  background-image:
+    radial-gradient(circle at 50% 46%,rgba(199,154,59,.10) 0 1px,transparent 2px),
+    repeating-conic-gradient(from 0deg at 50% 46%,rgba(199,154,59,.10) 0deg 1deg,transparent 1deg 15deg),
+    radial-gradient(circle at 50% 46%,transparent 0 72px,rgba(199,154,59,.18) 73px 74px,transparent 75px 116px,rgba(199,154,59,.13) 117px 118px,transparent 119px 165px,rgba(199,154,59,.10) 166px 167px,transparent 168px),
+    linear-gradient(#121725,#0d111c);
+}
+body.dark .messages::before{
+  content:"◇   ✦   ☾   ✧   ●   〰   ◉   ♡   ≈   ○   ●🌊   ✦   ◇   ☾   ✧";
+  color:#e6bf5a;opacity:.18;text-shadow:0 0 9px rgba(230,191,90,.35);
+}
+body.dark .bubble{background:#202638;color:#f2e5c5;border-color:rgba(199,154,59,.20)}
+body.dark .bubble.mine{background:#2b3045;color:#f6df9a;border-color:rgba(199,154,59,.42)}
+body.dark .bubble.ghost{background:linear-gradient(135deg,#27243a,#302a20);color:#f4c95b;border-color:#c49a3d;box-shadow:0 0 16px rgba(225,185,72,.14);text-shadow:0 0 6px rgba(255,218,113,.85),0 0 16px rgba(225,171,52,.45)}
+body.dark .otti-stage{background:linear-gradient(135deg,#171c2c,#282333)}
+body.dark .wave{background:#343047}
+body.dark .state{background:#292638;color:#f0cf72;border-color:#9a7731}
+body.dark .composer,body.dark .chat-actions{background:#111521;border-color:rgba(199,154,59,.3)}
+body.dark .connection{background:#202638;color:#cdbb91;border-color:#51452d}
+body.dark .connection.ok{background:#1c3027;color:#9fd5ae}
+body.dark .theme-toggle{background:#242a3b;color:#f2dfad;border-color:rgba(199,154,59,.32)}
+body.dark .theme-pill{background:#151a29;color:#e5c36b;border:1px solid #6f5728}
+/* Gold Korean-style circular rosette/mandala stays visible across the whole chat canvas. */
+body.dark .messages::after{
+  content:"";position:absolute;left:50%;top:48%;width:340px;height:340px;transform:translate(-50%,-50%) rotate(7deg);pointer-events:none;z-index:0;border-radius:50%;opacity:.30;
+  background:
+    repeating-conic-gradient(from 0deg,rgba(226,189,92,.45) 0deg 2deg,transparent 2deg 18deg),
+    radial-gradient(circle,transparent 0 48px,rgba(226,189,92,.38) 49px 51px,transparent 52px 82px,rgba(226,189,92,.25) 83px 85px,transparent 86px 122px,rgba(226,189,92,.20) 123px 125px,transparent 126px 169px,rgba(226,189,92,.15) 170px 172px,transparent 173px);
+  -webkit-mask-image:radial-gradient(circle,black 0 72%,transparent 88%);mask-image:radial-gradient(circle,black 0 72%,transparent 88%);
+}
+
 </style>
 </head>
 <body>
@@ -203,7 +318,7 @@ body.dark .nav-btn{color:#9f8a64}.nav-btn.active{color:var(--ink)}
 
 <div id="app" class="app hidden">
   <section id="chats" class="screen active">
-    <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><button class="icon" onclick="showScreen('profile')">●</button></div>
+    <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><div style="display:flex;gap:7px;align-items:center"><button class="icon appearance-main" onclick="toggleTheme()">☼ <span>Appearance</span></button><button class="icon" onclick="showScreen('profile')">●</button></div></div>
     <div class="content">
       <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><button class="refresh" onclick="loadContacts()">↻</button></div>
       <div id="contacts" class="card"></div>
@@ -242,7 +357,7 @@ body.dark .nav-btn{color:#9f8a64}.nav-btn.active{color:var(--ink)}
     <div class="top"><button class="icon" onclick="showScreen('chats')">←</button><b>Your Otti</b><span></span></div>
     <div class="content">
       <div class="card profile-hero"><div class="profile-otti"><img class="mascot-img"></div><h2 id="profileName" style="margin:8px 0 2px">Your Otti</h2><div id="profileEmail" class="sub"></div></div>
-      <div class="card"><b>Privacy</b><div class="option"><b>〰 DIVE</b><span>Instantly transform visible conversation into Otti symbols.</span></div><div class="option" onclick="toggleTheme()"><b>☾ Dark Otti</b><span>Switch between the warm doodle world and teal + gold Otti night.</span></div><div class="option"><b>◉ Viewer detection</b><span>Permissioned camera/on-device detection can be added without changing the chat architecture.</span></div></div>
+      <div class="card"><b>Privacy</b><div class="option"><b>〰 DIVE</b><span>Instantly transform visible conversation into Otti symbols.</span></div><div class="option" onclick="toggleTheme()"><b>☾ Dark Otti</b><span>Switch between the warm Korean hanji world and the midnight royal Codex world.</span></div><div class="option"><b>◉ Viewer detection</b><span>Permissioned camera/on-device detection can be added without changing the chat architecture.</span></div></div>
       <button class="theme-toggle" onclick="toggleTheme()"><span>✦ Appearance<small>Light doodles ↔ Golden Codex</small></span><span id="themePill" class="theme-pill">Light</span></button>
       <button class="secondary" onclick="logout()">Log out</button>
     </div>
