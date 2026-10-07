@@ -410,6 +410,8 @@ body.dark .mom-corner-btn{background:#0b5a56;color:#ffe08a;border-color:#b88a2b}
     <div class="content">
       <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><div style="display:flex;gap:6px"><button class="refresh" onclick="clearAllChats()" aria-label="Clear all chat histories" title="Clear all chat histories">⌫</button><button class="refresh" onclick="refreshChats()" aria-label="Refresh chats" title="Refresh chats">↻</button></div></div>
       <div id="contacts" class="card"></div>
+      <div class="section-head" style="margin-top:18px"><div><div class="title">Rafts</div><div class="sub">Your group chats.</div></div><button class="refresh" onclick="createRaft()" aria-label="Create a Raft" title="Create a Raft">＋</button></div>
+      <div id="rafts" class="card"><div class="empty"><div class="empty-symbol">◇</div><b>Your Rafts will appear here</b></div></div>
       <div class="card add-otti-main" onclick="showScreen('add')"><div class="add-otti-glyph">＋</div><div><b>Add Otti</b><div class="sub">Find someone and start a private chat.</div></div><span class="add-otti-arrow">›</span></div><div class="card add-otti-main" onclick="copyInvite()"><div class="add-otti-glyph">↗</div><div><b>Invite a friend</b><div class="sub">Share OTTI and start your own Raft.</div></div><span class="add-otti-arrow">›</span></div>
     </div>
   </section>
@@ -738,7 +740,7 @@ const $=id=>document.getElementById(id);
 function showScreen(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   const s=$(id); if(!s)return; s.classList.add("active"); updateNavigation(id);
-  if(id==="status")loadStatuses(); if(id==="chats")loadContacts();
+  if(id==="status")loadStatuses(); if(id==="chats"){loadContacts();loadRafts()}
 }
 function updateNavigation(id){
   $("bottomNav").style.display=id==="chat"?"none":"flex";
@@ -879,7 +881,7 @@ async function checkSession(){
 function enterApp(){
   $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
   $("profileName").textContent=currentUser.name||"Your Otti";$("profileEmail").textContent=currentUser.email||"";
-  loadContacts();const ad=$("autoDiveToggle");if(ad)ad.checked=cameraAutoDive;
+  loadContacts();loadRafts();startNotificationPolling();const ad=$("autoDiveToggle");if(ad)ad.checked=cameraAutoDive;
 }
 async function refreshChats(){const b=document.querySelector('#chats .refresh');if(b){b.classList.add('spinning');setTimeout(()=>b.classList.remove('spinning'),650)}try{await loadContacts();toast('✦ Chats refreshed')}catch(e){toast('◇ Could not refresh chats')}}
 async function loadContacts(){
@@ -894,6 +896,43 @@ async function loadContacts(){
       c.appendChild(row);
     });
   }catch(e){toast("◇ "+e.message)}
+}
+
+async function loadRafts(){
+  const box=$("rafts");if(!box)return;
+  try{
+    const r=await fetch('/api/rooms',{credentials:'include',cache:'no-store'}),d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Could not load Rafts');
+    const rafts=(d.rooms||[]).filter(x=>x.kind==='group');box.innerHTML='';
+    if(!rafts.length){box.innerHTML='<div class="empty"><div class="empty-symbol">◇</div><b>No Rafts yet</b><div>Tap ＋ to create your first group.</div></div>';return}
+    rafts.forEach(room=>{
+      const row=document.createElement('div');row.className='contact';
+      row.innerHTML='<div class="avatar"><span></span></div><div class="contact-main"><div class="contact-name"></div><div class="contact-email">Raft group</div></div><button class="contact-menu" type="button" aria-label="Delete Raft" title="Delete Raft">×</button><div>›</div>';
+      row.querySelector('.avatar span').textContent=room.icon||'◇';row.querySelector('.contact-name').textContent=room.name||'Raft';
+      row.onclick=()=>openRoom(room.id,{id:room.id,name:room.name||'Raft',kind:'group',icon:room.icon});
+      row.querySelector('.contact-menu').onclick=ev=>{ev.stopPropagation();deleteRaft(room)};
+      box.appendChild(row);
+    });
+  }catch(e){box.innerHTML='<div class="empty"><b>Could not load Rafts</b><div>'+escapeHtml(e.message)+'</div></div>'}
+}
+async function createRaft(){
+  const name=prompt('Name your new Raft:','My Raft');if(name===null)return;
+  const clean=name.trim();if(!clean){toast('◇ Enter a Raft name');return}
+  try{
+    const r=await fetch('/api/groups',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:clean,icon:'◇'})});
+    const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not create Raft');
+    await loadRafts();if(d.room)await openRoom(d.room.id,{id:d.room.id,name:d.room.name||clean,kind:'group',icon:d.room.icon});
+    toast('✦ Raft created');
+  }catch(e){toast('◇ '+e.message)}
+}
+async function deleteRaft(room){
+  if(!confirm('Delete Raft “'+(room.name||'Raft')+'” and its messages for everyone? This cannot be undone.'))return;
+  try{
+    const r=await fetch('/api/groups/'+encodeURIComponent(room.id),{method:'DELETE',credentials:'include'}),d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Could not delete Raft');
+    if(currentRoomId===room.id){stopMessagePolling();if(socket){try{socket.close()}catch(_){}socket=null}currentRoomId=null;currentContact=null;showScreen('chats')}
+    await loadRafts();toast('× Raft deleted');
+  }catch(e){toast('◇ '+e.message)}
 }
 
 function openContactActions(contact){
@@ -1058,8 +1097,8 @@ function handleSocketMessage(d){
   }
   if(d.type==="message"){
     const mine=String(d.user_id)===String(currentUser.id);
-    if(d.room===currentRoomId){renderMessage(d);scrollMessages();if(!mine){setOttiState("sent");addOttiNotification("♡",(d.name||"Otti")+" sent a message",d.text||"New private message");notifyIncomingMessage(d);notifyMessageSound()}}
-    else if(!mine){addOttiNotification("♡",(d.name||"Otti")+" sent a message",d.text||"New private message");notifyIncomingMessage(d);notifyMessageSound()}
+    if(d.room===currentRoomId){renderMessage(d);scrollMessages();if(!mine)setOttiState("sent")}
+    if(!mine)handleIncomingMessageNotice(d);
     return;
   }
   if(d.type==="react"){addOttiNotification(d.reaction||"♡",(d.user||"Otti")+" reacted",d.reaction||"New reaction");return}
@@ -1164,12 +1203,13 @@ if($('msg')){
 
 /* ---------- RECOVERED FINAL: in-app Otti notification tray ---------- */
 let ottiNotificationCount=0;
+const notifiedMessageIds=new Set();
 function renderOttiNotificationBadge(){
   const b=$('ottiNotifyBadge');if(!b)return;
   b.textContent=ottiNotificationCount>9?'9+':String(ottiNotificationCount);
   b.hidden=ottiNotificationCount===0;
 }
-function addOttiNotification(symbol,title,text){
+function addOttiNotification(symbol,title,text,roomId){
   const list=$('ottiNotifyList');if(!list)return;
   ottiNotificationCount++;
   const item=document.createElement('div');item.className='otti-notify-item';
@@ -1177,6 +1217,7 @@ function addOttiNotification(symbol,title,text){
   item.querySelector('.otti-notify-glyph').textContent=symbol||'🦦';
   item.querySelector('b').textContent=title||'Otti update';
   item.querySelector('span').textContent=text||'';
+  if(roomId){item.style.cursor='pointer';item.setAttribute('role','button');item.onclick=()=>openNotificationRoom(roomId)}
   list.prepend(item);renderOttiNotificationBadge();
 }
 (function(){
@@ -1187,6 +1228,45 @@ function addOttiNotification(symbol,title,text){
   clear?.addEventListener('click',()=>{const list=$('ottiNotifyList');if(list)list.innerHTML='<div class="otti-notify-item"><div class="otti-notify-glyph">◇</div><div class="otti-notify-copy"><b>No new notifications</b><span>Otti is quiet for now.</span></div></div>';ottiNotificationCount=0;renderOttiNotificationBadge()});
   renderOttiNotificationBadge();
 })();
+
+/* Cross-room polling catches new messages even when the user is not inside that chat. */
+let notificationPollTimer=null,notificationCursor=null,notificationPollBusy=false;
+function startNotificationPolling(){
+  if(notificationPollTimer)clearInterval(notificationPollTimer);
+  if(!notificationCursor)notificationCursor=new Date(Date.now()-5000).toISOString();
+  pollIncomingNotifications();
+  notificationPollTimer=setInterval(pollIncomingNotifications,5000);
+}
+async function pollIncomingNotifications(){
+  if(!currentUser||notificationPollBusy)return;notificationPollBusy=true;
+  try{
+    const since=notificationCursor||new Date(Date.now()-5000).toISOString();
+    const nextCursor=new Date().toISOString();
+    const r=await fetch('/api/notifications?since='+encodeURIComponent(since),{credentials:'include',cache:'no-store'});
+    if(!r.ok)return;const d=await r.json();
+    (d.messages||[]).forEach(handleIncomingMessageNotice);
+    notificationCursor=nextCursor;
+  }catch(e){console.debug('Notification poll failed',e)}finally{notificationPollBusy=false}
+}
+function handleIncomingMessageNotice(d){
+  if(!d||String(d.user_id)===String(currentUser?.id))return;
+  const key=String(d.id||[d.room,d.user_id,d.created_at,d.text].join(':'));
+  if(notifiedMessageIds.has(key))return;notifiedMessageIds.add(key);
+  if(notifiedMessageIds.size>500)notifiedMessageIds.delete(notifiedMessageIds.values().next().value);
+  const sender=d.name||'Someone';
+  addOttiNotification('♡',sender+' sent a message',d.text||'New private message',d.room);
+  notifyIncomingMessage(d);notifyMessageSound();
+}
+async function openNotificationRoom(roomId){
+  try{
+    const r=await fetch('/api/rooms',{credentials:'include',cache:'no-store'}),d=await r.json();
+    if(!r.ok)throw new Error('Could not open chat');
+    const room=(d.rooms||[]).find(x=>String(x.id)===String(roomId));
+    if(!room){toast('◇ This chat is no longer available');return}
+    await openRoom(room.id,{id:room.id,name:room.name||'Otti',kind:room.kind,icon:room.icon});
+    const panel=$('ottiNotifyPanel');if(panel)panel.classList.remove('show');
+  }catch(e){toast('◇ Could not open message')}
+}
 
 /* ---------- FINAL: browser notifications ---------- */
 let notificationPermission='default';
@@ -1221,7 +1301,7 @@ function notifyIncomingMessage(d){
   const body=d.text?String(d.text).slice(0,100):'You have a new message';
   try{
     const n=new Notification('♡ '+sender+' · OTTI',{body,tag:'otti-room-'+String(d.room||'general'),renotify:true});
-    n.onclick=()=>{window.focus();if(d.room&&currentRoomId!==d.room){toast('◇ Open the chat to read it.')}};
+    n.onclick=()=>{window.focus();if(d.room)openNotificationRoom(d.room);};
   }catch(_){ }
 }
 function notifyMessageSound(){

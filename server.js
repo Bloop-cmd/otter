@@ -274,6 +274,39 @@ app.post('/api/groups',requireAuth,async(req,res)=>{
     await client.query('COMMIT');res.json({room:{id:roomId,name,kind:'group',icon}});
   }catch(e){await client.query('ROLLBACK');console.error(e);res.status(500).json({error:'GROUP_ERROR'})}finally{client.release()}
 });
+app.delete('/api/groups/:roomId',requireAuth,async(req,res)=>{
+  const client=await pool.connect();
+  try{
+    await client.query('BEGIN');
+    const owner=await client.query("SELECT id FROM rooms WHERE id=$1 AND kind='group' AND created_by=$2 FOR UPDATE",[req.params.roomId,req.session.userId]);
+    if(!owner.rowCount){await client.query('ROLLBACK');return res.status(403).json({error:'NOT_GROUP_OWNER'})}
+    await client.query('DELETE FROM messages WHERE room_id=$1',[req.params.roomId]);
+    await client.query('DELETE FROM user_room_clears WHERE room_id=$1',[req.params.roomId]);
+    await client.query('DELETE FROM room_members WHERE room_id=$1',[req.params.roomId]);
+    await client.query('DELETE FROM groups_meta WHERE room_id=$1',[req.params.roomId]);
+    await client.query('DELETE FROM rooms WHERE id=$1',[req.params.roomId]);
+    await client.query('COMMIT');res.json({ok:true});
+  }catch(e){await client.query('ROLLBACK');console.error('Raft delete error',e);res.status(500).json({error:'RAFT_DELETE_ERROR'})}finally{client.release()}
+});
+
+app.get('/api/notifications',requireAuth,async(req,res)=>{
+  try{
+    const sinceRaw=safe(req.query.since,80);const parsed=sinceRaw?new Date(sinceRaw):new Date(Date.now()-5000);
+    const since=Number.isNaN(parsed.getTime())?new Date(Date.now()-5000):parsed;
+    const r=await pool.query(`
+      SELECT m.id,m.room_id AS room,m.user_id,m.text,m.created_at,u.name,
+             rooms.name AS room_name,rooms.kind
+      FROM messages m
+      JOIN room_members mine ON mine.room_id=m.room_id AND mine.user_id=$1
+      JOIN rooms ON rooms.id=m.room_id
+      LEFT JOIN users u ON u.id=m.user_id
+      WHERE m.user_id<>$1 AND m.created_at>$2
+        AND m.created_at>COALESCE((SELECT cleared_at FROM user_room_clears c WHERE c.user_id=$1 AND c.room_id=m.room_id),'epoch'::timestamptz)
+      ORDER BY m.created_at ASC LIMIT 100`,[req.session.userId,since]);
+    res.json({messages:r.rows,cursor:new Date().toISOString()});
+  }catch(e){console.error('Notification poll error',e);res.status(500).json({error:'NOTIFICATIONS_ERROR'})}
+});
+
 app.get('/api/groups/:roomId/members',requireAuth,async(req,res)=>{
   const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[req.params.roomId,req.session.userId]);
   if(!access.rowCount)return res.status(403).json({error:'FORBIDDEN'});
