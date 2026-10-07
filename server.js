@@ -28,7 +28,7 @@ const sessionParser=session({
 });
 
 app.set('trust proxy',1);
-app.use(express.json({limit:'1mb'}));
+app.use(express.json({limit:'32kb'}));
 app.use(express.urlencoded({extended:false}));
 app.use(sessionParser);
 app.use(express.static(path.join(__dirname)));
@@ -91,18 +91,6 @@ app.post('/api/auth/email',async(req,res)=>{
 });
 
 app.post('/api/auth/logout',(req,res)=>req.session.destroy(()=>{res.clearCookie('connect.sid');res.json({ok:true})}));
-
-// User-selected display pictures are stored as small, resized JPEG data URLs.
-app.put('/api/me/avatar',requireAuth,async(req,res)=>{
-  try{
-    const avatar=String(req.body?.avatar||'');
-    if(!/^data:image\/jpeg;base64,[A-Za-z0-9+/]+=*$/.test(avatar)||avatar.length>900000)
-      return res.status(400).json({error:'Choose a valid image under the size limit.'});
-    const r=await pool.query('UPDATE users SET avatar=$1,updated_at=NOW() WHERE id=$2 RETURNING id,email,name,avatar,provider',[avatar,req.session.userId]);
-    if(!r.rowCount)return res.status(404).json({error:'User not found.'});
-    res.json({ok:true,user:r.rows[0]});
-  }catch(e){console.error('avatar update error',e);res.status(500).json({error:'Could not save display picture.'})}
-});
 
 app.get('/auth/google',(req,res)=>{
   if(!process.env.GOOGLE_CLIENT_ID||!process.env.GOOGLE_CLIENT_SECRET)return res.status(503).send('Google OAuth is not configured.');
@@ -273,7 +261,7 @@ app.post('/api/statuses',requireAuth,async(req,res)=>{
 });
 
 app.get('/api/rooms',requireAuth,async(req,res)=>{
-  const r=await pool.query(`SELECT r.id,r.name,r.kind,r.created_at,r.created_by,gm.icon FROM rooms r JOIN room_members rm ON rm.room_id=r.id LEFT JOIN groups_meta gm ON gm.room_id=r.id WHERE rm.user_id=$1 ORDER BY r.created_at DESC`,[req.session.userId]);
+  const r=await pool.query(`SELECT r.id,r.name,r.kind,r.created_at,gm.icon FROM rooms r JOIN room_members rm ON rm.room_id=r.id LEFT JOIN groups_meta gm ON gm.room_id=r.id WHERE rm.user_id=$1 ORDER BY r.created_at DESC`,[req.session.userId]);
   res.json({rooms:r.rows});
 });
 app.post('/api/groups',requireAuth,async(req,res)=>{
@@ -286,22 +274,6 @@ app.post('/api/groups',requireAuth,async(req,res)=>{
     await client.query('COMMIT');res.json({room:{id:roomId,name,kind:'group',icon}});
   }catch(e){await client.query('ROLLBACK');console.error(e);res.status(500).json({error:'GROUP_ERROR'})}finally{client.release()}
 });
-app.delete('/api/groups/:roomId',requireAuth,async(req,res)=>{
-  const client=await pool.connect();
-  try{
-    await client.query('BEGIN');
-    const room=await client.query("SELECT id,created_by FROM rooms WHERE id=$1 AND kind='group' FOR UPDATE",[req.params.roomId]);
-    if(!room.rowCount){await client.query('ROLLBACK');return res.status(404).json({error:'RAFT_NOT_FOUND'})}
-    if(String(room.rows[0].created_by)!==String(req.session.userId)){await client.query('ROLLBACK');return res.status(403).json({error:'ONLY_RAFT_CREATOR_CAN_DELETE'})}
-    await client.query('DELETE FROM messages WHERE room_id=$1',[req.params.roomId]);
-    await client.query('DELETE FROM user_room_clears WHERE room_id=$1',[req.params.roomId]);
-    await client.query('DELETE FROM room_members WHERE room_id=$1',[req.params.roomId]);
-    await client.query('DELETE FROM groups_meta WHERE room_id=$1',[req.params.roomId]);
-    await client.query('DELETE FROM rooms WHERE id=$1',[req.params.roomId]);
-    await client.query('COMMIT');res.json({ok:true,deleted:true});
-  }catch(e){await client.query('ROLLBACK');console.error('delete Raft error',e);res.status(500).json({error:'RAFT_DELETE_ERROR'})}finally{client.release()}
-});
-
 app.get('/api/groups/:roomId/members',requireAuth,async(req,res)=>{
   const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[req.params.roomId,req.session.userId]);
   if(!access.rowCount)return res.status(403).json({error:'FORBIDDEN'});
@@ -318,22 +290,6 @@ app.post('/api/groups/:roomId/members',requireAuth,async(req,res)=>{
     await pool.query('INSERT INTO room_members(room_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[req.params.roomId,target]);
     res.json({ok:true,user:u.rows[0]});
   }catch(e){console.error(e);res.status(500).json({error:'GROUP_MEMBER_ADD_ERROR'})}
-});
-
-// Pollable incoming-message feed for the inbox and browser notifications.
-app.get('/api/notifications',requireAuth,async(req,res)=>{
-  try{
-    const raw=safe(req.query.after,80);const after=raw&&Number.isFinite(Date.parse(raw))?new Date(raw):new Date(Date.now()-60000);
-    const r=await pool.query(`SELECT m.id,m.room_id AS room,m.user_id,u.name,m.text,m.created_at,rooms.kind
-      FROM messages m
-      JOIN room_members mine ON mine.room_id=m.room_id AND mine.user_id=$1
-      LEFT JOIN users u ON u.id=m.user_id
-      JOIN rooms ON rooms.id=m.room_id
-      WHERE m.user_id<>$1 AND m.created_at>$2
-      ORDER BY m.created_at ASC LIMIT 100`,[req.session.userId,after]);
-    const notifications=r.rows.map(x=>({...x,created_at:new Date(x.created_at).toISOString()}));
-    res.set('Cache-Control','no-store');res.json({notifications,cursor:notifications.length?notifications[notifications.length-1].created_at:after.toISOString()});
-  }catch(e){console.error('notification poll error',e);res.status(500).json({error:'NOTIFICATION_POLL_ERROR'})}
 });
 
 /* ---------- Robust WebSocket ---------- */

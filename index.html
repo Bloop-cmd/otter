@@ -313,7 +313,8 @@ body.dark .ghost-codex-element{background:linear-gradient(145deg,#102f47,#0b2539
 @media(max-width:380px){.ghost-codex-elements{gap:4px}.ghost-codex-element{padding:8px 3px}.ghost-codex-element .el-glyph{font-size:21px}}
 
 
-.otti-notify-item.is-clickable{cursor:pointer}.otti-notify-item.is-clickable:hover{filter:brightness(.97)}.raft-row .contact-menu{flex:none}.profile-otti img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+/* Mom Mode: deliberately simple notes-style camouflage */
+.mom-screen{position:fixed;inset:0;z-index:99999;background:#f7f5ef;color:#292929;font-family:Arial,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);overflow:auto}.mom-screen[hidden]{display:none!important}.mom-top{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #e6e2d8;background:#fbfaf7;font-size:15px;font-weight:600}.mom-top button{border:0;background:transparent;color:#3a5d9c;font-size:16px;padding:8px}.mom-paper{max-width:720px;margin:0 auto;padding:22px 22px 60px}.mom-paper h2{font-size:26px;font-weight:600;margin:8px 0}.mom-date{color:#858585;font-size:12px;margin:0 0 18px}.mom-paper textarea{width:100%;height:65vh;resize:vertical;border:0;outline:0;background:transparent;color:#292929;font:16px/1.7 Arial,sans-serif}.mom-hint{border-top:1px solid #e6e2d8;padding-top:12px;color:#999;font-size:12px}.mom-mode-card{margin-top:12px}
 </style>
 
 <style id="otti-ghost-codex-final">
@@ -383,26 +384,6 @@ body:not(.dark) .bubble.ghost .message-body .ghost-symbol, body.dark .bubble.gho
 body.dark .mom-corner-btn{background:#0b5a56;color:#ffe08a;border-color:#b88a2b}
 /* Switch to the chat immediately; load messages after the chat view is visible. */
 #chat .messages{contain:content}
-
-/* OTTI usability fixes: luminous light-mode Ghost glyphs, DP picker, Rafts */
-body:not(.dark) .bubble.ghost{background:linear-gradient(135deg,#fff9fb,#f4f0ff 48%,#eafaff)!important;border:1px solid rgba(176,116,255,.65)!important;box-shadow:0 0 8px rgba(255,95,190,.24),0 0 18px rgba(92,174,255,.20)!important;text-shadow:none!important;animation:ghostLightGlow 2.4s ease-in-out infinite!important}
-body:not(.dark) .bubble.ghost .ghost-symbols{filter:drop-shadow(0 0 5px rgba(255,110,190,.45))!important}
-body:not(.dark) .bubble.ghost .ghost-symbol{color:#bb54f5!important;-webkit-text-fill-color:#bb54f5!important;text-shadow:0 0 3px currentColor,0 0 8px currentColor,0 0 15px rgba(255,105,200,.7)!important}
-body:not(.dark) .bubble.ghost .ghost-symbol.solar{color:#f2a900!important;-webkit-text-fill-color:#f2a900!important}
-body:not(.dark) .bubble.ghost .ghost-symbol.aqua{color:#009bd8!important;-webkit-text-fill-color:#009bd8!important}
-body:not(.dark) .bubble.ghost .ghost-symbol.terra{color:#2aaf75!important;-webkit-text-fill-color:#2aaf75!important}
-body:not(.dark) .bubble.ghost .ghost-symbol.luna{color:#9255ed!important;-webkit-text-fill-color:#9255ed!important}
-body:not(.dark) .bubble.ghost .ghost-symbol.secret{color:#f04c9b!important;-webkit-text-fill-color:#f04c9b!important}
-body:not(.dark) .bubble.ghost .ghost-symbol.protect{color:#e67e22!important;-webkit-text-fill-color:#e67e22!important}
-body:not(.dark) .bubble.ghost .ghost-symbol.dive{color:#ef477f!important;-webkit-text-fill-color:#ef477f!important}
-@keyframes ghostLightGlow{0%,100%{filter:brightness(1);box-shadow:0 0 8px rgba(255,95,190,.22),0 0 18px rgba(92,174,255,.16)}50%{filter:brightness(1.08);box-shadow:0 0 12px rgba(255,95,190,.38),0 0 24px rgba(92,174,255,.3)}}
-.dp-upload-label{display:inline-flex;align-items:center;justify-content:center;margin:12px auto 4px;padding:10px 14px;cursor:pointer}
-#profileDisplayPicture{border-radius:50%;object-fit:cover}
-.contact .avatar img{width:100%;height:100%;object-fit:cover;border-radius:inherit}
-.raft-row{display:flex;align-items:center;gap:12px;padding:13px 10px;border-bottom:1px solid var(--line);cursor:pointer}
-.raft-row:last-child{border-bottom:0}.raft-glyph{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#ffd8e9,#ccefff);font-size:23px}
-
-[hidden]{display:none!important}
 </style>
 
 </head>
@@ -425,12 +406,10 @@ body:not(.dark) .bubble.ghost .ghost-symbol.dive{color:#ef477f!important;-webkit
 
 <div id="app" class="app hidden">
   <section id="chats" class="screen active">
-    <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><div class="top-actions"><button class="otti-notify-btn" id="ottiNotifyBtn" aria-label="Otti notifications" title="Otti notifications">🦦<span class="otti-notify-badge" id="ottiNotifyBadge" hidden>0</span></button><button class="icon appearance-corner-btn" onclick="showScreen('profile')" aria-label="Appearance and profile" title="Appearance">●</button></div></div>
+    <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><div class="top-actions"><button class="otti-notify-btn" id="ottiNotifyBtn" aria-label="Otti notifications" title="Otti notifications">🦦<span class="otti-notify-badge" id="ottiNotifyBadge" hidden>0</span></button><button class="mom-corner-btn" onclick="toggleMomMode()" aria-label="Open Mom Mode" title="Mom Mode">📓</button><button class="icon appearance-corner-btn" onclick="showScreen('profile')" aria-label="Appearance and profile" title="Appearance">●</button></div></div>
     <div class="content">
-      <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><div style="display:flex;gap:6px"><button class="refresh" onclick="refreshChats()" aria-label="Refresh chats" title="Refresh chats">↻</button></div></div>
+      <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><div style="display:flex;gap:6px"><button class="refresh" onclick="clearAllChats()" aria-label="Clear all chat histories" title="Clear all chat histories">⌫</button><button class="refresh" onclick="refreshChats()" aria-label="Refresh chats" title="Refresh chats">↻</button></div></div>
       <div id="contacts" class="card"></div>
-      <div class="card add-otti-main" onclick="createRaft()"><div class="add-otti-glyph">◈</div><div><b>Create a Raft</b><div class="sub">Make a private group for your people.</div></div><span class="add-otti-arrow">›</span></div>
-      <div id="rafts" class="card" hidden></div>
       <div class="card add-otti-main" onclick="showScreen('add')"><div class="add-otti-glyph">＋</div><div><b>Add Otti</b><div class="sub">Find someone and start a private chat.</div></div><span class="add-otti-arrow">›</span></div><div class="card add-otti-main" onclick="copyInvite()"><div class="add-otti-glyph">↗</div><div><b>Invite a friend</b><div class="sub">Share OTTI and start your own Raft.</div></div><span class="add-otti-arrow">›</span></div>
     </div>
   </section>
@@ -477,7 +456,7 @@ body:not(.dark) .bubble.ghost .ghost-symbol.dive{color:#ef477f!important;-webkit
   <section id="profile" class="screen">
     <div class="top"><button class="icon" onclick="showScreen('chats')">←</button><b>Your Otti</b><span></span></div>
     <div class="content">
-      <div class="card profile-hero"><div class="profile-otti"><img id="profileDisplayPicture" class="mascot-img" alt="Your display picture"></div><h2 id="profileName" style="margin:8px 0 2px">Your Otti</h2><div id="profileEmail" class="sub"></div><label class="secondary dp-upload-label" for="displayPictureInput">📷 Change display picture</label><input id="displayPictureInput" type="file" accept="image/*" hidden onchange="uploadDisplayPicture(this)"><div class="sub">Choose a photo; it will be resized before saving.</div></div>
+      <div class="card profile-hero"><div class="profile-otti"><img class="mascot-img"></div><h2 id="profileName" style="margin:8px 0 2px">Your Otti</h2><div id="profileEmail" class="sub"></div></div>
       <div class="card"><b>Privacy</b><div class="option"><b>〰 DIVE</b><span>Instantly transform visible conversation into Otti symbols.</span></div><div class="option" onclick="toggleTheme()"><b>☾ Dark Otti</b><span>Switch between sandy beach light and Otti's deep ocean night world.</span></div><div class="option" onclick="toggleCameraPrivacy()"><b>◉ Camera privacy</b><span id="cameraPrivacyText">Off · Tap to enable on-device face detection.</span></div><label class="option" style="display:flex;align-items:center;gap:10px"><input id="autoDiveToggle" type="checkbox" checked onchange="setAutoDive(this.checked)" style="width:20px;height:20px"><span><b>〰 Camera auto-DIVE</b><span>Automatically DIVE if the camera detects 2+ faces. Detection can miss real shoulder-surfing.</span></span></label><video id="cameraPreview" class="hidden" playsinline muted></video></div>
       <div class="theme-toggle-card"><div><b>✦ Appearance</b><small>Beach day ↔ Otti sea night</small></div><button id="themeSwitch" class="big-theme-switch" onclick="toggleTheme()" aria-label="Toggle light and dark mode"><span class="theme-switch-knob">☀</span></button></div><button class="theme-toggle" onclick="enableNotifications()"><span>♡ Notifications<small id="notificationText">Message alerts are off</small></span><span id="notificationPill" class="theme-pill">Off</span></button>
 <button class="secondary" onclick="logout()">Log out</button>
@@ -488,7 +467,7 @@ body:not(.dark) .bubble.ghost .ghost-symbol.dive{color:#ef477f!important;-webkit
     <div class="top chat-top">
       <button class="icon" onclick="closeChat()">←</button>
       <div class="brand"><div class="mini"><img class="mascot-img"></div><span id="chatName" class="chat-title">Otti</span></div>
-      <div class="chat-top-tools"><button id="groupInviteBtn" class="codex-trigger" onclick="inviteToRaft()" hidden>＋ Invite</button><button class="codex-trigger" onclick="openOttiCodex()">◇ Codex</button><div id="connection" class="connection">○ connecting</div></div>
+      <div class="chat-top-tools"><button class="codex-trigger" onclick="openOttiCodex()">◇ Codex</button><div id="connection" class="connection">○ connecting</div></div>
     </div>
 
     <div class="otti-stage">
@@ -522,7 +501,7 @@ body:not(.dark) .bubble.ghost .ghost-symbol.dive{color:#ef477f!important;-webkit
     </div>
   </section>
 
-
+  <section id="momModeScreen" class="mom-screen" aria-label="Notes" hidden><div class="mom-top"><button onclick="toggleMomMode()" aria-label="Return to OTTI">‹</button><span>Notes</span><button onclick="toggleMomMode()" title="Return to OTTI">Done</button></div><div class="mom-paper"><h2>My Notes</h2><p class="mom-date" id="momDate"></p><textarea id="momNotes" placeholder="Write a note…" aria-label="Notes" oninput="saveMomNotes()"></textarea><div class="mom-hint">All caught up.</div></div></section>
 
   <nav id="bottomNav" class="bottom-nav">
     <button id="navChats" class="nav-btn active" onclick="showScreen('chats')"><span>♡</span><span>Chats</span></button>
@@ -759,7 +738,7 @@ const $=id=>document.getElementById(id);
 function showScreen(id){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   const s=$(id); if(!s)return; s.classList.add("active"); updateNavigation(id);
-  if(id==="status")loadStatuses(); if(id==="chats")loadContacts(); if(id==="profile"){if(currentUser){$("profileName").textContent=currentUser.name||"Your Otti";$("profileEmail").textContent=currentUser.email||"";const pic=$("profileDisplayPicture");if(pic)pic.src=currentUser.avatar||MASCOT;}}
+  if(id==="status")loadStatuses(); if(id==="chats")loadContacts();
 }
 function updateNavigation(id){
   $("bottomNav").style.display=id==="chat"?"none":"flex";
@@ -899,96 +878,21 @@ async function checkSession(){
 }
 function enterApp(){
   $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
-  $("profileName").textContent=currentUser.name||"Your Otti";$("profileEmail").textContent=currentUser.email||"";const pic=$("profileDisplayPicture");if(pic)pic.src=currentUser.avatar||MASCOT;
-  loadContacts();startUnreadPolling();const ad=$("autoDiveToggle");if(ad)ad.checked=cameraAutoDive;
+  $("profileName").textContent=currentUser.name||"Your Otti";$("profileEmail").textContent=currentUser.email||"";
+  loadContacts();const ad=$("autoDiveToggle");if(ad)ad.checked=cameraAutoDive;
 }
 async function refreshChats(){const b=document.querySelector('#chats .refresh');if(b){b.classList.add('spinning');setTimeout(()=>b.classList.remove('spinning'),650)}try{await loadContacts();toast('✦ Chats refreshed')}catch(e){toast('◇ Could not refresh chats')}}
-async function readApiResponse(response,fallback='Request failed'){
-  const raw=await response.text();let data={};
-  try{data=raw?JSON.parse(raw):{}}catch(_){
-    const clean=raw.replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-    const isHtml=/<!doctype html|<html[\s>]/i.test(raw);
-    throw new Error(isHtml?'OTTI server returned a web page instead of API data. Please redeploy the updated server.js and restart the server.':(clean.slice(0,160)||fallback));
-  }
-  if(!response.ok)throw new Error(data.error||data.message||fallback);
-  if(!data||typeof data!=='object')throw new Error(fallback);
-  return data;
-}
-
-async function uploadDisplayPicture(input){
-  const file=input?.files?.[0];if(!file)return;
-  if(!file.type.startsWith('image/')){toast('◇ Please choose an image.');input.value='';return;}
-  try{
-    const image=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=URL.createObjectURL(file)});
-    const canvas=document.createElement('canvas'),size=256;canvas.width=size;canvas.height=size;
-    const ctx=canvas.getContext('2d');const scale=Math.max(size/image.width,size/image.height),w=image.width*scale,h=image.height*scale;ctx.drawImage(image,(size-w)/2,(size-h)/2,w,h);
-    const avatar=canvas.toDataURL('image/jpeg',0.68);URL.revokeObjectURL(image.src);
-    const r=await fetch('/api/me/avatar',{method:'PUT',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({avatar})});
-    const d=await readApiResponse(r,'Could not save display picture');currentUser=d.user||currentUser;applyCurrentAvatar();toast('♡ Display picture updated');
-  }catch(e){toast('◇ '+(e.message||'Could not save display picture'));}finally{if(input)input.value='';}
-}
-function applyCurrentAvatar(){
-  if(!currentUser)return;const src=currentUser.avatar||MASCOT;
-  const p=$('profileDisplayPicture');if(p)p.src=src;document.querySelectorAll('.profile-otti .mascot-img').forEach(img=>img.src=src);
-  document.querySelectorAll('.contact').forEach(row=>{const email=row.querySelector('.contact-email')?.textContent;const c=contacts.find(x=>x.email===email);const img=row.querySelector('.avatar img');if(img)img.src=c?.avatar||MASCOT});
-}
-async function inviteToRaft(){
-  if(currentContact?.kind!=='group'||!currentRoomId)return;
-  const q=prompt('Search for a person to invite by name or email');if(!q?.trim())return;
-  try{
-    const r=await fetch('/api/users/search?q='+encodeURIComponent(q.trim()),{credentials:'include'});const d=await readApiResponse(r,'Could not search for people');const users=(d.users||[]).filter(u=>String(u.id)!==String(currentUser?.id));
-    if(!users.length){toast('◇ No matching people found.');return;}
-    const choices=users.map((u,i)=>`${i+1}. ${u.name||'Otti'} (${u.email||'no email'})`).join('\n');const pick=Number(prompt('Who should join this Raft? Enter a number:\n'+choices));if(!Number.isInteger(pick)||pick<1||pick>users.length)return;
-    const target=users[pick-1];const add=await fetch('/api/groups/'+encodeURIComponent(currentRoomId)+'/members',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:target.id})});await readApiResponse(add,'Could not invite this person');toast('♡ '+(target.name||'Otti')+' joined your Raft');await loadRafts();
-  }catch(e){toast('◇ '+e.message)}
-}
-async function createRaft(){
-  const name=prompt('Name your Raft','My Otti Circle');if(name===null)return;
-  const clean=name.trim();if(!clean){toast('◇ Give your Raft a name first.');return;}
-  try{const r=await fetch('/api/groups',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:clean,icon:'◈'})});const d=await readApiResponse(r,'Could not create Raft');
-    if(!d.room?.id)throw new Error('The server did not return a Raft. Please redeploy the updated server.js and try again.');toast('◈ Your Raft is ready');await loadContacts();await openRoom(d.room.id,{id:d.room.id,user_id:d.room.id,name:d.room.name||clean,kind:'group',icon:d.room.icon||'◈'});
-  }catch(e){toast('◇ '+e.message)}
-}
-async function loadRafts(){
-  const el=$('rafts');if(!el)return;
-  try{
-    const r=await fetch('/api/rooms',{credentials:'include',headers:{'Accept':'application/json'}});const d=await readApiResponse(r,'Could not load Rafts');const rooms=(d.rooms||[]).filter(x=>x.kind==='group');
-    el.hidden=false;el.innerHTML='<div class="section-head"><b>◈ Your Rafts</b></div>';
-    if(!rooms.length){el.innerHTML+='<div class="sub" style="padding:10px 4px">No Rafts yet. Create one for your people.</div>';return}
-    rooms.forEach(room=>{
-      const row=document.createElement('div');row.className='raft-row';
-      const glyph=document.createElement('div');glyph.className='raft-glyph';glyph.textContent=room.icon||'◈';
-      const title=document.createElement('div');title.style.flex='1';title.style.minWidth='0';
-      const b=document.createElement('b');b.textContent=room.name||'Otti Raft';
-      const sub=document.createElement('div');sub.className='sub';sub.textContent='Private group chat';title.append(b,sub);
-      const open=document.createElement('button');open.type='button';open.className='contact-menu';open.title='Open Raft';open.setAttribute('aria-label','Open Raft');open.textContent='›';
-      open.onclick=(ev)=>{ev.stopPropagation();openRoom(room.id,{id:room.id,user_id:room.id,name:room.name||'Otti Raft',kind:'group',icon:room.icon||'◈'})};
-      const del=document.createElement('button');del.type='button';del.className='contact-menu';del.title='Delete Raft and its chat';del.setAttribute('aria-label','Delete Raft and its chat');del.textContent='🗑';del.onclick=(ev)=>{ev.stopPropagation();deleteRaft(room)};
-      row.append(glyph,title,open,del);row.onclick=()=>openRoom(room.id,{id:room.id,user_id:room.id,name:room.name||'Otti Raft',kind:'group',icon:room.icon||'◈'});el.appendChild(row);
-    });
-  }catch(e){el.hidden=false;el.innerHTML='<div class="section-head"><b>◈ Your Rafts</b></div><div class="sub" style="padding:10px 4px">'+escapeHtml(e.message||'Could not load Rafts')+'</div>'}
-}
-async function deleteRaft(room){
-  if(!room?.id)return;
-  if(!confirm('Delete “'+(room.name||'this Raft')+'” and its entire group chat history for everyone? This cannot be undone.'))return;
-  try{
-    const r=await fetch('/api/groups/'+encodeURIComponent(room.id),{method:'DELETE',credentials:'include',headers:{'Accept':'application/json'}});await readApiResponse(r,'Could not delete Raft');
-    if(String(currentRoomId)===String(room.id))closeChat();await loadContacts();toast('🗑 Raft and its chat deleted');
-  }catch(e){toast('◇ '+e.message)}
-}
-
 async function loadContacts(){
   try{
     const r=await fetch("/api/contacts",{credentials:"include"}),d=await r.json();
     if(!r.ok)throw new Error(d.error||"Unable to load contacts");contacts=d.contacts||[];
     const c=$("contacts");c.innerHTML="";
-    if(!contacts.length){c.innerHTML='<div class="empty"><div class="empty-symbol">♡</div><b>No Ottis yet</b><div>Add someone from the Add tab.</div></div>';await loadRafts();return}
+    if(!contacts.length){c.innerHTML='<div class="empty"><div class="empty-symbol">♡</div><b>No Ottis yet</b><div>Add someone from the Add tab.</div></div>';return}
     contacts.forEach(x=>{
       const row=document.createElement("div");row.className="contact";row.onclick=()=>openContact(x);
-      row.innerHTML='<div class="avatar"><img src="'+escapeHtml(x.avatar||MASCOT)+'"></div><div class="contact-main"><div class="contact-name">'+escapeHtml(x.name||"Otti")+'</div><div class="contact-email">'+escapeHtml(x.email||"")+'</div><div class="contact-state">● connected</div></div><button class="contact-menu" aria-label="Chat options" title="Chat options">⋯</button><div>›</div>'; row.querySelector(".contact-menu").onclick=(ev)=>{ev.stopPropagation();openContactActions(x)};
+      row.innerHTML='<div class="avatar"><img src="'+MASCOT+'"></div><div class="contact-main"><div class="contact-name">'+escapeHtml(x.name||"Otti")+'</div><div class="contact-email">'+escapeHtml(x.email||"")+'</div><div class="contact-state">● connected</div></div><button class="contact-menu" aria-label="Chat options" title="Chat options">⋯</button><div>›</div>'; row.querySelector(".contact-menu").onclick=(ev)=>{ev.stopPropagation();openContactActions(x)};
       c.appendChild(row);
     });
-    await loadRafts();
   }catch(e){toast("◇ "+e.message)}
 }
 
@@ -1003,7 +907,7 @@ async function clearSelectedChat(){
   if(!confirm("Clear this conversation from your view? The other person's history is not cleared."))return;
   try{
     const room=await getDirectRoom(c.user_id);if(!room)throw new Error("Could not find this chat");
-    const r=await fetch('/api/rooms/'+encodeURIComponent(room.id)+'/clear',{method:'POST',credentials:'include'});await readApiResponse(r,'Could not clear chat');
+    const r=await fetch('/api/rooms/'+encodeURIComponent(room.id)+'/clear',{method:'POST',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not clear chat');
     if(currentRoomId===room.id){$("messages").innerHTML="";renderedMessageIds=new Set();renderedClientIds=new Set();}
     toast('⌫ Chat cleared for you');closeContactActions();
   }catch(e){toast('◇ '+e.message)}
@@ -1014,16 +918,16 @@ async function getDirectRoom(userId){
 async function deleteSelectedContact(){
   const c=selectedContactForActions;if(!c)return;
   if(!confirm('Remove '+(c.name||'this person')+' from your OTTI contacts? Their account and messages for the other person will not be deleted.'))return;
-  try{const r=await fetch('/api/contacts/'+encodeURIComponent(c.user_id),{method:'DELETE',credentials:'include'});await readApiResponse(r,'Could not delete contact');if(currentContact&&String(currentContact.id||currentContact.user_id)===String(c.user_id))closeChat();closeContactActions();await loadContacts();toast('× Contact removed');}catch(e){toast('◇ '+e.message)}
+  try{const r=await fetch('/api/contacts/'+encodeURIComponent(c.user_id),{method:'DELETE',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not delete contact');if(currentContact&&String(currentContact.id||currentContact.user_id)===String(c.user_id))closeChat();closeContactActions();await loadContacts();toast('× Contact removed');}catch(e){toast('◇ '+e.message)}
 }
 async function blockSelectedContact(){
   const c=selectedContactForActions;if(!c)return;
   if(!confirm('Block '+(c.name||'this contact')+'? They will be removed from your list until you unblock them.'))return;
-  try{const r=await fetch('/api/contacts/'+encodeURIComponent(c.user_id)+'/block',{method:'POST',credentials:'include'});await readApiResponse(r,'Could not block contact');if(currentContact&&String(currentContact.id||currentContact.user_id)===String(c.user_id))closeChat();closeContactActions();await loadContacts();toast('⛔ Contact blocked');}catch(e){toast('◇ '+e.message)}
+  try{const r=await fetch('/api/contacts/'+encodeURIComponent(c.user_id)+'/block',{method:'POST',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not block contact');if(currentContact&&String(currentContact.id||currentContact.user_id)===String(c.user_id))closeChat();closeContactActions();await loadContacts();toast('⛔ Contact blocked');}catch(e){toast('◇ '+e.message)}
 }
 async function clearAllChats(){
   if(!confirm('Clear all chat histories from your view? Contacts stay. Other people keep their own history.'))return;
-  try{const r=await fetch('/api/chats/clear-all',{method:'POST',credentials:'include'});await readApiResponse(r,'Could not clear chats');if(currentRoomId){$("messages").innerHTML="";renderedMessageIds=new Set();renderedClientIds=new Set();}toast('⌫ All chat histories cleared for you');}catch(e){toast('◇ '+e.message)}
+  try{const r=await fetch('/api/chats/clear-all',{method:'POST',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not clear chats');if(currentRoomId){$("messages").innerHTML="";renderedMessageIds=new Set();renderedClientIds=new Set();}toast('⌫ All chat histories cleared for you');}catch(e){toast('◇ '+e.message)}
 }
 function setAutoDive(enabled){
   cameraAutoDive=!!enabled;try{localStorage.setItem('otti-auto-dive',String(cameraAutoDive))}catch(_){}
@@ -1044,7 +948,7 @@ async function searchUsers(){
     if(!(d.users||[]).length){c.innerHTML='<div class="empty"><div class="empty-symbol">◇</div>No Otti found.</div>';return}
     d.users.forEach(u=>{
       const card=document.createElement("div");card.className="search-result";
-      card.innerHTML='<div style="display:flex;align-items:center;gap:12px"><div class="avatar"><img src="'+escapeHtml(u.avatar||MASCOT)+'"></div><div style="flex:1"><b>'+escapeHtml(u.name||"Otti")+'</b><div class="sub">'+escapeHtml(u.email||"")+'</div></div><button class="add-small">♡ Add</button></div>';
+      card.innerHTML='<div style="display:flex;align-items:center;gap:12px"><div class="avatar"><img src="'+MASCOT+'"></div><div style="flex:1"><b>'+escapeHtml(u.name||"Otti")+'</b><div class="sub">'+escapeHtml(u.email||"")+'</div></div><button class="add-small">♡ Add</button></div>';
       card.querySelector("button").onclick=()=>addContact(u);c.appendChild(card);
     });
   }catch(e){toast("◇ "+e.message)}
@@ -1070,7 +974,7 @@ async function openContact(c){
 }
 async function openRoom(roomId,contact){
   currentRoomId=roomId;currentContact=contact;ghost=false;renderedMessageIds=new Set();renderedClientIds=new Set();pendingMessages=[];
-  $("chatName").textContent=contact.name||"Otti";const invite=$("groupInviteBtn");if(invite)invite.hidden=contact.kind!=="group";$("messages").innerHTML="";updateGhostUI();showScreen("chat");setConnection("connecting");
+  $("chatName").textContent=contact.name||"Otti";$("messages").innerHTML="";updateGhostUI();showScreen("chat");setConnection("connecting");
   await loadMessages(roomId);startMessagePolling(roomId);connectWebSocket(roomId);
 }
 async function loadMessages(roomId){
@@ -1154,10 +1058,8 @@ function handleSocketMessage(d){
   }
   if(d.type==="message"){
     const mine=String(d.user_id)===String(currentUser.id);
-    const duplicateIncoming=!mine&&d.id&&seenIncomingMessageIds.has(String(d.id));
-    if(!mine&&d.id)seenIncomingMessageIds.add(String(d.id));
-    if(d.room===currentRoomId){renderMessage(d);scrollMessages();if(!mine){setOttiState("sent");if(!duplicateIncoming){addOttiNotification("♡",(d.name||"Otti")+" sent a message",d.text||"New private message",d);notifyIncomingMessage(d);notifyMessageSound()}}}
-    else if(!mine&&!duplicateIncoming){addOttiNotification("♡",(d.name||"Otti")+" sent a message",d.text||"New private message",d);notifyIncomingMessage(d);notifyMessageSound()}
+    if(d.room===currentRoomId){renderMessage(d);scrollMessages();if(!mine){setOttiState("sent");addOttiNotification("♡",(d.name||"Otti")+" sent a message",d.text||"New private message");notifyIncomingMessage(d);notifyMessageSound()}}
+    else if(!mine){addOttiNotification("♡",(d.name||"Otti")+" sent a message",d.text||"New private message");notifyIncomingMessage(d);notifyMessageSound()}
     return;
   }
   if(d.type==="react"){addOttiNotification(d.reaction||"♡",(d.user||"Otti")+" reacted",d.reaction||"New reaction");return}
@@ -1201,7 +1103,13 @@ async function postStatus(){
     input.value="";toast("✦ Status dropped.");loadStatuses();
   }catch(e){toast("◇ "+e.message)}
 }
-
+function toggleMomMode(){
+  const screen=$("momModeScreen"); if(!screen)return;
+  const opening=screen.hidden;
+  if(opening){try{$("momNotes").value=localStorage.getItem("otti-mom-notes")||""}catch(_){};const d=new Date();$("momDate").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});screen.hidden=false;document.body.dataset.momMode="on";}
+  else{screen.hidden=true;delete document.body.dataset.momMode;}
+  const b=$("momModeButton");if(b)b.textContent=opening?"Close":"Open";
+}
 function saveMomNotes(){try{localStorage.setItem("otti-mom-notes",$("momNotes").value)}catch(_){}}
 
 async function copyInvite(){
@@ -1255,13 +1163,13 @@ if($('msg')){
 }
 
 /* ---------- RECOVERED FINAL: in-app Otti notification tray ---------- */
-let ottiNotificationCount=0;const seenIncomingMessageIds=new Set();
+let ottiNotificationCount=0;
 function renderOttiNotificationBadge(){
   const b=$('ottiNotifyBadge');if(!b)return;
   b.textContent=ottiNotificationCount>9?'9+':String(ottiNotificationCount);
   b.hidden=ottiNotificationCount===0;
 }
-function addOttiNotification(symbol,title,text,target=null){
+function addOttiNotification(symbol,title,text){
   const list=$('ottiNotifyList');if(!list)return;
   ottiNotificationCount++;
   const item=document.createElement('div');item.className='otti-notify-item';
@@ -1269,7 +1177,6 @@ function addOttiNotification(symbol,title,text,target=null){
   item.querySelector('.otti-notify-glyph').textContent=symbol||'🦦';
   item.querySelector('b').textContent=title||'Otti update';
   item.querySelector('span').textContent=text||'';
-  if(target?.room){item.classList.add('is-clickable');item.setAttribute('role','button');item.tabIndex=0;const go=()=>openNotificationTarget(target);item.addEventListener('click',go);item.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}})}
   list.prepend(item);renderOttiNotificationBadge();
 }
 (function(){
@@ -1297,26 +1204,6 @@ async function enableNotifications(){
   try{
     const permission=await Notification.requestPermission();
     notificationPermission=permission;refreshNotificationUI();
-
-/* ---------- Reliable foreground/background-tab unread polling ---------- */
-let notificationCursor=new Date().toISOString(),notificationPollBusy=false;
-async function pollUnreadMessages(){
-  if(notificationPollBusy||!currentUser)return;notificationPollBusy=true;
-  try{
-    const r=await fetch('/api/notifications?after='+encodeURIComponent(notificationCursor),{credentials:'include',cache:'no-store',headers:{'Accept':'application/json'}});
-    const d=await readApiResponse(r,'Could not check unread messages');
-    const items=d.notifications||[];
-    for(const m of items){
-      if(m.id&&seenIncomingMessageIds.has(String(m.id)))continue;if(m.id)seenIncomingMessageIds.add(String(m.id));
-      const target={id:m.id,room:m.room,user_id:m.user_id,name:m.name||'Someone',text:m.text||'',kind:m.kind};
-      addOttiNotification('♡',(m.name||'Someone')+' sent a message',m.text||'You have a new message',target);
-      notifyIncomingMessage(target);notificationCursor=m.created_at||notificationCursor;
-    }
-    if(d.cursor)notificationCursor=d.cursor;
-  }catch(_){/* transient network/server errors are retried on next poll */}
-  finally{notificationPollBusy=false}
-}
-function startUnreadPolling(){pollUnreadMessages();setInterval(pollUnreadMessages,5000)}
     if(permission==='granted'){
       toast('♡ Notifications are on.');
       try{new Notification('OTTI', {body:'You will now know when an Otti messages you.',tag:'otti-enabled'});}catch(_){ }
@@ -1334,21 +1221,8 @@ function notifyIncomingMessage(d){
   const body=d.text?String(d.text).slice(0,100):'You have a new message';
   try{
     const n=new Notification('♡ '+sender+' · OTTI',{body,tag:'otti-room-'+String(d.room||'general'),renotify:true});
-    n.onclick=()=>{window.focus();openNotificationTarget(d);n.close?.()};
+    n.onclick=()=>{window.focus();if(d.room&&currentRoomId!==d.room){toast('◇ Open the chat to read it.')}};
   }catch(_){ }
-}
-async function openNotificationTarget(d){
-  try{
-    const roomId=String(d.room||'');if(!roomId)return;
-    if(currentRoomId===roomId&&currentContact){showScreen('chat');return;}
-    const rr=await fetch('/api/rooms',{credentials:'include'});const rd=await readApiResponse(rr,'Could not open message');const room=(rd.rooms||[]).find(x=>String(x.id)===roomId);
-    if(room?.kind==='group'){
-      const mr=await fetch('/api/groups/'+encodeURIComponent(roomId)+'/members',{credentials:'include'});const md=await readApiResponse(mr,'Could not open Raft');const other=(md.members||[]).find(x=>String(x.user_id)!==String(currentUser?.id));
-      await openRoom(roomId,{id:roomId,user_id:roomId,name:room.name||'Otti Raft',kind:'group',icon:room.icon||'◈'});return;
-    }
-    await loadContacts();const contact=contacts.find(x=>String(x.user_id)===String(d.user_id))||{user_id:d.user_id,name:d.name||'Otti'};
-    await openContact(contact);
-  }catch(e){toast('◇ Could not open that message')}
 }
 function notifyMessageSound(){
   try{
