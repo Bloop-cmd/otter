@@ -28,7 +28,7 @@ const sessionParser=session({
 });
 
 app.set('trust proxy',1);
-app.use(express.json({limit:'2mb'}));
+app.use(express.json({limit:'32kb'}));
 app.use(express.urlencoded({extended:false}));
 app.use(sessionParser);
 app.use(express.static(path.join(__dirname)));
@@ -48,10 +48,6 @@ async function init(){
   for(const table of ['users','rooms','room_members','messages','contacts','groups_meta','statuses'])
     await pool.query(`SELECT 1 FROM ${table} LIMIT 1`);
   await pool.query(`CREATE TABLE IF NOT EXISTS user_room_clears (user_id uuid NOT NULL, room_id uuid NOT NULL, cleared_at timestamptz NOT NULL DEFAULT NOW(), PRIMARY KEY(user_id,room_id))`);
-  await pool.query(`ALTER TABLE groups_meta ADD COLUMN IF NOT EXISTS raft_style text NOT NULL DEFAULT 'neon'`);
-  await pool.query(`ALTER TABLE groups_meta ADD COLUMN IF NOT EXISTS secret_language boolean NOT NULL DEFAULT true`);
-  await pool.query(`ALTER TABLE groups_meta ADD COLUMN IF NOT EXISTS hold_hands boolean NOT NULL DEFAULT true`);
-  await pool.query(`ALTER TABLE groups_meta ADD COLUMN IF NOT EXISTS post_policy text NOT NULL DEFAULT 'everyone'`);
 }
 
 app.get('/health',async(req,res)=>{
@@ -64,15 +60,6 @@ app.get('/api/me',async(req,res)=>{
   const r=await pool.query('SELECT id,email,name,avatar,provider FROM users WHERE id=$1',[req.session.userId]);
   if(!r.rowCount){req.session.destroy(()=>{});return res.json({user:null})}
   res.json({user:r.rows[0]});
-});
-app.put('/api/me/avatar',requireAuth,async(req,res)=>{
-  try{
-    const avatar=safe(req.body.avatar,1500000);
-    if(!avatar||!/^data:image\/(jpeg|png|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(avatar))return res.status(400).json({error:'INVALID_IMAGE'});
-    const r=await pool.query('UPDATE users SET avatar=$1,updated_at=NOW() WHERE id=$2 RETURNING id,email,name,avatar,provider',[avatar,req.session.userId]);
-    if(!r.rowCount)return res.status(404).json({error:'USER_NOT_FOUND'});
-    res.json({ok:true,user:r.rows[0]});
-  }catch(e){console.error(e);res.status(500).json({error:'AVATAR_UPDATE_ERROR'})}
 });
 
 app.post('/api/auth/email',async(req,res)=>{
@@ -171,7 +158,7 @@ function loginSession(req,userId){
 
 app.get('/api/contacts',requireAuth,async(req,res)=>{
   try{
-    const r=await pool.query(`SELECT c.contact_user_id AS user_id,u.name,u.email,u.avatar,c.status,c.created_at FROM contacts c JOIN users u ON u.id=c.contact_user_id WHERE c.user_id=$1 AND c.status <> 'blocked' ORDER BY COALESCE((SELECT MAX(m.created_at) FROM rooms rr JOIN room_members rma ON rma.room_id=rr.id AND rma.user_id=c.user_id JOIN room_members rmb ON rmb.room_id=rr.id AND rmb.user_id=c.contact_user_id JOIN messages m ON m.room_id=rr.id WHERE rr.kind='direct'),c.created_at) DESC`,[req.session.userId]);
+    const r=await pool.query(`SELECT c.contact_user_id AS user_id,u.name,u.email,u.avatar,c.status,c.created_at FROM contacts c JOIN users u ON u.id=c.contact_user_id WHERE c.user_id=$1 AND c.status <> 'blocked' ORDER BY c.created_at DESC`,[req.session.userId]);
     res.json({contacts:r.rows});
   }catch(e){console.error(e);res.status(500).json({error:'CONTACTS_ERROR'})}
 });
@@ -222,8 +209,6 @@ app.post('/api/rooms/:roomId/messages',requireAuth,async(req,res)=>{
     const roomId=safe(req.params.roomId,80);
     const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[roomId,req.session.userId]);
     if(!access.rowCount)return res.status(403).json({error:'FORBIDDEN'});
-    const postingRule=await pool.query(`SELECT r.kind,r.created_by,gm.post_policy FROM rooms r LEFT JOIN groups_meta gm ON gm.room_id=r.id WHERE r.id=$1`,[roomId]);
-    if(postingRule.rows[0]?.kind==='group'&&postingRule.rows[0]?.post_policy==='admins'&&postingRule.rows[0]?.created_by!==req.session.userId)return res.status(403).json({error:'RAFT_POSTING_RESTRICTED'});
     const text=safe(req.body.text);
     if(!text)return res.status(400).json({error:'MESSAGE_REQUIRED'});
     const id=uuid(),hidden=!!req.body.is_hidden;
@@ -276,41 +261,18 @@ app.post('/api/statuses',requireAuth,async(req,res)=>{
 });
 
 app.get('/api/rooms',requireAuth,async(req,res)=>{
-  const r=await pool.query(`SELECT r.id,r.name,r.kind,r.created_at,r.created_by,gm.icon,gm.raft_style,gm.secret_language,gm.hold_hands,gm.post_policy FROM rooms r JOIN room_members rm ON rm.room_id=r.id LEFT JOIN groups_meta gm ON gm.room_id=r.id WHERE rm.user_id=$1 ORDER BY r.created_at DESC`,[req.session.userId]);
+  const r=await pool.query(`SELECT r.id,r.name,r.kind,r.created_at,gm.icon FROM rooms r JOIN room_members rm ON rm.room_id=r.id LEFT JOIN groups_meta gm ON gm.room_id=r.id WHERE rm.user_id=$1 ORDER BY r.created_at DESC`,[req.session.userId]);
   res.json({rooms:r.rows});
 });
 app.post('/api/groups',requireAuth,async(req,res)=>{
   const client=await pool.connect();
   try{
-    await client.query('BEGIN');
-    const roomId=uuid(),groupId=uuid(),name=safe(req.body.name,80)||'New Otti Circle',icon=safe(req.body.icon,8)||'◇';
-    const raftStyle=['neon','deep-sea','glitch'].includes(safe(req.body.raftStyle,20))?safe(req.body.raftStyle,20):'neon';
-    const secretLanguage=req.body.secretLanguage!==false,holdHands=req.body.holdHands!==false,postPolicy=req.body.postPolicy==='admins'?'admins':'everyone';
+    await client.query('BEGIN');const roomId=uuid(),groupId=uuid(),name=safe(req.body.name,80)||'New Otti Circle',icon=safe(req.body.icon,8)||'◇';
     await client.query('INSERT INTO rooms(id,name,kind,created_by) VALUES($1,$2,$3,$4)',[roomId,name,'group',req.session.userId]);
     await client.query('INSERT INTO room_members(room_id,user_id) VALUES($1,$2)',[roomId,req.session.userId]);
-    await client.query('INSERT INTO groups_meta(id,room_id,icon,created_by,raft_style,secret_language,hold_hands,post_policy) VALUES($1,$2,$3,$4,$5,$6,$7,$8)',[groupId,roomId,icon,req.session.userId,raftStyle,secretLanguage,holdHands,postPolicy]);
-    const members=Array.isArray(req.body.memberIds)?[...new Set(req.body.memberIds.map(x=>safe(x,80)).filter(x=>x&&x!==req.session.userId))].slice(0,50):[];
-    for(const memberId of members){
-      const contact=await client.query("SELECT 1 FROM contacts WHERE user_id=$1 AND contact_user_id=$2 AND status='accepted'",[req.session.userId,memberId]);
-      if(!contact.rowCount)continue;
-      await client.query('INSERT INTO room_members(room_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[roomId,memberId]);
-    }
-    await client.query('COMMIT');res.json({room:{id:roomId,name,kind:'group',icon,raft_style:raftStyle,secret_language:secretLanguage,hold_hands:holdHands,post_policy:postPolicy}});
+    await client.query('INSERT INTO groups_meta(id,room_id,icon,created_by) VALUES($1,$2,$3,$4)',[groupId,roomId,icon,req.session.userId]);
+    await client.query('COMMIT');res.json({room:{id:roomId,name,kind:'group',icon}});
   }catch(e){await client.query('ROLLBACK');console.error(e);res.status(500).json({error:'GROUP_ERROR'})}finally{client.release()}
-});
-app.patch('/api/groups/:roomId/settings',requireAuth,async(req,res)=>{
-  try{
-    const owner=await pool.query("SELECT 1 FROM rooms WHERE id=$1 AND kind='group' AND created_by=$2",[req.params.roomId,req.session.userId]);
-    if(!owner.rowCount)return res.status(403).json({error:'NOT_GROUP_OWNER'});
-    const sets=[],vals=[req.params.roomId];
-    if(['neon','deep-sea','glitch'].includes(req.body.raftStyle)){vals.push(req.body.raftStyle);sets.push(`raft_style=$${vals.length}`)}
-    if(typeof req.body.secretLanguage==='boolean'){vals.push(req.body.secretLanguage);sets.push(`secret_language=$${vals.length}`)}
-    if(typeof req.body.holdHands==='boolean'){vals.push(req.body.holdHands);sets.push(`hold_hands=$${vals.length}`)}
-    if(['everyone','admins'].includes(req.body.postPolicy)){vals.push(req.body.postPolicy);sets.push(`post_policy=$${vals.length}`)}
-    if(!sets.length)return res.status(400).json({error:'NO_SETTINGS'});
-    const r=await pool.query(`UPDATE groups_meta SET ${sets.join(',')} WHERE room_id=$1 RETURNING room_id,icon,raft_style,secret_language,hold_hands,post_policy`,vals);
-    res.json({ok:true,settings:r.rows[0]});
-  }catch(e){console.error(e);res.status(500).json({error:'GROUP_SETTINGS_ERROR'})}
 });
 app.get('/api/groups/:roomId/members',requireAuth,async(req,res)=>{
   const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[req.params.roomId,req.session.userId]);
@@ -440,12 +402,10 @@ wss.on('connection',async(ws,req,token)=>{
         return;
       }
 
-      if(m.type==='typing'){
-        broadcast(ws.roomId,{type:'typing',room:ws.roomId,user:user.name});
+      if(['dive','return','typing'].includes(m.type)){
+        broadcast(ws.roomId,{type:m.type,room:ws.roomId,user:user.name});
         return;
       }
-      // DIVE/Return are local display states and must not toggle another member's screen.
-      if(m.type==='dive'||m.type==='return')return;
 
       if(m.type==='react'){
         broadcast(ws.roomId,{type:'react',room:ws.roomId,user:user.name,messageId:safe(m.messageId,100),reaction:safe(m.reaction,8)});
