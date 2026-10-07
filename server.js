@@ -216,7 +216,7 @@ app.post('/api/rooms/:roomId/messages',requireAuth,async(req,res)=>{
     if(!access.rowCount)return res.status(403).json({error:'FORBIDDEN'});
     const text=safe(req.body.text);
     if(!text)return res.status(400).json({error:'MESSAGE_REQUIRED'});
-    const id=uuid(),hidden=!!req.body.is_hidden;
+    const id=uuid(),hidden=false;
     const r=await pool.query(`SELECT $1::uuid AS id,$2::uuid AS room_id,$3::uuid AS user_id,$4::text AS text,$5::boolean AS is_hidden,NOW() AS created_at,u.name FROM users u WHERE u.id=$3`,[id,roomId,req.session.userId,text,hidden]);
     await pool.query('INSERT INTO messages(id,room_id,user_id,text,is_hidden) VALUES($1,$2,$3,$4,$5)',[id,roomId,req.session.userId,text,hidden]);
     const message={...r.rows[0],client_id:safe(req.body.client_id,100)||null};
@@ -454,14 +454,14 @@ wss.on('connection',async(ws,req,token)=>{
       if(m.type==='message'){
         const text=safe(m.text);
         if(!text)return;
-        const id=uuid(),hidden=!!m.is_hidden;
+        const id=uuid(),hidden=false;
         await pool.query('INSERT INTO messages(id,room_id,user_id,text,is_hidden) VALUES($1,$2,$3,$4,$5)',[id,ws.roomId,user.id,text,hidden]);
         console.log('WS message persisted',id,'room',ws.roomId);
         broadcast(ws.roomId,{type:'message',room:ws.roomId,id,text,is_hidden:hidden,client_id:safe(m.client_id,100)||null,created_at:new Date().toISOString(),user_id:user.id,name:user.name});
         return;
       }
 
-      if(['dive','return','typing'].includes(m.type)){
+      if(m.type==='typing'){
         broadcast(ws.roomId,{type:m.type,room:ws.roomId,user:user.name});
         return;
       }

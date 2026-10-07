@@ -809,8 +809,8 @@ function updateGhostUI(){
   $("state").textContent=ghost?"〰 DIVE":"● Private";
   $("msg").placeholder=ghost?"Send privately…":"Message privately…";
   document.querySelectorAll("#messages .bubble").forEach(b=>{
-    const plain=b.dataset.plain||"",stored=b.dataset.hidden==="true",body=b.querySelector(".message-body"),line=b.querySelector(".otti-language-line");
-    if(ghost||stored){if(body)body.innerHTML=glyph(plain);b.classList.add("ghost");if(line)line.style.display="none"}
+    const plain=b.dataset.plain||"",body=b.querySelector(".message-body"),line=b.querySelector(".otti-language-line");
+    if(ghost){if(body)body.innerHTML=glyph(plain);b.classList.add("ghost");if(line)line.style.display="none"}
     else{if(body)body.textContent=plain;b.classList.remove("ghost");if(line)line.style.display="flex"}
   });
 }
@@ -824,14 +824,14 @@ function renderMessage(m){
   const mine=currentUser&&String(m.user_id)===String(currentUser.id);
   b.className="bubble"+(mine?" mine":"");b.dataset.plain=m.text||"";b.dataset.hidden=m.is_hidden?"true":"false";
   if(!mine&&m.name){const n=document.createElement("div");n.className="message-name";n.textContent=m.name;b.appendChild(n)}
-  const t=document.createElement("div");t.className="message-body";if(ghost||m.is_hidden)t.innerHTML=glyph(m.text||"");else t.textContent=(m.text||"");
-  if(ghost||m.is_hidden)b.classList.add("ghost");
+  const t=document.createElement("div");t.className="message-body";if(ghost)t.innerHTML=glyph(m.text||"");else t.textContent=(m.text||"");
+  if(ghost)b.classList.add("ghost");
   b.appendChild(t);
   const p=getOttiPresentation(m.text||"");
   if(p){
     const line=document.createElement("div");line.className="otti-language-line";line.innerHTML='<span class="otti-language-symbols"></span><span><span class="otti-language-translation"></span><small></small></span>';
     line.querySelector(".otti-language-symbols").textContent=p.symbols;line.querySelector(".otti-language-translation").textContent=p.translation;line.querySelector("small").textContent=p.meaning||"canonical OTTI meaning";
-    if(ghost||m.is_hidden)line.style.display="none";b.appendChild(line);
+    if(ghost)line.style.display="none";b.appendChild(line);
   }
   $("messages").appendChild(b);return b;
 }
@@ -862,13 +862,13 @@ function toggleTheme(){const dark=!document.body.classList.contains("dark");loca
 function triggerDiveAnimation(){const el=$("chat");if(!el)return;el.classList.remove("dive-ripple");void el.offsetWidth;el.classList.add("dive-ripple");setTimeout(()=>el.classList.remove("dive-ripple"),700)}
 function toggleGhost(){
   ghost=!ghost;triggerDiveAnimation();updateGhostUI();setOttiState(ghost?"dive":"idle");
-  sendSocket({type:ghost?"dive":"return"});toast(ghost?"〰 Otti dove.":"⌁ Back on the surface.");
+  toast(ghost?"〰 Ghost Mode is on for you only.":"⌁ Ghost Mode is off for you.");
 }
 function returnSurface(){
-  if(!ghost)return;ghost=false;updateGhostUI();setOttiState("return");sendSocket({type:"return"});toast("⌁ Otti surfaced.");
+  if(!ghost)return;ghost=false;updateGhostUI();setOttiState("return");toast("⌁ Ghost Mode is off for you.");
 }
 function simulateViewer(){
-  ghost=true;triggerDiveAnimation();updateGhostUI();setOttiState("dive");sendSocket({type:"dive"});toast("◉〰 Someone may be looking.");
+  ghost=true;triggerDiveAnimation();updateGhostUI();setOttiState("dive");toast("◉〰 Ghost Mode enabled for you.");
 }
 function sendSocket(payload){
   if(socket&&socket.readyState===WebSocket.OPEN)socket.send(JSON.stringify(payload));
@@ -1158,14 +1158,12 @@ function handleSocketMessage(d){
     return;
   }
   if(d.type==="react"){addOttiNotification(d.reaction||"♡",(d.user||"Otti")+" reacted",d.reaction||"New reaction");return}
-  if(d.type==="dive"&&d.room===currentRoomId){ghost=true;updateGhostUI();setOttiState("dive");addOttiNotification("◉〰","Otti DIVE activated","Someone may be looking.");return}
-  if(d.type==="return"&&d.room===currentRoomId){ghost=false;updateGhostUI();setOttiState("return");addOttiNotification("⌁","Otti returned","Back on the surface.");return}
   if(d.type==="error")toast("◇ "+(d.error||"Chat error"));
 }
 function sendMessage(){
   const input=$("msg"),text=input.value.trim();if(!text)return;
   const client_id="c-"+Date.now()+"-"+Math.random().toString(16).slice(2);
-  const payload={type:"message",text,is_hidden:ghost,client_id};
+  const payload={type:"message",text,is_hidden:false,client_id};
   input.value="";setOttiState("sent");
   // REST is the single authoritative send path. WebSocket remains the live
   // delivery channel, preventing optimistic + WS + polling duplicates.
