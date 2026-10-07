@@ -364,6 +364,7 @@ body:not(.dark) .bubble.ghost .ghost-symbol,body.dark .bubble.ghost .ghost-symbo
 </style>
 
 <style id="otti-final-controls">
+.mom-corner-btn{background:#ffe2b6!important;border:1px solid #f2c27e!important}.raft-row{cursor:pointer}.raft-avatar{font-size:23px;background:linear-gradient(135deg,#c8f3ed,#ffe1ec);box-shadow:inset -4px -4px rgba(0,0,0,.06)}
 /* Codex glow is identical in both themes; light mode does not flatten the glyph colors. */
 body:not(.dark) .bubble.ghost,body.dark .bubble.ghost{background:linear-gradient(145deg,#090b1d 0%,#11132b 55%,#17112b 100%)!important;border:1px solid rgba(255,214,112,.42)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 22px rgba(123,83,255,.18),0 8px 22px rgba(0,0,0,.28)!important;color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:none!important;animation:none!important}
 body:not(.dark) .bubble.ghost .ghost-symbol,body.dark .bubble.ghost .ghost-symbol{color:inherit;-webkit-text-fill:currentColor!important;text-shadow:0 0 4px currentColor,0 0 10px currentColor,0 0 20px currentColor!important}
@@ -394,10 +395,11 @@ body.dark #contactActionsModal{background:#0d2940;color:#fff0d0;border:1px solid
 
 <div id="app" class="app hidden">
   <section id="chats" class="screen active">
-    <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><div class="top-actions"><button class="otti-notify-btn" id="ottiNotifyBtn" aria-label="Otti notifications" title="Otti notifications">🦦<span class="otti-notify-badge" id="ottiNotifyBadge" hidden>0</span></button><button class="icon" onclick="showScreen('profile')">●</button></div></div>
+    <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><div class="top-actions"><button class="otti-notify-btn" id="ottiNotifyBtn" aria-label="Otti notifications" title="Otti notifications">🦦<span class="otti-notify-badge" id="ottiNotifyBadge" hidden>0</span></button><button class="icon mom-corner-btn" onclick="toggleMomMode()" aria-label="Open Mom Mode" title="Mom Mode">📓</button><button class="icon" onclick="showScreen('profile')">●</button></div></div>
     <div class="content">
       <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><div style="display:flex;gap:6px"><button class="refresh" onclick="clearAllChats()" aria-label="Clear all chat histories" title="Clear all chat histories">⌫</button><button class="refresh" onclick="refreshChats()" aria-label="Refresh chats" title="Refresh chats">↻</button></div></div>
       <div id="contacts" class="card"></div>
+      <div class="section-head" style="margin-top:18px"><div><div class="title" style="font-size:22px">Your Rafts</div><div class="sub">Your close-friend circles.</div></div><button class="refresh" onclick="createRaft()">＋ Create</button></div><div id="rafts" class="card"><div class="sub">Create a Raft for your people.</div></div>
       <div class="card add-otti-main" onclick="showScreen('add')"><div class="add-otti-glyph">＋</div><div><b>Add Otti</b><div class="sub">Find someone and start a private chat.</div></div><span class="add-otti-arrow">›</span></div><div class="card add-otti-main" onclick="copyInvite()"><div class="add-otti-glyph">↗</div><div><b>Invite a friend</b><div class="sub">Share OTTI and start your own Raft.</div></div><span class="add-otti-arrow">›</span></div>
     </div>
   </section>
@@ -405,8 +407,9 @@ body.dark #contactActionsModal{background:#0d2940;color:#fff0d0;border:1px solid
   <div id="contactActionsModal" class="otti-notify-panel" role="dialog" aria-label="Contact and chat actions" style="left:12px;right:12px;top:50%;transform:translateY(-50%);max-width:420px;margin:auto;padding:16px">
     <div class="otti-notify-head"><span id="contactActionsTitle">Otti options</span><button class="otti-notify-clear" onclick="closeContactActions()">Close</button></div>
     <div class="option" onclick="clearSelectedChat()"><b>⌫ Clear this chat</b><span>Clear your view of this chat history only.</span></div>
-    <div class="option" onclick="deleteSelectedContact()"><b>× Delete person</b><span>Remove this Otti from your contacts and your direct chat list.</span></div>
-    <div class="option" onclick="blockSelectedContact()"><b>⛔ Block contact</b><span>Remove them from your list and prevent reconnecting until unblocked by support.</span></div>
+    <div class="option" onclick="deleteSelectedContact()"><b>× Delete person</b><span>Remove this Otti from your contacts and your direct chat list on this account.</span></div>
+    <div class="option" onclick="blockSelectedContact()"><b>⛔ Block contact</b><span>Block messages and remove them from your contact list. You can unblock them in Profile.</span></div>
+    <div class="option" onclick="clearAllChats()"><b>⌫ Clear all chats</b><span>Clear your own chat histories across OTTI; contacts stay.</span></div>
   </div>
   <div class="otti-notify-panel" id="ottiNotifyPanel" role="dialog" aria-label="Otti notifications">
     <div class="otti-notify-head"><span>🦦 Otti notifications</span><button class="otti-notify-clear" id="ottiNotifyClear">Clear</button></div>
@@ -456,7 +459,7 @@ body.dark #contactActionsModal{background:#0d2940;color:#fff0d0;border:1px solid
     <div class="top chat-top">
       <button class="icon" onclick="closeChat()">←</button>
       <div class="brand"><div class="mini"><img class="mascot-img"></div><span id="chatName" class="chat-title">Otti</span></div>
-      <div class="chat-top-tools"><button class="codex-trigger" onclick="openOttiCodex()">◇ Codex</button><div id="connection" class="connection">○ connecting</div></div>
+      <div class="chat-top-tools"><button class="codex-trigger" onclick="openOttiCodex()">◇ Codex</button><button class="contact-menu" onclick="openCurrentChatActions()" aria-label="Chat actions" title="Chat actions">⋯</button><div id="connection" class="connection">○ connecting</div></div>
     </div>
 
     <div class="otti-stage">
@@ -876,15 +879,68 @@ async function loadContacts(){
     const r=await fetch("/api/contacts",{credentials:"include"}),d=await r.json();
     if(!r.ok)throw new Error(d.error||"Unable to load contacts");contacts=d.contacts||[];
     const c=$("contacts");c.innerHTML="";
-    if(!contacts.length){c.innerHTML='<div class="empty"><div class="empty-symbol">♡</div><b>No Ottis yet</b><div>Add someone from the Add tab.</div></div>';return}
+    if(!contacts.length){c.innerHTML='<div class="empty"><div class="empty-symbol">♡</div><b>No Ottis yet</b><div>Add someone from the Add tab.</div></div>';await loadRafts();return}
     contacts.forEach(x=>{
       const row=document.createElement("div");row.className="contact";row.onclick=()=>openContact(x);
       row.innerHTML='<div class="avatar"><img src="'+MASCOT+'"></div><div class="contact-main"><div class="contact-name">'+escapeHtml(x.name||"Otti")+'</div><div class="contact-email">'+escapeHtml(x.email||"")+'</div><div class="contact-state">● connected</div></div><button class="contact-menu" aria-label="Chat options" title="Chat options">⋯</button><div>›</div>'; row.querySelector(".contact-menu").onclick=(ev)=>{ev.stopPropagation();openContactActions(x)};
       c.appendChild(row);
     });
+    await loadRafts();
   }catch(e){toast("◇ "+e.message)}
 }
 
+async function loadRafts(){
+  const el=$("rafts"); if(!el)return;
+  try{
+    const r=await fetch('/api/rooms',{credentials:'include',cache:'no-store'}),d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Could not load Rafts');
+    const rafts=(d.rooms||[]).filter(x=>x.kind==='group'); el.innerHTML='';
+    if(!rafts.length){el.innerHTML='<div class="empty"><div class="empty-symbol">◇</div><b>No Rafts yet</b><div>Create a circle and invite your Ottis.</div></div>';return}
+    rafts.forEach(g=>{const row=document.createElement('div');row.className='contact raft-row';row.innerHTML='<div class="avatar raft-avatar">'+escapeHtml(g.icon||'◇')+'</div><div class="contact-main"><div class="contact-name">'+escapeHtml(g.name||'Your Raft')+'</div><div class="contact-email">✦ Raft · Hold Hands</div></div><button class="contact-menu" aria-label="Open Raft">›</button>';row.onclick=()=>openRoom(g.id,{id:g.id,user_id:g.id,name:g.name||'Your Raft',kind:'group',icon:g.icon||'◇'});el.appendChild(row)});
+  }catch(e){el.innerHTML='<div class="sub">Rafts could not load. Please refresh.</div>';}
+}
+async function createRaft(){
+  const name=prompt('Name your Raft (e.g. The Besties):'); if(name===null)return;
+  const clean=name.trim(); if(!clean){toast('◇ Add a Raft name');return}
+  const icon=prompt('Choose a Raft symbol (◇, ♡, ✦, ☾, ●):','♡'); if(icon===null)return;
+  try{
+    const r=await fetch('/api/groups',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:clean,icon:(icon.trim()||'◇').slice(0,8)})});
+    const d=await r.json(); if(!r.ok||!d.room)throw new Error(d.error||'Could not create Raft');
+    const eligible=contacts||[];
+    if(eligible.length){
+      const choices=eligible.map((c,i)=>`${i+1}. ${c.name||c.email||'Otti'}`).join('\n');
+      const answer=prompt('Invite existing Ottis by number, separated with commas. Cancel or leave blank to do this later.\n'+choices,'');
+      if(answer!==null&&answer.trim()){
+        const nums=[...new Set(answer.split(',').map(x=>Number(x.trim())-1).filter(i=>Number.isInteger(i)&&i>=0&&i<eligible.length))];
+        for(const i of nums){const mr=await fetch('/api/groups/'+encodeURIComponent(d.room.id)+'/members',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:eligible[i].user_id})});const md=await mr.json();if(!mr.ok)throw new Error(md.error||'Raft created, but an invite failed')}
+      }
+    }
+    await loadRafts(); toast('♡ Raft created'); await openRoom(d.room.id,{id:d.room.id,user_id:d.room.id,name:d.room.name,kind:'group',icon:d.room.icon});
+  }catch(e){toast('◇ '+e.message);await loadRafts()}
+}
+function openCurrentChatActions(){
+  if(!currentContact)return;
+  if(currentContact.kind==='group'){manageRaft();return}
+  openContactActions({user_id:currentContact.user_id||currentContact.id,name:currentContact.name,email:currentContact.email});
+}
+async function manageRaft(){
+  if(!currentRoomId)return;
+  const action=prompt('Raft options:\n1. View members\n2. Add a member\n3. Change Raft style (Neon / Deep Sea / Glitch)','1');
+  if(action===null)return;
+  try{
+    if(action.trim()==='1'){
+      const r=await fetch('/api/groups/'+encodeURIComponent(currentRoomId)+'/members',{credentials:'include'}),d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load members');
+      alert('♡ Hold Hands · '+(d.members||[]).map(m=>m.name||m.email).join('\n'));
+    }else if(action.trim()==='2'){
+      const r=await fetch('/api/groups/'+encodeURIComponent(currentRoomId)+'/members',{credentials:'include'}),d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load members');
+      const existing=new Set((d.members||[]).map(m=>m.user_id));const options=(contacts||[]).filter(c=>!existing.has(c.user_id));if(!options.length){toast('✦ All your contacts are already in this Raft');return}
+      const pick=prompt('Choose an Otti to invite:\n'+options.map((c,i)=>`${i+1}. ${c.name||c.email}`).join('\n'));if(pick===null)return;const c=options[Number(pick)-1];if(!c)throw new Error('Choose a valid number');
+      const a=await fetch('/api/groups/'+encodeURIComponent(currentRoomId)+'/members',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:c.user_id})});const ad=await a.json();if(!a.ok)throw new Error(ad.error||'Could not invite member');toast('♡ Otti joined your Raft');
+    }else if(action.trim()==='3'){
+      const style=prompt('Choose style: Neon, Deep Sea, or Glitch','Neon');if(style===null)return;const clean=['neon','deep sea','glitch'].includes(style.trim().toLowerCase())?style.trim().toLowerCase():'neon';try{localStorage.setItem('otti-raft-style-'+currentRoomId,clean)}catch(_){};toast('✦ Raft style set to '+clean+' on this device');
+    }
+  }catch(e){toast('◇ '+e.message)}
+}
 function openContactActions(contact){
   selectedContactForActions=contact;
   $("contactActionsTitle").textContent=(contact.name||"Otti")+" · options";
@@ -895,9 +951,9 @@ async function clearSelectedChat(){
   const c=selectedContactForActions;if(!c)return;
   if(!confirm("Clear this conversation from your view? The other person's history is not cleared."))return;
   try{
-    const room=await getDirectRoom(c.user_id);if(!room)throw new Error("Could not find this chat");
+    const rr=await fetch('/api/rooms',{credentials:'include',cache:'no-store'});const rd=await rr.json();if(!rr.ok)throw new Error(rd.error||'Could not find chats');let room=(rd.rooms||[]).find(x=>x.kind==='direct'&&x.other_user_id===c.user_id);if(!room)room=await getDirectRoom(c.user_id);if(!room)throw new Error("Could not find this chat");
     const r=await fetch('/api/rooms/'+encodeURIComponent(room.id)+'/clear',{method:'POST',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not clear chat');
-    if(currentRoomId===room.id){$("messages").innerHTML="";renderedMessageIds=new Set();renderedClientIds=new Set();}
+    if(currentRoomId===room.id){$("messages").innerHTML="";renderedMessageIds=new Set();renderedClientIds=new Set();await loadMessages(room.id);}
     toast('⌫ Chat cleared for you');closeContactActions();
   }catch(e){toast('◇ '+e.message)}
 }
@@ -916,7 +972,7 @@ async function blockSelectedContact(){
 }
 async function clearAllChats(){
   if(!confirm('Clear all chat histories from your view? Contacts stay. Other people keep their own history.'))return;
-  try{const r=await fetch('/api/chats/clear-all',{method:'POST',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not clear chats');if(currentRoomId){$("messages").innerHTML="";renderedMessageIds=new Set();renderedClientIds=new Set();}toast('⌫ All chat histories cleared for you');}catch(e){toast('◇ '+e.message)}
+  try{const r=await fetch('/api/chats/clear-all',{method:'POST',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not clear chats');if(currentRoomId){$("messages").innerHTML="";renderedMessageIds=new Set();renderedClientIds=new Set();await loadMessages(currentRoomId);}toast('⌫ All chat histories cleared for you');}catch(e){toast('◇ '+e.message)}
 }
 function setAutoDive(enabled){
   cameraAutoDive=!!enabled;try{localStorage.setItem('otti-auto-dive',String(cameraAutoDive))}catch(_){}

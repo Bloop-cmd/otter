@@ -47,6 +47,7 @@ async function init(){
   if(!process.env.DATABASE_URL)throw new Error('DATABASE_URL is required');
   for(const table of ['users','rooms','room_members','messages','contacts','groups_meta','statuses'])
     await pool.query(`SELECT 1 FROM ${table} LIMIT 1`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS user_room_clears (user_id uuid NOT NULL, room_id uuid NOT NULL, cleared_at timestamptz NOT NULL DEFAULT NOW(), PRIMARY KEY(user_id,room_id))`);
 }
 
 app.get('/health',async(req,res)=>{
@@ -157,7 +158,7 @@ function loginSession(req,userId){
 
 app.get('/api/contacts',requireAuth,async(req,res)=>{
   try{
-    const r=await pool.query(`SELECT c.contact_user_id AS user_id,u.name,u.email,u.avatar,c.status,c.created_at FROM contacts c JOIN users u ON u.id=c.contact_user_id WHERE c.user_id=$1 ORDER BY c.created_at DESC`,[req.session.userId]);
+    const r=await pool.query(`SELECT c.contact_user_id AS user_id,u.name,u.email,u.avatar,c.status,c.created_at FROM contacts c JOIN users u ON u.id=c.contact_user_id WHERE c.user_id=$1 AND c.status <> 'blocked' ORDER BY c.created_at DESC`,[req.session.userId]);
     res.json({contacts:r.rows});
   }catch(e){console.error(e);res.status(500).json({error:'CONTACTS_ERROR'})}
 });
@@ -178,6 +179,8 @@ app.post('/api/contacts',requireAuth,async(req,res)=>{
     const u=await pool.query('SELECT id,name,email,avatar FROM users WHERE id=$1',[target]);
     if(!u.rowCount)return res.status(404).json({error:'USER_NOT_FOUND'});
     if(target===req.session.userId)return res.status(400).json({error:'CANNOT_ADD_SELF'});
+    const blocked=await pool.query(`SELECT 1 FROM contacts WHERE (user_id=$1 AND contact_user_id=$2 AND status='blocked') OR (user_id=$2 AND contact_user_id=$1 AND status='blocked') LIMIT 1`,[req.session.userId,target]);
+    if(blocked.rowCount)return res.status(403).json({error:'CONTACT_BLOCKED'});
     for(const [a,b] of [[req.session.userId,target],[target,req.session.userId]]){
       const exists=await pool.query('SELECT 1 FROM contacts WHERE user_id=$1 AND contact_user_id=$2 LIMIT 1',[a,b]);
       if(exists.rowCount)await pool.query("UPDATE contacts SET status='accepted' WHERE user_id=$1 AND contact_user_id=$2",[a,b]);
@@ -197,7 +200,7 @@ app.post('/api/contacts',requireAuth,async(req,res)=>{
 app.get('/api/rooms/:roomId/messages',requireAuth,async(req,res)=>{
   const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[req.params.roomId,req.session.userId]);
   if(!access.rowCount)return res.status(403).json({error:'FORBIDDEN'});
-  const r=await pool.query(`SELECT m.id,m.text,m.is_hidden AS is_hidden,m.created_at,u.id user_id,u.name FROM messages m LEFT JOIN users u ON u.id=m.user_id WHERE m.room_id=$1 ORDER BY m.created_at ASC LIMIT 200`,[req.params.roomId]);
+  const r=await pool.query(`SELECT m.id,m.text,m.is_hidden AS is_hidden,m.created_at,u.id user_id,u.name FROM messages m LEFT JOIN users u ON u.id=m.user_id WHERE m.room_id=$1 AND m.created_at>COALESCE((SELECT cleared_at FROM user_room_clears WHERE user_id=$2 AND room_id=$1), 'epoch'::timestamptz) ORDER BY m.created_at ASC LIMIT 200`,[req.params.roomId,req.session.userId]);
   res.json({messages:r.rows});
 });
 
@@ -218,6 +221,34 @@ app.post('/api/rooms/:roomId/messages',requireAuth,async(req,res)=>{
   }catch(e){console.error('REST message error',e);res.status(500).json({error:'MESSAGE_SEND_ERROR'})}
 });
 
+// Per-user history clearing: does not delete the other participant's copy.
+app.post('/api/rooms/:roomId/clear',requireAuth,async(req,res)=>{
+  try{const roomId=safe(req.params.roomId,80);const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[roomId,req.session.userId]);if(!access.rowCount)return res.status(403).json({error:'FORBIDDEN'});await pool.query(`INSERT INTO user_room_clears(user_id,room_id,cleared_at) VALUES($1,$2,NOW()) ON CONFLICT(user_id,room_id) DO UPDATE SET cleared_at=EXCLUDED.cleared_at`,[req.session.userId,roomId]);res.json({ok:true})}
+  catch(e){console.error(e);res.status(500).json({error:'CHAT_CLEAR_ERROR'})}
+});
+app.post('/api/chats/clear-all',requireAuth,async(req,res)=>{
+  try{await pool.query(`INSERT INTO user_room_clears(user_id,room_id,cleared_at) SELECT $1,room_id,NOW() FROM room_members WHERE user_id=$1 ON CONFLICT(user_id,room_id) DO UPDATE SET cleared_at=EXCLUDED.cleared_at`,[req.session.userId]);res.json({ok:true})}
+  catch(e){console.error(e);res.status(500).json({error:'CLEAR_ALL_ERROR'})}
+});
+app.get('/api/contacts/blocked',requireAuth,async(req,res)=>{
+  try{const r=await pool.query(`SELECT c.contact_user_id AS user_id,u.name,u.email FROM contacts c JOIN users u ON u.id=c.contact_user_id WHERE c.user_id=$1 AND c.status='blocked' ORDER BY c.created_at DESC`,[req.session.userId]);res.json({contacts:r.rows})}
+  catch(e){console.error(e);res.status(500).json({error:'BLOCKED_CONTACTS_ERROR'})}
+});
+app.post('/api/contacts/:contactId/unblock',requireAuth,async(req,res)=>{
+  try{await pool.query(`DELETE FROM contacts WHERE user_id=$1 AND contact_user_id=$2 AND status='blocked'`,[req.session.userId,safe(req.params.contactId,80)]);res.json({ok:true})}
+  catch(e){console.error(e);res.status(500).json({error:'UNBLOCK_ERROR'})}
+});
+app.delete('/api/contacts/:contactId',requireAuth,async(req,res)=>{
+  const target=safe(req.params.contactId,80);
+  try{await pool.query('DELETE FROM contacts WHERE user_id=$1 AND contact_user_id=$2',[req.session.userId,target]);await pool.query(`DELETE FROM room_members rm USING rooms r WHERE rm.room_id=r.id AND rm.user_id=$1 AND r.kind='direct' AND EXISTS(SELECT 1 FROM room_members other WHERE other.room_id=r.id AND other.user_id=$2)`,[req.session.userId,target]);res.json({ok:true})}
+  catch(e){console.error(e);res.status(500).json({error:'CONTACT_DELETE_ERROR'})}
+});
+app.post('/api/contacts/:contactId/block',requireAuth,async(req,res)=>{
+  const target=safe(req.params.contactId,80);
+  try{if(target===req.session.userId)return res.status(400).json({error:'CANNOT_BLOCK_SELF'});const existing=await pool.query("UPDATE contacts SET status='blocked' WHERE user_id=$1 AND contact_user_id=$2",[req.session.userId,target]);if(!existing.rowCount)await pool.query(`INSERT INTO contacts(user_id,contact_user_id,status) VALUES($1,$2,'blocked')`,[req.session.userId,target]);await pool.query(`DELETE FROM room_members rm USING rooms r WHERE rm.room_id=r.id AND rm.user_id=$1 AND r.kind='direct' AND EXISTS(SELECT 1 FROM room_members other WHERE other.room_id=r.id AND other.user_id=$2)`,[req.session.userId,target]);res.json({ok:true})}
+  catch(e){console.error(e);res.status(500).json({error:'CONTACT_BLOCK_ERROR'})}
+});
+
 app.get('/api/statuses',requireAuth,async(req,res)=>{
   const r=await pool.query(`SELECT s.id,s.symbol,s.text,s.created_at,u.id user_id,u.name,u.email FROM statuses s JOIN users u ON u.id=s.user_id WHERE s.created_at>NOW()-INTERVAL '24 hours' ORDER BY s.created_at DESC LIMIT 100`);
   res.json({statuses:r.rows});
@@ -230,7 +261,7 @@ app.post('/api/statuses',requireAuth,async(req,res)=>{
 });
 
 app.get('/api/rooms',requireAuth,async(req,res)=>{
-  const r=await pool.query(`SELECT r.id,r.name,r.kind,r.created_at,gm.icon FROM rooms r JOIN room_members rm ON rm.room_id=r.id LEFT JOIN groups_meta gm ON gm.room_id=r.id WHERE rm.user_id=$1 ORDER BY r.created_at DESC`,[req.session.userId]);
+  const r=await pool.query(`SELECT r.id,r.name,r.kind,r.created_at,gm.icon,(SELECT rm2.user_id FROM room_members rm2 WHERE rm2.room_id=r.id AND rm2.user_id<>$1 LIMIT 1) AS other_user_id FROM rooms r JOIN room_members rm ON rm.room_id=r.id LEFT JOIN groups_meta gm ON gm.room_id=r.id WHERE rm.user_id=$1 ORDER BY r.created_at DESC`,[req.session.userId]);
   res.json({rooms:r.rows});
 });
 app.post('/api/groups',requireAuth,async(req,res)=>{
@@ -329,7 +360,7 @@ wss.on('connection',async(ws,req,token)=>{
       ws.roomId=tokenRoomId;
       joinSocket(tokenRoomId,ws);
       console.log('WS auto-joined room',tokenRoomId,'user',user.id);
-      const history=await pool.query(`SELECT m.id,m.text,m.is_hidden AS is_hidden,m.created_at,u.id user_id,u.name FROM messages m LEFT JOIN users u ON u.id=m.user_id WHERE m.room_id=$1 ORDER BY m.created_at DESC LIMIT 200`,[tokenRoomId]);
+      const history=await pool.query(`SELECT m.id,m.text,m.is_hidden AS is_hidden,m.created_at,u.id user_id,u.name FROM messages m LEFT JOIN users u ON u.id=m.user_id WHERE m.room_id=$1 AND m.created_at>COALESCE((SELECT cleared_at FROM user_room_clears WHERE user_id=$2 AND room_id=$1), 'epoch'::timestamptz) ORDER BY m.created_at DESC LIMIT 200`,[tokenRoomId,user.id]);
       ws.send(JSON.stringify({type:'room-state',room:tokenRoomId,messages:history.rows.reverse()}));
       broadcast(tokenRoomId,{type:'presence',room:tokenRoomId,user:user.name,count:roomSockets.get(tokenRoomId).size});
     }else{
@@ -353,7 +384,7 @@ wss.on('connection',async(ws,req,token)=>{
         if(ws.roomId)leaveSocket(ws.roomId,ws);
         ws.roomId=roomId;joinSocket(roomId,ws);
         console.log('WS joined room',roomId,'user',user.id);
-        const history=await pool.query(`SELECT m.id,m.text,m.is_hidden AS is_hidden,m.created_at,u.id user_id,u.name FROM messages m LEFT JOIN users u ON u.id=m.user_id WHERE m.room_id=$1 ORDER BY m.created_at DESC LIMIT 200`,[roomId]);
+        const history=await pool.query(`SELECT m.id,m.text,m.is_hidden AS is_hidden,m.created_at,u.id user_id,u.name FROM messages m LEFT JOIN users u ON u.id=m.user_id WHERE m.room_id=$1 AND m.created_at>COALESCE((SELECT cleared_at FROM user_room_clears WHERE user_id=$2 AND room_id=$1), 'epoch'::timestamptz) ORDER BY m.created_at DESC LIMIT 200`,[roomId,user.id]);
         ws.send(JSON.stringify({type:'room-state',room:roomId,messages:history.rows.reverse()}));
         broadcast(roomId,{type:'presence',room:roomId,user:user.name,count:roomSockets.get(roomId).size});
         return;
