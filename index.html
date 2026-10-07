@@ -312,6 +312,9 @@ body:not(.dark) .bubble.ghost{background:#111!important;color:#f7f4ea!important;
 body.dark .ghost-codex-element{background:linear-gradient(145deg,#102f47,#0b2539);border-color:#245a78;color:#fff0d0}.body.dark .ghost-codex-element small,body.dark .ghost-codex-element small{color:#9fc3d0}
 @media(max-width:380px){.ghost-codex-elements{gap:4px}.ghost-codex-element{padding:8px 3px}.ghost-codex-element .el-glyph{font-size:21px}}
 
+
+/* Mom Mode: deliberately simple notes-style camouflage */
+.mom-screen{position:fixed;inset:0;z-index:99999;background:#f7f5ef;color:#292929;font-family:Arial,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);overflow:auto}.mom-screen[hidden]{display:none!important}.mom-top{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #e6e2d8;background:#fbfaf7;font-size:15px;font-weight:600}.mom-top button{border:0;background:transparent;color:#3a5d9c;font-size:16px;padding:8px}.mom-paper{max-width:720px;margin:0 auto;padding:22px 22px 60px}.mom-paper h2{font-size:26px;font-weight:600;margin:8px 0}.mom-date{color:#858585;font-size:12px;margin:0 0 18px}.mom-paper textarea{width:100%;height:65vh;resize:vertical;border:0;outline:0;background:transparent;color:#292929;font:16px/1.7 Arial,sans-serif}.mom-hint{border-top:1px solid #e6e2d8;padding-top:12px;color:#999;font-size:12px}.mom-mode-card{margin-top:12px}
 </style>
 
 <style id="otti-ghost-codex-final">
@@ -360,6 +363,17 @@ body:not(.dark) .bubble.ghost .ghost-symbol,body.dark .bubble.ghost .ghost-symbo
 }
 </style>
 
+<style id="otti-final-controls">
+/* Codex glow is identical in both themes; light mode does not flatten the glyph colors. */
+body:not(.dark) .bubble.ghost,body.dark .bubble.ghost{background:linear-gradient(145deg,#090b1d 0%,#11132b 55%,#17112b 100%)!important;border:1px solid rgba(255,214,112,.42)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 22px rgba(123,83,255,.18),0 8px 22px rgba(0,0,0,.28)!important;color:#fff!important;-webkit-text-fill-color:#fff!important;text-shadow:none!important;animation:none!important}
+body:not(.dark) .bubble.ghost .ghost-symbol,body.dark .bubble.ghost .ghost-symbol{color:inherit;-webkit-text-fill:currentColor!important;text-shadow:0 0 4px currentColor,0 0 10px currentColor,0 0 20px currentColor!important}
+.contact-menu{border:0;border-radius:10px;background:rgba(120,130,150,.12);font-size:21px;min-width:34px;height:34px;color:inherit;cursor:pointer}.contact{gap:8px}.contact-main{min-width:0}
+#contactActionsModal{z-index:1000;max-height:85vh;overflow:auto;box-shadow:0 20px 70px rgba(0,0,0,.45);background:var(--card,#fffaf0)}#contactActionsModal .option{cursor:pointer}
+.chat-screen.dive-ripple{position:relative;overflow:hidden}.chat-screen.dive-ripple:after{content:"";position:absolute;z-index:45;left:50%;top:48%;width:10px;height:10px;border:2px solid rgba(110,220,255,.9);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%) scale(0);animation:ottiDiveRipple .62s ease-out forwards;box-shadow:0 0 18px rgba(120,100,255,.6)}
+@keyframes ottiDiveRipple{to{transform:translate(-50%,-50%) scale(42);opacity:0}}
+#contactActionsModal .option:hover{filter:brightness(.97)}
+body.dark #contactActionsModal{background:#0d2940;color:#fff0d0;border:1px solid #245a78}
+</style>
 </head>
 <body>
 <div id="authScreen" class="auth-wrap">
@@ -382,12 +396,18 @@ body:not(.dark) .bubble.ghost .ghost-symbol,body.dark .bubble.ghost .ghost-symbo
   <section id="chats" class="screen active">
     <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><div class="top-actions"><button class="otti-notify-btn" id="ottiNotifyBtn" aria-label="Otti notifications" title="Otti notifications">🦦<span class="otti-notify-badge" id="ottiNotifyBadge" hidden>0</span></button><button class="icon" onclick="showScreen('profile')">●</button></div></div>
     <div class="content">
-      <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><button class="refresh" onclick="refreshChats()" aria-label="Refresh chats" title="Refresh chats">↻</button></div>
+      <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><div style="display:flex;gap:6px"><button class="refresh" onclick="clearAllChats()" aria-label="Clear all chat histories" title="Clear all chat histories">⌫</button><button class="refresh" onclick="refreshChats()" aria-label="Refresh chats" title="Refresh chats">↻</button></div></div>
       <div id="contacts" class="card"></div>
-      <div class="card add-otti-main" onclick="showScreen('add')"><div class="add-otti-glyph">＋</div><div><b>Add Otti</b><div class="sub">Find someone and start a private chat.</div></div><span class="add-otti-arrow">›</span></div>
+      <div class="card add-otti-main" onclick="showScreen('add')"><div class="add-otti-glyph">＋</div><div><b>Add Otti</b><div class="sub">Find someone and start a private chat.</div></div><span class="add-otti-arrow">›</span></div><div class="card add-otti-main" onclick="copyInvite()"><div class="add-otti-glyph">↗</div><div><b>Invite a friend</b><div class="sub">Share OTTI and start your own Raft.</div></div><span class="add-otti-arrow">›</span></div>
     </div>
   </section>
 
+  <div id="contactActionsModal" class="otti-notify-panel" role="dialog" aria-label="Contact and chat actions" style="left:12px;right:12px;top:50%;transform:translateY(-50%);max-width:420px;margin:auto;padding:16px">
+    <div class="otti-notify-head"><span id="contactActionsTitle">Otti options</span><button class="otti-notify-clear" onclick="closeContactActions()">Close</button></div>
+    <div class="option" onclick="clearSelectedChat()"><b>⌫ Clear this chat</b><span>Clear your view of this chat history only.</span></div>
+    <div class="option" onclick="deleteSelectedContact()"><b>× Delete person</b><span>Remove this Otti from your contacts and your direct chat list.</span></div>
+    <div class="option" onclick="blockSelectedContact()"><b>⛔ Block contact</b><span>Remove them from your list and prevent reconnecting until unblocked by support.</span></div>
+  </div>
   <div class="otti-notify-panel" id="ottiNotifyPanel" role="dialog" aria-label="Otti notifications">
     <div class="otti-notify-head"><span>🦦 Otti notifications</span><button class="otti-notify-clear" id="ottiNotifyClear">Clear</button></div>
     <div class="otti-notify-list" id="ottiNotifyList"><div class="otti-notify-item"><div class="otti-notify-glyph">◇</div><div class="otti-notify-copy"><b>Your private world is ready</b><span>OTTI notifications live here.</span></div></div></div>
@@ -425,9 +445,10 @@ body:not(.dark) .bubble.ghost .ghost-symbol,body.dark .bubble.ghost .ghost-symbo
     <div class="top"><button class="icon" onclick="showScreen('chats')">←</button><b>Your Otti</b><span></span></div>
     <div class="content">
       <div class="card profile-hero"><div class="profile-otti"><img class="mascot-img"></div><h2 id="profileName" style="margin:8px 0 2px">Your Otti</h2><div id="profileEmail" class="sub"></div></div>
-      <div class="card"><b>Privacy</b><div class="option"><b>〰 DIVE</b><span>Instantly transform visible conversation into Otti symbols.</span></div><div class="option" onclick="toggleTheme()"><b>☾ Dark Otti</b><span>Switch between sandy beach light and Otti's deep ocean night world.</span></div><div class="option" onclick="toggleCameraPrivacy()"><b>◉ Camera privacy</b><span id="cameraPrivacyText">Off · Tap to enable local viewer detection.</span></div><video id="cameraPreview" class="hidden" playsinline muted></video></div>
+      <div class="card"><b>Privacy</b><div class="option"><b>〰 DIVE</b><span>Instantly transform visible conversation into Otti symbols.</span></div><div class="option" onclick="toggleTheme()"><b>☾ Dark Otti</b><span>Switch between sandy beach light and Otti's deep ocean night world.</span></div><div class="option" onclick="toggleCameraPrivacy()"><b>◉ Camera privacy</b><span id="cameraPrivacyText">Off · Tap to enable on-device face detection.</span></div><label class="option" style="display:flex;align-items:center;gap:10px"><input id="autoDiveToggle" type="checkbox" checked onchange="setAutoDive(this.checked)" style="width:20px;height:20px"><span><b>〰 Camera auto-DIVE</b><span>Automatically DIVE if the camera detects 2+ faces. Detection can miss real shoulder-surfing.</span></span></label><video id="cameraPreview" class="hidden" playsinline muted></video></div>
       <div class="theme-toggle-card"><div><b>✦ Appearance</b><small>Beach day ↔ Otti sea night</small></div><button id="themeSwitch" class="big-theme-switch" onclick="toggleTheme()" aria-label="Toggle light and dark mode"><span class="theme-switch-knob">☀</span></button></div><button class="theme-toggle" onclick="enableNotifications()"><span>♡ Notifications<small id="notificationText">Message alerts are off</small></span><span id="notificationPill" class="theme-pill">Off</span></button>
-      <button class="secondary" onclick="logout()">Log out</button>
+      <div class="card mom-mode-card"><div style="display:flex;align-items:center;gap:10px"><div style="font-size:28px">📓</div><div style="flex:1"><b>Mom Mode</b><div class="sub">Switch to a simple notes-style screen in one tap.</div></div><button class="secondary" onclick="toggleMomMode()" id="momModeButton">Open</button></div><small style="display:block;margin-top:8px;opacity:.72">Camouflage only; it does not secure the device or guarantee privacy.</small></div>
+      <div class="option" onclick="manageBlockedContacts()"><b>⛔ Blocked Ottis</b><span>Review or unblock people you have blocked.</span></div><button class="secondary" onclick="logout()">Log out</button>
     </div>
   </section>
 
@@ -468,6 +489,8 @@ body:not(.dark) .bubble.ghost .ghost-symbol,body.dark .bubble.ghost .ghost-symbo
       </div>
     </div>
   </section>
+
+  <section id="momModeScreen" class="mom-screen" aria-label="Notes" hidden><div class="mom-top"><button onclick="toggleMomMode()" aria-label="Return to OTTI">‹</button><span>Notes</span><button onclick="toggleMomMode()" title="Return to OTTI">Done</button></div><div class="mom-paper"><h2>My Notes</h2><p class="mom-date" id="momDate"></p><textarea id="momNotes" placeholder="Write a note…" aria-label="Notes" oninput="saveMomNotes()"></textarea><div class="mom-hint">All caught up.</div></div></section>
 
   <nav id="bottomNav" class="bottom-nav">
     <button id="navChats" class="nav-btn active" onclick="showScreen('chats')"><span>♡</span><span>Chats</span></button>
@@ -696,6 +719,7 @@ document.getElementById("authMascot").src=MASCOT;
 
 let currentUser=null,contacts=[],currentRoomId=null,currentContact=null,socket=null;
 let ghost=false,authMode="signin",reconnectTimer=null,reconnectAttempts=0,reconnectBusy=false,pollTimer=null;
+let selectedContactForActions=null;let cameraAutoDive=true;try{cameraAutoDive=localStorage.getItem("otti-auto-dive")!=="false"}catch(_){}
 let renderedMessageIds=new Set(),renderedClientIds=new Set(),pendingMessages=[],typingTimer=null;
 
 const $=id=>document.getElementById(id);
@@ -806,15 +830,16 @@ function filterCodex(cat,btn){document.querySelectorAll('.codex-filter-btn').for
 
 function applyTheme(){document.body.classList.toggle("dark",localStorage.getItem("otti-theme")==="dark")}
 function toggleTheme(){const dark=!document.body.classList.contains("dark");localStorage.setItem("otti-theme",dark?"dark":"light");applyTheme();toast(dark?"☾ Otti night on.":"✦ Otti light on.")}
+function triggerDiveAnimation(){const el=$("chat");if(!el)return;el.classList.remove("dive-ripple");void el.offsetWidth;el.classList.add("dive-ripple");setTimeout(()=>el.classList.remove("dive-ripple"),700)}
 function toggleGhost(){
-  ghost=!ghost;updateGhostUI();setOttiState(ghost?"dive":"idle");
+  ghost=!ghost;triggerDiveAnimation();updateGhostUI();setOttiState(ghost?"dive":"idle");
   sendSocket({type:ghost?"dive":"return"});toast(ghost?"〰 Otti dove.":"⌁ Back on the surface.");
 }
 function returnSurface(){
   if(!ghost)return;ghost=false;updateGhostUI();setOttiState("return");sendSocket({type:"return"});toast("⌁ Otti surfaced.");
 }
 function simulateViewer(){
-  ghost=true;updateGhostUI();setOttiState("dive");sendSocket({type:"dive"});toast("◉〰 Someone may be looking.");
+  ghost=true;triggerDiveAnimation();updateGhostUI();setOttiState("dive");sendSocket({type:"dive"});toast("◉〰 Someone may be looking.");
 }
 function sendSocket(payload){
   if(socket&&socket.readyState===WebSocket.OPEN)socket.send(JSON.stringify(payload));
@@ -843,7 +868,7 @@ async function checkSession(){
 function enterApp(){
   $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
   $("profileName").textContent=currentUser.name||"Your Otti";$("profileEmail").textContent=currentUser.email||"";
-  loadContacts();
+  loadContacts();const ad=$("autoDiveToggle");if(ad)ad.checked=cameraAutoDive;
 }
 async function refreshChats(){const b=document.querySelector('#chats .refresh');if(b){b.classList.add('spinning');setTimeout(()=>b.classList.remove('spinning'),650)}try{await loadContacts();toast('✦ Chats refreshed')}catch(e){toast('◇ Could not refresh chats')}}
 async function loadContacts(){
@@ -854,10 +879,53 @@ async function loadContacts(){
     if(!contacts.length){c.innerHTML='<div class="empty"><div class="empty-symbol">♡</div><b>No Ottis yet</b><div>Add someone from the Add tab.</div></div>';return}
     contacts.forEach(x=>{
       const row=document.createElement("div");row.className="contact";row.onclick=()=>openContact(x);
-      row.innerHTML='<div class="avatar"><img src="'+MASCOT+'"></div><div class="contact-main"><div class="contact-name">'+escapeHtml(x.name||"Otti")+'</div><div class="contact-email">'+escapeHtml(x.email||"")+'</div><div class="contact-state">● connected</div></div><div>›</div>';
+      row.innerHTML='<div class="avatar"><img src="'+MASCOT+'"></div><div class="contact-main"><div class="contact-name">'+escapeHtml(x.name||"Otti")+'</div><div class="contact-email">'+escapeHtml(x.email||"")+'</div><div class="contact-state">● connected</div></div><button class="contact-menu" aria-label="Chat options" title="Chat options">⋯</button><div>›</div>'; row.querySelector(".contact-menu").onclick=(ev)=>{ev.stopPropagation();openContactActions(x)};
       c.appendChild(row);
     });
   }catch(e){toast("◇ "+e.message)}
+}
+
+function openContactActions(contact){
+  selectedContactForActions=contact;
+  $("contactActionsTitle").textContent=(contact.name||"Otti")+" · options";
+  $("contactActionsModal").classList.add("show");
+}
+function closeContactActions(){ $("contactActionsModal").classList.remove("show"); selectedContactForActions=null; }
+async function clearSelectedChat(){
+  const c=selectedContactForActions;if(!c)return;
+  if(!confirm("Clear this conversation from your view? The other person's history is not cleared."))return;
+  try{
+    const room=await getDirectRoom(c.user_id);if(!room)throw new Error("Could not find this chat");
+    const r=await fetch('/api/rooms/'+encodeURIComponent(room.id)+'/clear',{method:'POST',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not clear chat');
+    if(currentRoomId===room.id){$("messages").innerHTML="";renderedMessageIds=new Set();renderedClientIds=new Set();}
+    toast('⌫ Chat cleared for you');closeContactActions();
+  }catch(e){toast('◇ '+e.message)}
+}
+async function getDirectRoom(userId){
+  const r=await fetch('/api/contacts',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not open chat');return d.room;
+}
+async function deleteSelectedContact(){
+  const c=selectedContactForActions;if(!c)return;
+  if(!confirm('Remove '+(c.name||'this person')+' from your OTTI contacts? Their account and messages for the other person will not be deleted.'))return;
+  try{const r=await fetch('/api/contacts/'+encodeURIComponent(c.user_id),{method:'DELETE',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not delete contact');if(currentContact&&String(currentContact.id||currentContact.user_id)===String(c.user_id))closeChat();closeContactActions();await loadContacts();toast('× Contact removed');}catch(e){toast('◇ '+e.message)}
+}
+async function blockSelectedContact(){
+  const c=selectedContactForActions;if(!c)return;
+  if(!confirm('Block '+(c.name||'this contact')+'? They will be removed from your list until you unblock them.'))return;
+  try{const r=await fetch('/api/contacts/'+encodeURIComponent(c.user_id)+'/block',{method:'POST',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not block contact');if(currentContact&&String(currentContact.id||currentContact.user_id)===String(c.user_id))closeChat();closeContactActions();await loadContacts();toast('⛔ Contact blocked');}catch(e){toast('◇ '+e.message)}
+}
+async function clearAllChats(){
+  if(!confirm('Clear all chat histories from your view? Contacts stay. Other people keep their own history.'))return;
+  try{const r=await fetch('/api/chats/clear-all',{method:'POST',credentials:'include'});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not clear chats');if(currentRoomId){$("messages").innerHTML="";renderedMessageIds=new Set();renderedClientIds=new Set();}toast('⌫ All chat histories cleared for you');}catch(e){toast('◇ '+e.message)}
+}
+function setAutoDive(enabled){
+  cameraAutoDive=!!enabled;try{localStorage.setItem('otti-auto-dive',String(cameraAutoDive))}catch(_){}
+  if(cameraAutoDive&&!cameraEnabled)toggleCameraPrivacy();
+  toast(cameraAutoDive?'〰 Camera auto-DIVE enabled':'Camera auto-DIVE disabled');
+}
+
+async function manageBlockedContacts(){
+  try{const r=await fetch('/api/contacts/blocked',{credentials:'include'}),d=await r.json();if(!r.ok)throw new Error(d.error||'Could not load blocked contacts');const list=d.contacts||[];if(!list.length){toast('✦ No blocked Ottis');return}const lines=list.map((c,i)=>`${i+1}. ${c.name||c.email||c.user_id}`).join('\n');const choice=prompt('Blocked Ottis — enter a number to unblock, or Cancel:\n'+lines);if(choice===null)return;const idx=Number(choice)-1;if(!Number.isInteger(idx)||idx<0||idx>=list.length){toast('◇ Choose a listed number');return}const c=list[idx];if(!confirm('Unblock '+(c.name||'this person')+'?'))return;const u=await fetch('/api/contacts/'+encodeURIComponent(c.user_id)+'/unblock',{method:'POST',credentials:'include'});const ud=await u.json();if(!u.ok)throw new Error(ud.error||'Could not unblock');toast('♡ Contact unblocked');await loadContacts()}catch(e){toast('◇ '+e.message)}
 }
 function openSearch(){showScreen("search");$("searchInput").focus()}
 async function searchUsers(){
@@ -1019,9 +1087,19 @@ async function postStatus(){
     input.value="";toast("✦ Status dropped.");loadStatuses();
   }catch(e){toast("◇ "+e.message)}
 }
-function copyInvite(){
+function toggleMomMode(){
+  const screen=$("momModeScreen"); if(!screen)return;
+  const opening=screen.hidden;
+  if(opening){try{$("momNotes").value=localStorage.getItem("otti-mom-notes")||""}catch(_){};const d=new Date();$("momDate").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});screen.hidden=false;document.body.dataset.momMode="on";}
+  else{screen.hidden=true;delete document.body.dataset.momMode;}
+  const b=$("momModeButton");if(b)b.textContent=opening?"Close":"Open";
+}
+function saveMomNotes(){try{localStorage.setItem("otti-mom-notes",$("momNotes").value)}catch(_){}}
+
+async function copyInvite(){
   const invite=location.origin;
-  navigator.clipboard?.writeText(invite).then(()=>toast("🔗 Otti invite copied")).catch(()=>toast(invite));
+  try{if(navigator.share){await navigator.share({title:'Join me on OTTI',text:'Let’s chat on OTTI — privacy you can see.',url:invite});toast('🔗 Invite shared');return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(invite);toast('🔗 Otti invite copied')}catch(_){prompt('Copy your OTTI invite link',invite)}
 }
 function closeChat(){
   if(reconnectTimer){clearTimeout(reconnectTimer);reconnectTimer=null}
@@ -1174,8 +1252,8 @@ async function startFaceDetector(){
         try{
           const result=cameraDetector.detectForVideo(v,now);
           const count=result?.detections?.length||0;
-          if(count>=2&&!ghost){
-            ghost=true;updateGhostUI();setOttiState('dive');sendSocket({type:'dive'});toast('◉〰 Possible viewer detected — DIVE');
+          if(count>=2&&cameraAutoDive&&!ghost){
+            ghost=true;triggerDiveAnimation();updateGhostUI();setOttiState('dive');sendSocket({type:'dive'});toast('◉〰 Possible viewer detected — DIVE');
           }
         }catch(_){ }
       }
