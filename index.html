@@ -313,8 +313,7 @@ body.dark .ghost-codex-element{background:linear-gradient(145deg,#102f47,#0b2539
 @media(max-width:380px){.ghost-codex-elements{gap:4px}.ghost-codex-element{padding:8px 3px}.ghost-codex-element .el-glyph{font-size:21px}}
 
 
-/* Mom Mode: deliberately simple notes-style camouflage */
-.mom-screen{position:fixed;inset:0;z-index:99999;background:#f7f5ef;color:#292929;font-family:Arial,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);overflow:auto}.mom-screen[hidden]{display:none!important}.mom-top{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #e6e2d8;background:#fbfaf7;font-size:15px;font-weight:600}.mom-top button{border:0;background:transparent;color:#3a5d9c;font-size:16px;padding:8px}.mom-paper{max-width:720px;margin:0 auto;padding:22px 22px 60px}.mom-paper h2{font-size:26px;font-weight:600;margin:8px 0}.mom-date{color:#858585;font-size:12px;margin:0 0 18px}.mom-paper textarea{width:100%;height:65vh;resize:vertical;border:0;outline:0;background:transparent;color:#292929;font:16px/1.7 Arial,sans-serif}.mom-hint{border-top:1px solid #e6e2d8;padding-top:12px;color:#999;font-size:12px}.mom-mode-card{margin-top:12px}
+.otti-notify-item.is-clickable{cursor:pointer}.otti-notify-item.is-clickable:hover{filter:brightness(.97)}.raft-row .contact-menu{flex:none}.profile-otti img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 </style>
 
 <style id="otti-ghost-codex-final">
@@ -426,7 +425,7 @@ body:not(.dark) .bubble.ghost .ghost-symbol.dive{color:#ef477f!important;-webkit
 
 <div id="app" class="app hidden">
   <section id="chats" class="screen active">
-    <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><div class="top-actions"><button class="otti-notify-btn" id="ottiNotifyBtn" aria-label="Otti notifications" title="Otti notifications">🦦<span class="otti-notify-badge" id="ottiNotifyBadge" hidden>0</span></button><button class="mom-corner-btn" onclick="toggleMomMode()" aria-label="Open Mom Mode" title="Mom Mode">📓</button><button class="icon appearance-corner-btn" onclick="showScreen('profile')" aria-label="Appearance and profile" title="Appearance">●</button></div></div>
+    <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><div class="top-actions"><button class="otti-notify-btn" id="ottiNotifyBtn" aria-label="Otti notifications" title="Otti notifications">🦦<span class="otti-notify-badge" id="ottiNotifyBadge" hidden>0</span></button><button class="icon appearance-corner-btn" onclick="showScreen('profile')" aria-label="Appearance and profile" title="Appearance">●</button></div></div>
     <div class="content">
       <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><div style="display:flex;gap:6px"><button class="refresh" onclick="refreshChats()" aria-label="Refresh chats" title="Refresh chats">↻</button></div></div>
       <div id="contacts" class="card"></div>
@@ -523,7 +522,7 @@ body:not(.dark) .bubble.ghost .ghost-symbol.dive{color:#ef477f!important;-webkit
     </div>
   </section>
 
-  <section id="momModeScreen" class="mom-screen" aria-label="Notes" hidden><div class="mom-top"><button onclick="toggleMomMode()" aria-label="Return to OTTI">‹</button><span>Notes</span><button onclick="toggleMomMode()" title="Return to OTTI">Done</button></div><div class="mom-paper"><h2>My Notes</h2><p class="mom-date" id="momDate"></p><textarea id="momNotes" placeholder="Write a note…" aria-label="Notes" oninput="saveMomNotes()"></textarea><div class="mom-hint">All caught up.</div></div></section>
+
 
   <nav id="bottomNav" class="bottom-nav">
     <button id="navChats" class="nav-btn active" onclick="showScreen('chats')"><span>♡</span><span>Chats</span></button>
@@ -901,18 +900,21 @@ async function checkSession(){
 function enterApp(){
   $("authScreen").classList.add("hidden");$("app").classList.remove("hidden");
   $("profileName").textContent=currentUser.name||"Your Otti";$("profileEmail").textContent=currentUser.email||"";const pic=$("profileDisplayPicture");if(pic)pic.src=currentUser.avatar||MASCOT;
-  loadContacts();const ad=$("autoDiveToggle");if(ad)ad.checked=cameraAutoDive;
+  loadContacts();startUnreadPolling();const ad=$("autoDiveToggle");if(ad)ad.checked=cameraAutoDive;
 }
 async function refreshChats(){const b=document.querySelector('#chats .refresh');if(b){b.classList.add('spinning');setTimeout(()=>b.classList.remove('spinning'),650)}try{await loadContacts();toast('✦ Chats refreshed')}catch(e){toast('◇ Could not refresh chats')}}
 async function readApiResponse(response,fallback='Request failed'){
   const raw=await response.text();let data={};
   try{data=raw?JSON.parse(raw):{}}catch(_){
     const clean=raw.replace(/<script[\s\S]*?<\/script>/gi,' ').replace(/<style[\s\S]*?<\/style>/gi,' ').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
-    data={error:response.ok?fallback:(clean.slice(0,160)||fallback)};
+    const isHtml=/<!doctype html|<html[\s>]/i.test(raw);
+    throw new Error(isHtml?'OTTI server returned a web page instead of API data. Please redeploy the updated server.js and restart the server.':(clean.slice(0,160)||fallback));
   }
-  if(!response.ok)throw new Error(data.error||fallback);
+  if(!response.ok)throw new Error(data.error||data.message||fallback);
+  if(!data||typeof data!=='object')throw new Error(fallback);
   return data;
 }
+
 async function uploadDisplayPicture(input){
   const file=input?.files?.[0];if(!file)return;
   if(!file.type.startsWith('image/')){toast('◇ Please choose an image.');input.value='';return;}
@@ -920,14 +922,14 @@ async function uploadDisplayPicture(input){
     const image=await new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=reject;img.src=URL.createObjectURL(file)});
     const canvas=document.createElement('canvas'),size=256;canvas.width=size;canvas.height=size;
     const ctx=canvas.getContext('2d');const scale=Math.max(size/image.width,size/image.height),w=image.width*scale,h=image.height*scale;ctx.drawImage(image,(size-w)/2,(size-h)/2,w,h);
-    const avatar=canvas.toDataURL('image/jpeg',0.76);URL.revokeObjectURL(image.src);
+    const avatar=canvas.toDataURL('image/jpeg',0.68);URL.revokeObjectURL(image.src);
     const r=await fetch('/api/me/avatar',{method:'PUT',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({avatar})});
     const d=await readApiResponse(r,'Could not save display picture');currentUser=d.user||currentUser;applyCurrentAvatar();toast('♡ Display picture updated');
   }catch(e){toast('◇ '+(e.message||'Could not save display picture'));}finally{if(input)input.value='';}
 }
 function applyCurrentAvatar(){
   if(!currentUser)return;const src=currentUser.avatar||MASCOT;
-  const p=$('profileDisplayPicture');if(p)p.src=src;
+  const p=$('profileDisplayPicture');if(p)p.src=src;document.querySelectorAll('.profile-otti .mascot-img').forEach(img=>img.src=src);
   document.querySelectorAll('.contact').forEach(row=>{const email=row.querySelector('.contact-email')?.textContent;const c=contacts.find(x=>x.email===email);const img=row.querySelector('.avatar img');if(img)img.src=c?.avatar||MASCOT});
 }
 async function inviteToRaft(){
@@ -944,16 +946,37 @@ async function createRaft(){
   const name=prompt('Name your Raft','My Otti Circle');if(name===null)return;
   const clean=name.trim();if(!clean){toast('◇ Give your Raft a name first.');return;}
   try{const r=await fetch('/api/groups',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:clean,icon:'◈'})});const d=await readApiResponse(r,'Could not create Raft');
-    toast('◈ Your Raft is ready');await loadContacts();if(d.room)await openRoom(d.room.id,{id:d.room.id,user_id:d.room.id,name:d.room.name||clean,kind:'group',icon:d.room.icon||'◈'});
+    if(!d.room?.id)throw new Error('The server did not return a Raft. Please redeploy the updated server.js and try again.');toast('◈ Your Raft is ready');await loadContacts();await openRoom(d.room.id,{id:d.room.id,user_id:d.room.id,name:d.room.name||clean,kind:'group',icon:d.room.icon||'◈'});
   }catch(e){toast('◇ '+e.message)}
 }
 async function loadRafts(){
   const el=$('rafts');if(!el)return;
-  try{const r=await fetch('/api/rooms',{credentials:'include'});const d=await readApiResponse(r,'Could not load Rafts');const rooms=(d.rooms||[]).filter(x=>x.kind==='group');
-    el.hidden=!rooms.length;if(!rooms.length)return;el.innerHTML='<div class="section-head"><b>◈ Your Rafts</b></div>';
-    rooms.forEach(room=>{const row=document.createElement('div');row.className='raft-row';const glyph=document.createElement('div');glyph.className='raft-glyph';glyph.textContent=room.icon||'◈';const title=document.createElement('div');title.style.flex='1';const b=document.createElement('b');b.textContent=room.name||'Otti Raft';const sub=document.createElement('div');sub.className='sub';sub.textContent='Private group';title.append(b,sub);row.append(glyph,title);row.onclick=()=>openRoom(room.id,{id:room.id,user_id:room.id,name:room.name||'Otti Raft',kind:'group',icon:room.icon||'◈'});el.appendChild(row)});
-  }catch(_){el.hidden=true}
+  try{
+    const r=await fetch('/api/rooms',{credentials:'include',headers:{'Accept':'application/json'}});const d=await readApiResponse(r,'Could not load Rafts');const rooms=(d.rooms||[]).filter(x=>x.kind==='group');
+    el.hidden=false;el.innerHTML='<div class="section-head"><b>◈ Your Rafts</b></div>';
+    if(!rooms.length){el.innerHTML+='<div class="sub" style="padding:10px 4px">No Rafts yet. Create one for your people.</div>';return}
+    rooms.forEach(room=>{
+      const row=document.createElement('div');row.className='raft-row';
+      const glyph=document.createElement('div');glyph.className='raft-glyph';glyph.textContent=room.icon||'◈';
+      const title=document.createElement('div');title.style.flex='1';title.style.minWidth='0';
+      const b=document.createElement('b');b.textContent=room.name||'Otti Raft';
+      const sub=document.createElement('div');sub.className='sub';sub.textContent='Private group chat';title.append(b,sub);
+      const open=document.createElement('button');open.type='button';open.className='contact-menu';open.title='Open Raft';open.setAttribute('aria-label','Open Raft');open.textContent='›';
+      open.onclick=(ev)=>{ev.stopPropagation();openRoom(room.id,{id:room.id,user_id:room.id,name:room.name||'Otti Raft',kind:'group',icon:room.icon||'◈'})};
+      const del=document.createElement('button');del.type='button';del.className='contact-menu';del.title='Delete Raft and its chat';del.setAttribute('aria-label','Delete Raft and its chat');del.textContent='🗑';del.onclick=(ev)=>{ev.stopPropagation();deleteRaft(room)};
+      row.append(glyph,title,open,del);row.onclick=()=>openRoom(room.id,{id:room.id,user_id:room.id,name:room.name||'Otti Raft',kind:'group',icon:room.icon||'◈'});el.appendChild(row);
+    });
+  }catch(e){el.hidden=false;el.innerHTML='<div class="section-head"><b>◈ Your Rafts</b></div><div class="sub" style="padding:10px 4px">'+escapeHtml(e.message||'Could not load Rafts')+'</div>'}
 }
+async function deleteRaft(room){
+  if(!room?.id)return;
+  if(!confirm('Delete “'+(room.name||'this Raft')+'” and its entire group chat history for everyone? This cannot be undone.'))return;
+  try{
+    const r=await fetch('/api/groups/'+encodeURIComponent(room.id),{method:'DELETE',credentials:'include',headers:{'Accept':'application/json'}});await readApiResponse(r,'Could not delete Raft');
+    if(String(currentRoomId)===String(room.id))closeChat();await loadContacts();toast('🗑 Raft and its chat deleted');
+  }catch(e){toast('◇ '+e.message)}
+}
+
 async function loadContacts(){
   try{
     const r=await fetch("/api/contacts",{credentials:"include"}),d=await r.json();
@@ -962,7 +985,7 @@ async function loadContacts(){
     if(!contacts.length){c.innerHTML='<div class="empty"><div class="empty-symbol">♡</div><b>No Ottis yet</b><div>Add someone from the Add tab.</div></div>';await loadRafts();return}
     contacts.forEach(x=>{
       const row=document.createElement("div");row.className="contact";row.onclick=()=>openContact(x);
-      row.innerHTML='<div class="avatar"><img src="'+MASCOT+'"></div><div class="contact-main"><div class="contact-name">'+escapeHtml(x.name||"Otti")+'</div><div class="contact-email">'+escapeHtml(x.email||"")+'</div><div class="contact-state">● connected</div></div><button class="contact-menu" aria-label="Chat options" title="Chat options">⋯</button><div>›</div>'; row.querySelector(".contact-menu").onclick=(ev)=>{ev.stopPropagation();openContactActions(x)};
+      row.innerHTML='<div class="avatar"><img src="'+escapeHtml(x.avatar||MASCOT)+'"></div><div class="contact-main"><div class="contact-name">'+escapeHtml(x.name||"Otti")+'</div><div class="contact-email">'+escapeHtml(x.email||"")+'</div><div class="contact-state">● connected</div></div><button class="contact-menu" aria-label="Chat options" title="Chat options">⋯</button><div>›</div>'; row.querySelector(".contact-menu").onclick=(ev)=>{ev.stopPropagation();openContactActions(x)};
       c.appendChild(row);
     });
     await loadRafts();
@@ -1131,8 +1154,10 @@ function handleSocketMessage(d){
   }
   if(d.type==="message"){
     const mine=String(d.user_id)===String(currentUser.id);
-    if(d.room===currentRoomId){renderMessage(d);scrollMessages();if(!mine){setOttiState("sent");addOttiNotification("♡",(d.name||"Otti")+" sent a message",d.text||"New private message");notifyIncomingMessage(d);notifyMessageSound()}}
-    else if(!mine){addOttiNotification("♡",(d.name||"Otti")+" sent a message",d.text||"New private message");notifyIncomingMessage(d);notifyMessageSound()}
+    const duplicateIncoming=!mine&&d.id&&seenIncomingMessageIds.has(String(d.id));
+    if(!mine&&d.id)seenIncomingMessageIds.add(String(d.id));
+    if(d.room===currentRoomId){renderMessage(d);scrollMessages();if(!mine){setOttiState("sent");if(!duplicateIncoming){addOttiNotification("♡",(d.name||"Otti")+" sent a message",d.text||"New private message",d);notifyIncomingMessage(d);notifyMessageSound()}}}
+    else if(!mine&&!duplicateIncoming){addOttiNotification("♡",(d.name||"Otti")+" sent a message",d.text||"New private message",d);notifyIncomingMessage(d);notifyMessageSound()}
     return;
   }
   if(d.type==="react"){addOttiNotification(d.reaction||"♡",(d.user||"Otti")+" reacted",d.reaction||"New reaction");return}
@@ -1176,13 +1201,7 @@ async function postStatus(){
     input.value="";toast("✦ Status dropped.");loadStatuses();
   }catch(e){toast("◇ "+e.message)}
 }
-function toggleMomMode(){
-  const screen=$("momModeScreen"); if(!screen)return;
-  const opening=screen.hidden;
-  if(opening){try{$("momNotes").value=localStorage.getItem("otti-mom-notes")||""}catch(_){};const d=new Date();$("momDate").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});screen.hidden=false;document.body.dataset.momMode="on";}
-  else{screen.hidden=true;delete document.body.dataset.momMode;}
-  const b=$("momModeButton");if(b)b.textContent=opening?"Close":"Open";
-}
+
 function saveMomNotes(){try{localStorage.setItem("otti-mom-notes",$("momNotes").value)}catch(_){}}
 
 async function copyInvite(){
@@ -1236,13 +1255,13 @@ if($('msg')){
 }
 
 /* ---------- RECOVERED FINAL: in-app Otti notification tray ---------- */
-let ottiNotificationCount=0;
+let ottiNotificationCount=0;const seenIncomingMessageIds=new Set();
 function renderOttiNotificationBadge(){
   const b=$('ottiNotifyBadge');if(!b)return;
   b.textContent=ottiNotificationCount>9?'9+':String(ottiNotificationCount);
   b.hidden=ottiNotificationCount===0;
 }
-function addOttiNotification(symbol,title,text){
+function addOttiNotification(symbol,title,text,target=null){
   const list=$('ottiNotifyList');if(!list)return;
   ottiNotificationCount++;
   const item=document.createElement('div');item.className='otti-notify-item';
@@ -1250,6 +1269,7 @@ function addOttiNotification(symbol,title,text){
   item.querySelector('.otti-notify-glyph').textContent=symbol||'🦦';
   item.querySelector('b').textContent=title||'Otti update';
   item.querySelector('span').textContent=text||'';
+  if(target?.room){item.classList.add('is-clickable');item.setAttribute('role','button');item.tabIndex=0;const go=()=>openNotificationTarget(target);item.addEventListener('click',go);item.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go()}})}
   list.prepend(item);renderOttiNotificationBadge();
 }
 (function(){
@@ -1277,6 +1297,26 @@ async function enableNotifications(){
   try{
     const permission=await Notification.requestPermission();
     notificationPermission=permission;refreshNotificationUI();
+
+/* ---------- Reliable foreground/background-tab unread polling ---------- */
+let notificationCursor=new Date().toISOString(),notificationPollBusy=false;
+async function pollUnreadMessages(){
+  if(notificationPollBusy||!currentUser)return;notificationPollBusy=true;
+  try{
+    const r=await fetch('/api/notifications?after='+encodeURIComponent(notificationCursor),{credentials:'include',cache:'no-store',headers:{'Accept':'application/json'}});
+    const d=await readApiResponse(r,'Could not check unread messages');
+    const items=d.notifications||[];
+    for(const m of items){
+      if(m.id&&seenIncomingMessageIds.has(String(m.id)))continue;if(m.id)seenIncomingMessageIds.add(String(m.id));
+      const target={id:m.id,room:m.room,user_id:m.user_id,name:m.name||'Someone',text:m.text||'',kind:m.kind};
+      addOttiNotification('♡',(m.name||'Someone')+' sent a message',m.text||'You have a new message',target);
+      notifyIncomingMessage(target);notificationCursor=m.created_at||notificationCursor;
+    }
+    if(d.cursor)notificationCursor=d.cursor;
+  }catch(_){/* transient network/server errors are retried on next poll */}
+  finally{notificationPollBusy=false}
+}
+function startUnreadPolling(){pollUnreadMessages();setInterval(pollUnreadMessages,5000)}
     if(permission==='granted'){
       toast('♡ Notifications are on.');
       try{new Notification('OTTI', {body:'You will now know when an Otti messages you.',tag:'otti-enabled'});}catch(_){ }
