@@ -313,8 +313,7 @@ body.dark .ghost-codex-element{background:linear-gradient(145deg,#102f47,#0b2539
 @media(max-width:380px){.ghost-codex-elements{gap:4px}.ghost-codex-element{padding:8px 3px}.ghost-codex-element .el-glyph{font-size:21px}}
 
 
-/* Mom Mode: deliberately simple notes-style camouflage */
-.mom-screen{position:fixed;inset:0;z-index:99999;background:#f7f5ef;color:#292929;font-family:Arial,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);overflow:auto}.mom-screen[hidden]{display:none!important}.mom-top{height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:1px solid #e6e2d8;background:#fbfaf7;font-size:15px;font-weight:600}.mom-top button{border:0;background:transparent;color:#3a5d9c;font-size:16px;padding:8px}.mom-paper{max-width:720px;margin:0 auto;padding:22px 22px 60px}.mom-paper h2{font-size:26px;font-weight:600;margin:8px 0}.mom-date{color:#858585;font-size:12px;margin:0 0 18px}.mom-paper textarea{width:100%;height:65vh;resize:vertical;border:0;outline:0;background:transparent;color:#292929;font:16px/1.7 Arial,sans-serif}.mom-hint{border-top:1px solid #e6e2d8;padding-top:12px;color:#999;font-size:12px}.mom-mode-card{margin-top:12px}
+
 </style>
 
 <style id="otti-ghost-codex-final">
@@ -380,12 +379,20 @@ body.dark #contactActionsModal{background:#0d2940;color:#fff0d0;border:1px solid
 body:not(.dark) .bubble.ghost, body.dark .bubble.ghost{background:linear-gradient(145deg,#090b1d 0%,#11132b 55%,#17112b 100%)!important;border:1px solid rgba(255,214,112,.42)!important;color:#fff!important;-webkit-text-fill-color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.06),0 0 22px rgba(123,83,255,.18),0 8px 22px rgba(0,0,0,.28)!important}
 body:not(.dark) .bubble.ghost .message-body .ghost-symbol, body.dark .bubble.ghost .message-body .ghost-symbol{color:var(--glyph-color,currentColor)!important;-webkit-text-fill:var(--glyph-color,currentColor)!important;text-shadow:0 0 4px currentColor,0 0 10px currentColor,0 0 20px currentColor!important;filter:drop-shadow(0 0 5px currentColor)}
 .bubble.ghost .ghost-symbol.solar{--glyph-color:#ffd45a!important;color:#ffd45a!important;-webkit-text-fill-color:#ffd45a!important}.bubble.ghost .ghost-symbol.aqua{--glyph-color:#63d7ff!important;color:#63d7ff!important;-webkit-text-fill-color:#63d7ff!important}.bubble.ghost .ghost-symbol.terra{--glyph-color:#9de88b!important;color:#9de88b!important;-webkit-text-fill-color:#9de88b!important}.bubble.ghost .ghost-symbol.luna{--glyph-color:#d7a5ff!important;color:#d7a5ff!important;-webkit-text-fill-color:#d7a5ff!important}.bubble.ghost .ghost-symbol.secret{--glyph-color:#ff8fc3!important;color:#ff8fc3!important;-webkit-text-fill-color:#ff8fc3!important}.bubble.ghost .ghost-symbol.protect{--glyph-color:#ffb35c!important;color:#ffb35c!important;-webkit-text-fill-color:#ffb35c!important}.bubble.ghost .ghost-symbol.dive{--glyph-color:#ff8a63!important;color:#ff8a63!important;-webkit-text-fill-color:#ff8a63!important}.bubble.ghost .ghost-symbol.spark{--glyph-color:#fff0a3!important;color:#fff0a3!important;-webkit-text-fill-color:#fff0a3!important}
-.top-actions{display:flex;align-items:center;gap:8px}.mom-corner-btn{width:38px;height:38px;min-width:38px;border:1px solid rgba(243,154,49,.35);border-radius:13px;background:#fff0d6;display:grid;place-items:center;font-size:19px;box-shadow:0 3px 10px rgba(23,33,43,.10);padding:0}.appearance-corner-btn{width:44px;height:44px;min-width:44px;border-radius:15px;font-size:22px;display:grid;place-items:center;padding:0}
-body.dark .mom-corner-btn{background:#0b5a56;color:#ffe08a;border-color:#b88a2b}
+.top-actions{display:flex;align-items:center;gap:8px}.appearance-corner-btn{width:44px;height:44px;min-width:44px;border-radius:15px;font-size:22px;display:grid;place-items:center;padding:0}
+
 /* Switch to the chat immediately; load messages after the chat view is visible. */
 #chat .messages{contain:content}
 </style>
 
+<style id="otti-raft-polish">
+/* Raft creation and member picker — native OTTI styling */
+.raft-modal{display:none;position:fixed;inset:0;z-index:12000;background:rgba(16,24,39,.52);backdrop-filter:blur(7px);align-items:flex-end;justify-content:center;padding:14px}
+.raft-modal.show{display:flex}.raft-sheet{width:min(100%,430px);max-height:88dvh;overflow:auto;background:var(--cream2);color:var(--ink);border:1px solid var(--line);border-radius:25px;padding:20px;box-shadow:0 24px 70px rgba(0,0,0,.28)}
+.raft-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:18px}.raft-kicker{font-size:10px;font-weight:950;letter-spacing:.13em;color:#c77820}.raft-modal-head h2{margin:5px 0;font-size:23px}.raft-modal-head p{margin:0;color:var(--mist);font-size:12px}.raft-close{border:0;border-radius:12px;width:36px;height:36px;background:rgba(120,130,150,.13);font-size:24px;color:inherit}.raft-label{display:block;font-size:12px;font-weight:850;margin:14px 0 7px}.raft-label span{font-weight:500;color:var(--mist)}.raft-name-input{margin-bottom:2px}.raft-selected{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}.raft-chip{display:flex;align-items:center;gap:6px;background:rgba(255,184,77,.2);border:1px solid rgba(243,154,49,.35);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:800}.raft-chip button{border:0;background:transparent;font-size:16px;padding:0;color:inherit}.raft-member-results{margin-top:8px;max-height:190px;overflow:auto;border:1px solid var(--line);border-radius:15px;padding:4px}.raft-member-option{display:flex;align-items:center;gap:9px;padding:9px;border-radius:11px;cursor:pointer}.raft-member-option:hover{background:rgba(255,184,77,.16)}.raft-member-option .raft-person-copy{flex:1;min-width:0}.raft-member-option b{display:block;font-size:13px}.raft-member-option small,.raft-help{color:var(--mist);font-size:11px}.raft-help{padding:12px}.raft-add-mark{font-size:20px;color:#c77820}.raft-modal-actions{display:flex;gap:9px;margin-top:18px}.raft-modal-actions button{flex:1;min-height:43px}.unread-pill{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#ff668d;color:#fff;font-size:11px;font-weight:950;box-shadow:0 2px 8px rgba(255,102,141,.32);margin-left:4px;animation:unreadPop .25s ease-out}.unread-pill[hidden]{display:none!important}.raft-row-actions{display:flex;align-items:center;gap:5px}.raft-add-members{border:1px solid rgba(243,154,49,.35);border-radius:10px;background:rgba(255,184,77,.14);color:inherit;min-width:34px;height:34px;font-size:17px}.contact-main .contact-name-line{display:flex;align-items:center;gap:5px;min-width:0}.contact-main .contact-name-line .contact-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.contact-main{min-width:0}.contact .contact-name-line .unread-pill{flex-shrink:0}@keyframes unreadPop{from{transform:scale(.55);opacity:.3}to{transform:scale(1);opacity:1}}
+body.dark .raft-sheet{background:#0d2940;color:#fff0d0;border-color:#245a78}body.dark .raft-member-results{border-color:#245a78}body.dark .raft-member-option:hover{background:rgba(99,215,255,.1)}
+@media(min-width:500px){.raft-modal{align-items:center}.raft-sheet{max-height:82dvh}}
+</style>
 </head>
 <body>
 <div id="authScreen" class="auth-wrap">
@@ -406,7 +413,7 @@ body.dark .mom-corner-btn{background:#0b5a56;color:#ffe08a;border-color:#b88a2b}
 
 <div id="app" class="app hidden">
   <section id="chats" class="screen active">
-    <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><div class="top-actions"><button class="otti-notify-btn" id="ottiNotifyBtn" aria-label="Otti notifications" title="Otti notifications">🦦<span class="otti-notify-badge" id="ottiNotifyBadge" hidden>0</span></button><button class="mom-corner-btn" onclick="toggleMomMode()" aria-label="Open Mom Mode" title="Mom Mode">📓</button><button class="icon appearance-corner-btn" onclick="showScreen('profile')" aria-label="Appearance and profile" title="Appearance">●</button></div></div>
+    <div class="top"><div class="brand"><div class="mini"><img class="mascot-img"></div>OTTI</div><div class="top-actions"><button class="otti-notify-btn" id="ottiNotifyBtn" aria-label="Otti notifications" title="Otti notifications">🦦<span class="otti-notify-badge" id="ottiNotifyBadge" hidden>0</span></button><button class="icon appearance-corner-btn" onclick="showScreen('profile')" aria-label="Appearance and profile" title="Appearance">●</button></div></div>
     <div class="content">
       <div class="section-head"><div><div class="title">Chats</div><div class="sub">Your private Ottis.</div></div><div style="display:flex;gap:6px"><button class="refresh" onclick="clearAllChats()" aria-label="Clear all chat histories" title="Clear all chat histories">⌫</button><button class="refresh" onclick="refreshChats()" aria-label="Refresh chats" title="Refresh chats">↻</button></div></div>
       <div id="contacts" class="card"></div>
@@ -421,6 +428,15 @@ body.dark .mom-corner-btn{background:#0b5a56;color:#ffe08a;border-color:#b88a2b}
     <div class="option" onclick="clearSelectedChat()"><b>⌫ Clear this chat</b><span>Clear your view of this chat history only.</span></div>
     <div class="option" onclick="deleteSelectedContact()"><b>× Delete person</b><span>Remove this Otti from your contacts and your direct chat list.</span></div>
     <div class="option" onclick="blockSelectedContact()"><b>⛔ Block contact</b><span>Remove them from your list until you choose to unblock them.</span></div>
+  </div>
+  <div id="raftModal" class="raft-modal" aria-hidden="true">
+    <div class="raft-sheet" role="dialog" aria-modal="true" aria-labelledby="raftModalTitle">
+      <div class="raft-modal-head"><div><div class="raft-kicker">●🌊 YOUR LITTLE CIRCLE</div><h2 id="raftModalTitle">Create a Raft</h2><p>Bring your Ottis together in one cozy space.</p></div><button class="raft-close" onclick="closeRaftModal()" aria-label="Close">×</button></div>
+      <label class="raft-label" for="raftNameInput">Raft name</label><input id="raftNameInput" class="input raft-name-input" maxlength="80" placeholder="e.g. Weekend chaos" autocomplete="off">
+      <label class="raft-label" for="raftMemberSearch">Add members <span>optional</span></label><input id="raftMemberSearch" class="input" placeholder="Search by name or email…" autocomplete="off" oninput="searchRaftMembers()">
+      <div id="raftSelectedMembers" class="raft-selected"></div><div id="raftMemberResults" class="raft-member-results"><div class="raft-help">Search for people to invite to your Raft.</div></div>
+      <div class="raft-modal-actions"><button class="secondary" onclick="closeRaftModal()">Not now</button><button id="raftSaveButton" class="primary" onclick="saveRaft()">Create Raft ✦</button></div>
+    </div>
   </div>
   <div class="otti-notify-panel" id="ottiNotifyPanel" role="dialog" aria-label="Otti notifications">
     <div class="otti-notify-head"><span>🦦 Otti notifications</span><button class="otti-notify-clear" id="ottiNotifyClear">Clear</button></div>
@@ -503,7 +519,7 @@ body.dark .mom-corner-btn{background:#0b5a56;color:#ffe08a;border-color:#b88a2b}
     </div>
   </section>
 
-  <section id="momModeScreen" class="mom-screen" aria-label="Notes" hidden><div class="mom-top"><button onclick="toggleMomMode()" aria-label="Return to OTTI">‹</button><span>Notes</span><button onclick="toggleMomMode()" title="Return to OTTI">Done</button></div><div class="mom-paper"><h2>My Notes</h2><p class="mom-date" id="momDate"></p><textarea id="momNotes" placeholder="Write a note…" aria-label="Notes" oninput="saveMomNotes()"></textarea><div class="mom-hint">All caught up.</div></div></section>
+
 
   <nav id="bottomNav" class="bottom-nav">
     <button id="navChats" class="nav-btn active" onclick="showScreen('chats')"><span>♡</span><span>Chats</span></button>
@@ -892,9 +908,10 @@ async function loadContacts(){
     if(!contacts.length){c.innerHTML='<div class="empty"><div class="empty-symbol">♡</div><b>No Ottis yet</b><div>Add someone from the Add tab.</div></div>';return}
     contacts.forEach(x=>{
       const row=document.createElement("div");row.className="contact";row.onclick=()=>openContact(x);
-      row.innerHTML='<div class="avatar"><img src="'+MASCOT+'"></div><div class="contact-main"><div class="contact-name">'+escapeHtml(x.name||"Otti")+'</div><div class="contact-email">'+escapeHtml(x.email||"")+'</div><div class="contact-state">● connected</div></div><button class="contact-menu" aria-label="Chat options" title="Chat options">⋯</button><div>›</div>'; row.querySelector(".contact-menu").onclick=(ev)=>{ev.stopPropagation();openContactActions(x)};
+      row.innerHTML='<div class="avatar"><img src="'+MASCOT+'"></div><div class="contact-main"><div class="contact-name-line"><div class="contact-name">'+escapeHtml(x.name||"Otti")+'</div><span class="unread-pill" data-unread-room="'+escapeHtml(x.room_id||'')+'" hidden>0</span></div><div class="contact-email">'+escapeHtml(x.email||"")+'</div><div class="contact-state">● connected</div></div><button class="contact-menu" aria-label="Chat options" title="Chat options">⋯</button><div>›</div>'; row.querySelector(".contact-menu").onclick=(ev)=>{ev.stopPropagation();openContactActions(x)};
       c.appendChild(row);
     });
+    refreshUnreadCounts();
   }catch(e){toast("◇ "+e.message)}
 }
 
@@ -907,23 +924,55 @@ async function loadRafts(){
     if(!rafts.length){box.innerHTML='<div class="empty"><div class="empty-symbol">◇</div><b>No Rafts yet</b><div>Tap ＋ to create your first group.</div></div>';return}
     rafts.forEach(room=>{
       const row=document.createElement('div');row.className='contact';
-      row.innerHTML='<div class="avatar"><span></span></div><div class="contact-main"><div class="contact-name"></div><div class="contact-email">Raft group</div></div><button class="contact-menu" type="button" aria-label="Delete Raft" title="Delete Raft">×</button><div>›</div>';
+      row.innerHTML='<div class="avatar"><span></span></div><div class="contact-main"><div class="contact-name-line"><div class="contact-name"></div><span class="unread-pill" data-unread-room="'+escapeHtml(room.id)+'" hidden>0</span></div><div class="contact-email">Raft group</div></div><div class="raft-row-actions"><button class="raft-add-members" type="button" aria-label="Add members" title="Add members">＋</button><button class="contact-menu" type="button" aria-label="Delete Raft" title="Delete Raft">×</button></div><div>›</div>';
       row.querySelector('.avatar span').textContent=room.icon||'◇';row.querySelector('.contact-name').textContent=room.name||'Raft';
       row.onclick=()=>openRoom(room.id,{id:room.id,name:room.name||'Raft',kind:'group',icon:room.icon});
+      row.querySelector('.raft-add-members').onclick=ev=>{ev.stopPropagation();openRaftModal(room)};
       row.querySelector('.contact-menu').onclick=ev=>{ev.stopPropagation();deleteRaft(room)};
       box.appendChild(row);
     });
+    refreshUnreadCounts();
   }catch(e){box.innerHTML='<div class="empty"><b>Could not load Rafts</b><div>'+escapeHtml(e.message)+'</div></div>'}
 }
-async function createRaft(){
-  const name=prompt('Name your new Raft:','My Raft');if(name===null)return;
-  const clean=name.trim();if(!clean){toast('◇ Enter a Raft name');return}
+let raftModalRoom=null,raftSelectedMembers=new Map(),raftSearchTimer=null;
+function openRaftModal(room=null){
+  raftModalRoom=room;raftSelectedMembers=new Map();
+  $('raftModalTitle').textContent=room?'Add members to '+(room.name||'Raft'):'Create a Raft';
+  $('raftNameInput').value=room?.name||'';$('raftNameInput').closest('label')?.classList.toggle('hidden',!!room);
+  document.querySelector('label[for="raftNameInput"]').style.display=room?'none':'block';$('raftNameInput').style.display=room?'none':'block';
+  $('raftMemberSearch').value='';$('raftMemberResults').innerHTML='<div class="raft-help">Search for people to invite to your Raft.</div>';
+  renderRaftSelected();$('raftSaveButton').textContent=room?'Add selected members ♡':'Create Raft ✦';
+  $('raftModal').classList.add('show');$('raftModal').setAttribute('aria-hidden','false');setTimeout(()=>$('raftMemberSearch').focus(),80);
+}
+function closeRaftModal(){const m=$('raftModal');m.classList.remove('show');m.setAttribute('aria-hidden','true');raftModalRoom=null;raftSelectedMembers.clear()}
+function renderRaftSelected(){
+  const box=$('raftSelectedMembers');box.innerHTML='';
+  raftSelectedMembers.forEach((u,id)=>{const chip=document.createElement('span');chip.className='raft-chip';const name=document.createElement('span');name.textContent=u.name||u.email||'Otti';const rm=document.createElement('button');rm.type='button';rm.textContent='×';rm.setAttribute('aria-label','Remove '+(u.name||'member'));rm.onclick=()=>{raftSelectedMembers.delete(id);renderRaftSelected()};chip.append(name,rm);box.appendChild(chip)});
+}
+async function searchRaftMembers(){
+  const q=$('raftMemberSearch').value.trim(),box=$('raftMemberResults');if(raftSearchTimer)clearTimeout(raftSearchTimer);
+  if(q.length<2){box.innerHTML='<div class="raft-help">Type at least 2 characters to search.</div>';return}
+  raftSearchTimer=setTimeout(async()=>{try{
+    const r=await fetch('/api/users/search?q='+encodeURIComponent(q),{credentials:'include',cache:'no-store'}),d=await r.json();if(!r.ok)throw new Error(d.error||'Search failed');
+    box.innerHTML='';const users=(d.users||[]).filter(u=>!raftSelectedMembers.has(String(u.id)));
+    if(!users.length){box.innerHTML='<div class="raft-help">No new people found. Try another name or email.</div>';return}
+    users.forEach(u=>{const item=document.createElement('div');item.className='raft-member-option';const av=document.createElement('div');av.className='avatar';av.style.width='36px';av.style.height='36px';av.innerHTML='<img src="'+MASCOT+'">';const copy=document.createElement('div');copy.className='raft-person-copy';const b=document.createElement('b');b.textContent=u.name||'Otti';const sm=document.createElement('small');sm.textContent=u.email||'';copy.append(b,sm);const add=document.createElement('span');add.className='raft-add-mark';add.textContent='＋';item.append(av,copy,add);item.onclick=()=>{raftSelectedMembers.set(String(u.id),u);renderRaftSelected();searchRaftMembers()};box.appendChild(item)});
+  }catch(e){box.innerHTML='<div class="raft-help">'+escapeHtml(e.message)+'</div>'}},180);
+}
+async function saveRaft(){
+  const button=$('raftSaveButton');button.disabled=true;const wasCreating=!raftModalRoom;
   try{
-    const r=await fetch('/api/groups',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:clean,icon:'◇'})});
-    const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not create Raft');
-    await loadRafts();if(d.room)await openRoom(d.room.id,{id:d.room.id,name:d.room.name||clean,kind:'group',icon:d.room.icon});
-    toast('✦ Raft created');
-  }catch(e){toast('◇ '+e.message)}
+    let room=raftModalRoom;
+    if(!room){const clean=$('raftNameInput').value.trim();if(!clean){toast('◇ Give your Raft a name first');$('raftNameInput').focus();return}
+      const r=await fetch('/api/groups',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:clean,icon:'◇'})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Could not create Raft');room=d.room;
+    }
+    let added=0;for(const u of raftSelectedMembers.values()){
+      const r=await fetch('/api/groups/'+encodeURIComponent(room.id)+'/members',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({userId:u.id})});const d=await r.json();if(!r.ok)throw new Error(d.error||('Could not add '+(u.name||'member')));added++;
+    }
+    closeRaftModal();await loadRafts();await loadContacts();
+    if(wasCreating && room)await openRoom(room.id,{id:room.id,name:room.name||'Raft',kind:'group',icon:room.icon});
+    toast(added?('✦ '+(wasCreating?'Raft ready':'Members added')+' · '+added+' member'+(added===1?'':'s')+' added'):(wasCreating?'✦ Raft created':'♡ Members added'));
+  }catch(e){toast('◇ '+e.message)}finally{button.disabled=false}
 }
 async function deleteRaft(room){
   if(!confirm('Delete Raft “'+(room.name||'Raft')+'” and its messages for everyone? This cannot be undone.'))return;
@@ -933,6 +982,12 @@ async function deleteRaft(room){
     if(currentRoomId===room.id){stopMessagePolling();if(socket){try{socket.close()}catch(_){}socket=null}currentRoomId=null;currentContact=null;showScreen('chats')}
     await loadRafts();toast('× Raft deleted');
   }catch(e){toast('◇ '+e.message)}
+}
+function createRaft(){openRaftModal()}
+async function refreshUnreadCounts(){
+  try{const r=await fetch('/api/unread',{credentials:'include',cache:'no-store'});if(!r.ok)return;const d=await r.json();const counts=d.counts||{};
+    document.querySelectorAll('[data-unread-room]').forEach(el=>{const id=el.getAttribute('data-unread-room'),n=Number(counts[id]||0);el.textContent=n>99?'99+':String(n);el.hidden=n<1});
+  }catch(_){}
 }
 
 function openContactActions(contact){
@@ -1021,6 +1076,7 @@ async function loadMessages(roomId){
     const r=await fetch("/api/rooms/"+encodeURIComponent(roomId)+"/messages",{credentials:"include"}),d=await r.json();
     if(!r.ok)throw new Error(d.error||"Unable to load messages");
     $("messages").innerHTML="";renderedMessageIds=new Set();renderedClientIds=new Set();(d.messages||[]).forEach(renderMessage);scrollMessages();
+    await fetch('/api/rooms/'+encodeURIComponent(roomId)+'/read',{method:'POST',credentials:'include'});refreshUnreadCounts();
   }catch(e){$("messages").innerHTML='<div class="empty"><div class="empty-symbol">◇</div><b>Could not load conversation</b><div>'+escapeHtml(e.message)+'</div></div>'}
 }
 function startMessagePolling(roomId){
@@ -1142,14 +1198,6 @@ async function postStatus(){
     input.value="";toast("✦ Status dropped.");loadStatuses();
   }catch(e){toast("◇ "+e.message)}
 }
-function toggleMomMode(){
-  const screen=$("momModeScreen"); if(!screen)return;
-  const opening=screen.hidden;
-  if(opening){try{$("momNotes").value=localStorage.getItem("otti-mom-notes")||""}catch(_){};const d=new Date();$("momDate").textContent=d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});screen.hidden=false;document.body.dataset.momMode="on";}
-  else{screen.hidden=true;delete document.body.dataset.momMode;}
-  const b=$("momModeButton");if(b)b.textContent=opening?"Close":"Open";
-}
-function saveMomNotes(){try{localStorage.setItem("otti-mom-notes",$("momNotes").value)}catch(_){}}
 
 async function copyInvite(){
   const invite=location.origin;
@@ -1255,6 +1303,7 @@ function handleIncomingMessageNotice(d){
   if(notifiedMessageIds.size>500)notifiedMessageIds.delete(notifiedMessageIds.values().next().value);
   const sender=d.name||'Someone';
   addOttiNotification('♡',sender+' sent a message',d.text||'New private message',d.room);
+  if(String(d.room)!==String(currentRoomId)||!$('chat')?.classList.contains('active'))refreshUnreadCounts();
   notifyIncomingMessage(d);notifyMessageSound();
 }
 async function openNotificationRoom(roomId){

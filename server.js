@@ -48,6 +48,8 @@ async function init(){
   for(const table of ['users','rooms','room_members','messages','contacts','groups_meta','statuses'])
     await pool.query(`SELECT 1 FROM ${table} LIMIT 1`);
   await pool.query(`CREATE TABLE IF NOT EXISTS user_room_clears (user_id uuid NOT NULL, room_id uuid NOT NULL, cleared_at timestamptz NOT NULL DEFAULT NOW(), PRIMARY KEY(user_id,room_id))`);
+  await pool.query(`CREATE TABLE IF NOT EXISTS user_room_reads (user_id uuid NOT NULL, room_id uuid NOT NULL, last_read_at timestamptz NOT NULL DEFAULT NOW(), PRIMARY KEY(user_id,room_id))`);
+  await pool.query(`INSERT INTO user_room_reads(user_id,room_id,last_read_at) SELECT user_id,room_id,NOW() FROM room_members ON CONFLICT DO NOTHING`);
 }
 
 app.get('/health',async(req,res)=>{
@@ -158,7 +160,9 @@ function loginSession(req,userId){
 
 app.get('/api/contacts',requireAuth,async(req,res)=>{
   try{
-    const r=await pool.query(`SELECT c.contact_user_id AS user_id,u.name,u.email,u.avatar,c.status,c.created_at FROM contacts c JOIN users u ON u.id=c.contact_user_id WHERE c.user_id=$1 AND c.status <> 'blocked' ORDER BY c.created_at DESC`,[req.session.userId]);
+    const r=await pool.query(`SELECT c.contact_user_id AS user_id,u.name,u.email,u.avatar,c.status,c.created_at,
+      (SELECT r.id FROM rooms r JOIN room_members mine ON mine.room_id=r.id AND mine.user_id=$1 JOIN room_members peer ON peer.room_id=r.id AND peer.user_id=c.contact_user_id WHERE r.kind='direct' LIMIT 1) AS room_id
+      FROM contacts c JOIN users u ON u.id=c.contact_user_id WHERE c.user_id=$1 AND c.status <> 'blocked' ORDER BY c.created_at DESC`,[req.session.userId]);
     res.json({contacts:r.rows});
   }catch(e){console.error(e);res.status(500).json({error:'CONTACTS_ERROR'})}
 });
@@ -191,6 +195,7 @@ app.post('/api/contacts',requireAuth,async(req,res)=>{
       const roomId=uuid(),name=u.rows[0].name;
       await pool.query('INSERT INTO rooms(id,name,kind,created_by) VALUES($1,$2,$3,$4)',[roomId,name,'direct',req.session.userId]);
       await pool.query('INSERT INTO room_members(room_id,user_id) VALUES($1,$2),($1,$3)',[roomId,req.session.userId,target]);
+      await pool.query('INSERT INTO user_room_reads(user_id,room_id,last_read_at) VALUES($1,$2,NOW()),($3,$2,NOW()) ON CONFLICT DO NOTHING',[req.session.userId,roomId,target]);
       room={rows:[{id:roomId,name,kind:'direct'}]};
     }
     res.json({ok:true,user:u.rows[0],room:room.rows[0]});
@@ -270,6 +275,7 @@ app.post('/api/groups',requireAuth,async(req,res)=>{
     await client.query('BEGIN');const roomId=uuid(),groupId=uuid(),name=safe(req.body.name,80)||'New Otti Circle',icon=safe(req.body.icon,8)||'◇';
     await client.query('INSERT INTO rooms(id,name,kind,created_by) VALUES($1,$2,$3,$4)',[roomId,name,'group',req.session.userId]);
     await client.query('INSERT INTO room_members(room_id,user_id) VALUES($1,$2)',[roomId,req.session.userId]);
+    await client.query('INSERT INTO user_room_reads(user_id,room_id,last_read_at) VALUES($1,$2,NOW()) ON CONFLICT DO NOTHING',[req.session.userId,roomId]);
     await client.query('INSERT INTO groups_meta(id,room_id,icon,created_by) VALUES($1,$2,$3,$4)',[groupId,roomId,icon,req.session.userId]);
     await client.query('COMMIT');res.json({room:{id:roomId,name,kind:'group',icon}});
   }catch(e){await client.query('ROLLBACK');console.error(e);res.status(500).json({error:'GROUP_ERROR'})}finally{client.release()}
@@ -282,6 +288,7 @@ app.delete('/api/groups/:roomId',requireAuth,async(req,res)=>{
     if(!owner.rowCount){await client.query('ROLLBACK');return res.status(403).json({error:'NOT_GROUP_OWNER'})}
     await client.query('DELETE FROM messages WHERE room_id=$1',[req.params.roomId]);
     await client.query('DELETE FROM user_room_clears WHERE room_id=$1',[req.params.roomId]);
+    await client.query('DELETE FROM user_room_reads WHERE room_id=$1',[req.params.roomId]);
     await client.query('DELETE FROM room_members WHERE room_id=$1',[req.params.roomId]);
     await client.query('DELETE FROM groups_meta WHERE room_id=$1',[req.params.roomId]);
     await client.query('DELETE FROM rooms WHERE id=$1',[req.params.roomId]);
@@ -307,6 +314,24 @@ app.get('/api/notifications',requireAuth,async(req,res)=>{
   }catch(e){console.error('Notification poll error',e);res.status(500).json({error:'NOTIFICATIONS_ERROR'})}
 });
 
+app.post('/api/rooms/:roomId/read',requireAuth,async(req,res)=>{
+  try{
+    const roomId=safe(req.params.roomId,80);const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[roomId,req.session.userId]);
+    if(!access.rowCount)return res.status(403).json({error:'FORBIDDEN'});
+    await pool.query(`INSERT INTO user_room_reads(user_id,room_id,last_read_at) VALUES($1,$2,NOW()) ON CONFLICT(user_id,room_id) DO UPDATE SET last_read_at=EXCLUDED.last_read_at`,[req.session.userId,roomId]);res.json({ok:true});
+  }catch(e){console.error('Mark read error',e);res.status(500).json({error:'MARK_READ_ERROR'})}
+});
+
+app.get('/api/unread',requireAuth,async(req,res)=>{
+  try{
+    const r=await pool.query(`SELECT m.room_id,COUNT(*)::int AS count
+      FROM messages m JOIN room_members mine ON mine.room_id=m.room_id AND mine.user_id=$1
+      WHERE m.user_id<>$1 AND m.created_at>GREATEST(COALESCE((SELECT c.cleared_at FROM user_room_clears c WHERE c.user_id=$1 AND c.room_id=m.room_id),'epoch'::timestamptz),COALESCE((SELECT rd.last_read_at FROM user_room_reads rd WHERE rd.user_id=$1 AND rd.room_id=m.room_id),'epoch'::timestamptz))
+      GROUP BY m.room_id`,[req.session.userId]);
+    const counts={};for(const row of r.rows)counts[row.room_id]=row.count;res.json({counts});
+  }catch(e){console.error('Unread counts error',e);res.status(500).json({error:'UNREAD_ERROR'})}
+});
+
 app.get('/api/groups/:roomId/members',requireAuth,async(req,res)=>{
   const access=await pool.query('SELECT 1 FROM room_members WHERE room_id=$1 AND user_id=$2',[req.params.roomId,req.session.userId]);
   if(!access.rowCount)return res.status(403).json({error:'FORBIDDEN'});
@@ -321,6 +346,7 @@ app.post('/api/groups/:roomId/members',requireAuth,async(req,res)=>{
     const u=await pool.query('SELECT id,name,email,avatar FROM users WHERE id=$1',[target]);
     if(!u.rowCount)return res.status(404).json({error:'USER_NOT_FOUND'});
     await pool.query('INSERT INTO room_members(room_id,user_id) VALUES($1,$2) ON CONFLICT DO NOTHING',[req.params.roomId,target]);
+    await pool.query('INSERT INTO user_room_reads(user_id,room_id,last_read_at) VALUES($1,$2,NOW()) ON CONFLICT DO NOTHING',[target,req.params.roomId]);
     res.json({ok:true,user:u.rows[0]});
   }catch(e){console.error(e);res.status(500).json({error:'GROUP_MEMBER_ADD_ERROR'})}
 });
