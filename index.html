@@ -502,7 +502,7 @@ body.dark .raft-sheet{background:#0d2940;color:#fff0d0;border-color:#245a78}body
     </div>
 
     <div class="chat-actions">
-      <button class="dive" onclick="toggleGhost()">〰 DIVE</button>
+      <button class="dive otti-dive-button" id="ottiDiveButton" onclick="toggleGhost()" aria-label="Turn Ghost Mode on or off" aria-pressed="false"><span class="dive-ghost-icon" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M24 5c-9 0-16 7-16 16v12l5-3 5 5 6-4 6 4 5-5 5 3V21C40 12 33 5 24 5Z"/><circle cx="18" cy="21" r="2"/><circle cx="30" cy="21" r="2"/><path d="M20 27q4 4 8 0"/></svg></span><span class="dive-button-copy"><strong>Ghost Mode</strong><small>DIVE IN</small></span><span class="dive-water-ripple" aria-hidden="true"></span></button>
       <button onclick="simulateViewer()">◉ Viewer</button>
       <button class="return" onclick="returnSurface()">⌁ Return</button>
     </div>
@@ -806,6 +806,9 @@ function getOttiPresentation(text){
   return null;
 }
 function updateGhostUI(){
+  const diveButton=$("ottiDiveButton");
+  if(diveButton){diveButton.setAttribute("aria-pressed",ghost?"true":"false");diveButton.classList.toggle("is-on",!!ghost);}
+  const chatScreen=$("chat");if(chatScreen)chatScreen.classList.toggle("ghost-active",!!ghost);
   $("state").textContent=ghost?"〰 DIVE":"● Private";
   $("msg").placeholder=ghost?"Send privately…":"Message privately…";
   document.querySelectorAll("#messages .bubble").forEach(b=>{
@@ -1412,5 +1415,28 @@ async function startFaceDetector(){
 applyTheme((()=>{try{return localStorage.getItem('otti-theme')||'light'}catch(_){return 'light'}})());
 checkSession();
 </script>
+
+<style id="otti-premium-ghost-ui">
+/* OTTI Ghost Mode — premium neon-water treatment */
+.chat-actions{align-items:center;gap:10px;padding:10px 14px calc(12px + env(safe-area-inset-bottom,0px));}
+.otti-dive-button{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:11px;min-height:58px;min-width:154px;padding:8px 20px;border:1px solid rgba(211,171,255,.78)!important;border-radius:20px!important;color:#fff!important;background:radial-gradient(120% 160% at 0% 0%,rgba(99,215,255,.26),transparent 48%),linear-gradient(135deg,#11132b 0%,#21113e 55%,#35145d 100%)!important;box-shadow:0 0 10px rgba(179,91,255,.55),0 0 28px rgba(139,73,255,.32),inset 0 1px 0 rgba(255,255,255,.16)!important;transition:transform .22s ease,box-shadow .22s ease;}
+.otti-dive-button:active{transform:scale(.96)}
+.otti-dive-button .dive-ghost-icon{display:grid;place-items:center;width:35px;height:35px;flex:0 0 35px;border-radius:50%;background:rgba(168,103,255,.15);box-shadow:0 0 18px rgba(197,111,255,.55);animation:ottiGhostFloat 2.8s ease-in-out infinite}
+.dive-ghost-icon svg{width:29px;height:29px;fill:none;stroke:#e9c7ff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 5px #bd6cff) drop-shadow(0 0 10px #8c42ff)}
+.dive-button-copy{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05;position:relative;z-index:2}
+.dive-button-copy strong{font-size:14px;font-weight:850;letter-spacing:.025em;text-shadow:0 0 10px rgba(219,166,255,.72)}
+.dive-button-copy small{margin-top:5px;font-size:11px;font-weight:900;letter-spacing:.22em;color:#71e8ff;text-shadow:0 0 8px #28cfff,0 0 18px #28cfff}
+.dive-water-ripple{position:absolute;z-index:-1;inset:auto -10% -29px;height:36px;border-radius:50%;border-top:2px solid rgba(91,226,255,.9);background:radial-gradient(ellipse at center,rgba(76,177,255,.32),transparent 68%);filter:blur(.2px);animation:ottiWaterDrift 3s ease-in-out infinite}
+.otti-dive-button[aria-pressed="true"]{border-color:#ff9de8!important;box-shadow:0 0 12px rgba(255,104,218,.72),0 0 34px rgba(166,77,255,.55),inset 0 0 18px rgba(164,88,255,.18)!important;background:linear-gradient(135deg,#10132c,#321054 55%,#51145c)!important}
+.otti-dive-button[aria-pressed="true"] .dive-button-copy small{color:#ff9de8;text-shadow:0 0 8px #ff51d6,0 0 18px #b14cff}
+#chat.ghost-active .otti-stage{filter:drop-shadow(0 0 18px rgba(170,91,255,.4))}
+#chat.ghost-active .otti-stage:after{content:"〰  DIVE IN  ◇";display:block;position:absolute;left:50%;bottom:7px;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:900;letter-spacing:.2em;color:#d9b6ff;text-shadow:0 0 8px #9d48ff,0 0 18px #6a35ff;animation:ottiDiveLabel 2.2s ease-in-out infinite}
+#chat.ghost-active .wave{filter:drop-shadow(0 0 8px #43dfff);animation:ottiWaterDrift 2.4s ease-in-out infinite}
+@keyframes ottiGhostFloat{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-3px) rotate(4deg)}}
+@keyframes ottiWaterDrift{0%,100%{transform:translateX(-3px) scaleX(.98);opacity:.72}50%{transform:translateX(4px) scaleX(1.03);opacity:1}}
+@keyframes ottiDiveLabel{0%,100%{opacity:.72;letter-spacing:.18em}50%{opacity:1;letter-spacing:.23em}}
+@media(prefers-reduced-motion:reduce){.otti-dive-button *,#chat.ghost-active .otti-stage:after{animation:none!important;transition:none!important}}
+</style>
+
 </body>
 </html>
