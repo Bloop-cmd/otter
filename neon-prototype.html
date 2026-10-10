@@ -1,0 +1,156 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OTTI — Neon Universe</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #10091f;
+  --panel: #1b112d;
+  --purple: #b75cff;
+  --pink: #ff56d8;
+  --cyan: #4cecff;
+  --text: #fbf4ff;
+  --muted: #b7a7ca;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; padding: 22px;
+  color: var(--text);
+  font-family: system-ui, sans-serif;
+  background: radial-gradient(ellipse at 50% 0%, #57217b 0%, transparent 48%), var(--bg);
+}
+main { max-width: 760px; margin: auto; }
+header { display: flex; align-items: center; gap: 12px; }
+.logo {
+  font-size: 34px; background: var(--panel); border-radius: 18px;
+  padding: 10px; box-shadow: 0 0 25px #b75cff55;
+}
+h1 { letter-spacing: 4px; margin: 0; }
+header p { color: var(--muted); font-size: 10px; letter-spacing: 3px; margin: 4px 0; }
+.hero {
+  margin-top: 28px; padding: 25px 16px; text-align: center;
+  border: 1px solid #b75cff66; border-radius: 26px;
+  background: linear-gradient(145deg,#27163d,#160e25);
+  box-shadow: 0 0 32px #9e43ff20;
+}
+.eyebrow { color: var(--cyan); font-size: 10px; letter-spacing: 3px; }
+h2 {
+  letter-spacing: 4px;
+  text-shadow: 0 0 10px white, 0 0 26px var(--purple);
+}
+.orb {
+  width: 160px; height: 160px; margin: 24px auto;
+  border: 2px solid var(--cyan); border-right-color: var(--pink);
+  border-bottom-color: var(--purple); border-radius: 50%;
+  display: grid; place-items: center;
+  box-shadow: 0 0 18px var(--cyan), inset 0 0 25px #b75cff33;
+  animation: glow 3s ease-in-out infinite alternate;
+}
+.otter {
+  font-size: 62px; width: 120px; height: 120px;
+  border-radius: 50%; display: grid; place-items: center;
+  background: #38204e; box-shadow: 0 0 30px #b75cff77;
+}
+button {
+  cursor: pointer; color: white; font-weight: 800;
+  letter-spacing: 2px; border: 1px solid #e7baff;
+  border-radius: 99px; padding: 14px 28px;
+  background: linear-gradient(100deg,#8b39f0,#d83db9);
+  box-shadow: 0 0 22px #b75cff66;
+}
+button[aria-pressed="true"] {
+  background: linear-gradient(100deg,#087f9b,#7437d7);
+  box-shadow: 0 0 22px var(--cyan);
+}
+.note { color: var(--muted); font-size: 12px; }
+.cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+.card {
+  background: var(--panel); border: 1px solid #ffffff18;
+  border-radius: 20px; padding: 18px;
+}
+.card h3 { margin-top: 0; font-size: 14px; }
+.person { padding: 10px 0; border-bottom: 1px solid #ffffff12; font-size: 13px; }
+.person:last-child { border: 0; }
+small { color: var(--muted); }
+.themes { display: flex; gap: 8px; flex-wrap: wrap; }
+.themes button { flex: 1; padding: 10px; font-size: 10px; }
+@keyframes glow {
+  from { transform: rotate(-8deg); filter: hue-rotate(0); }
+  to { transform: rotate(8deg); filter: hue-rotate(25deg); }
+}
+@media(max-width:560px) {
+  body { padding: 12px; }
+  .cards { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="logo">🦦</div>
+  <div><h1>OTTI</h1><p>YOUR LITTLE UNIVERSE</p></div>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">✦ YOUR SPACE. YOUR RULES. ✦</div>
+  <h2>GHOST MODE</h2>
+  <div class="orb"><div class="otter" id="mascot">🦦</div></div>
+  <button id="dive" aria-pressed="false">DIVE IN ↗</button>
+  <p class="note" id="status">Your space stays yours. Tap to preview Ghost Mode.</p>
+</section>
+
+<div class="cards">
+  <section class="card">
+    <h3>✨ Your people</h3>
+    <div class="person">🌷 <b>Falguni 💗</b><br><small>that neon theme is SO you ✨</small></div>
+    <div class="person">🪩 <b>Moon girls</b><br><small>Friday plans? I'm readyyy</small></div>
+    <div class="person">🦋 <b>Meera</b><br><small>sent you a little sparkle ♡</small></div>
+  </section>
+  <section class="card">
+    <h3>🫧 Your Rafts</h3>
+    <div class="person">🌙 <b>Moon girls</b><br><small>4 souls · your safe space</small></div>
+    <div class="person">🪩 <b>Weekend chaos</b><br><small>7 souls · pure energy</small></div>
+    <div class="person">🫶 <b>Inner circle</b><br><small>3 souls · just us</small></div>
+    <h3 style="margin-top:18px">🎨 Choose your vibe</h3>
+    <div class="themes">
+      <button data-theme="light">☀ LIGHT</button>
+      <button data-theme="dark">☾ DARK</button>
+      <button data-theme="neon">✦ NEON</button>
+    </div>
+  </section>
+</div>
+<p class="note">OTTI Neon Lab · Design preview · Sample conversations only</p>
+</main>
+<script>
+const dive = document.getElementById('dive');
+const status = document.getElementById('status');
+dive.addEventListener('click', () => {
+  const on = dive.getAttribute('aria-pressed') !== 'true';
+  dive.setAttribute('aria-pressed', String(on));
+  dive.textContent = on ? 'GHOST MODE ON ✦' : 'DIVE IN ↗';
+  document.getElementById('mascot').textContent = on ? '🫥' : '🦦';
+  status.textContent = on
+    ? 'Demo state active on this prototype only. Real chat privacy is not connected.'
+    : 'Your space stays yours. Tap to preview Ghost Mode.';
+});
+document.querySelectorAll('[data-theme]').forEach(button => {
+  button.addEventListener('click', () => {
+    const theme = button.dataset.theme;
+    if (theme === 'light') {
+      document.documentElement.style.setProperty('--bg','#eee7fa');
+      document.documentElement.style.setProperty('--panel','#f8f1ff');
+      document.documentElement.style.setProperty('--text','#27113c');
+    } else {
+      document.documentElement.style.setProperty('--bg',theme === 'dark' ? '#090812' : '#10091f');
+      document.documentElement.style.setProperty('--panel','#1b112d');
+      document.documentElement.style.setProperty('--text','#fbf4ff');
+    }
+  });
+});
+</script>
+</body>
+</html>
