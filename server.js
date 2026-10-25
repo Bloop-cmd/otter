@@ -207,30 +207,6 @@ app.get('/auth/google/callback', async (req, res) => {
   }
 });
 
-app.get('/auth/github',(req,res)=>{
-  if(!process.env.GITHUB_CLIENT_ID||!process.env.GITHUB_CLIENT_SECRET)return res.status(503).send('GitHub OAuth is not configured.');
-  req.session.oauthState=randomState();
-  const redirect=encodeURIComponent(`${baseUrl(req)}/auth/github/callback`);
-  res.redirect(`https://github.com/login/oauth/authorize?client_id=${encodeURIComponent(process.env.GITHUB_CLIENT_ID)}&redirect_uri=${redirect}&scope=${encodeURIComponent('read:user user:email')}&state=${req.session.oauthState}`);
-});
-
-app.get('/auth/github/callback',async(req,res)=>{
-  try{
-    if(!req.query.code||req.query.state!==req.session.oauthState)return res.status(400).send('Invalid OAuth state.');
-    delete req.session.oauthState;
-    const redirect=`${baseUrl(req)}/auth/github/callback`;
-    const token=await fetch('https://github.com/login/oauth/access_token',{method:'POST',headers:{accept:'application/json','content-type':'application/json'},body:JSON.stringify({client_id:process.env.GITHUB_CLIENT_ID,client_secret:process.env.GITHUB_CLIENT_SECRET,code:req.query.code,redirect_uri:redirect})}).then(r=>r.json());
-    if(!token.access_token)return res.status(401).send('GitHub authorization failed.');
-    const headers={authorization:`Bearer ${token.access_token}`,accept:'application/vnd.github+json','user-agent':'otti-live'};
-    const profile=await fetch('https://api.github.com/user',{headers}).then(r=>r.json());
-    const emails=await fetch('https://api.github.com/user/emails',{headers}).then(r=>r.json());
-    const primary=(Array.isArray(emails)?emails.find(x=>x.primary&&x.verified):null)||emails?.find?.(x=>x.verified);
-    if(!primary?.email)return res.status(400).send('A verified GitHub email is required.');
-    const user=await upsertOAuth('github',String(profile.id),primary.email,profile.name||profile.login||'Otti User',profile.avatar_url);
-    await loginSession(req,user.id);res.redirect('/');
-  }catch(e){console.error(e);res.status(500).send('GitHub sign-in failed.')}
-});
-
 async function upsertOAuth(provider,providerId,email,name,avatar){
   let r=await pool.query('SELECT * FROM users WHERE provider=$1 AND provider_id=$2',[provider,providerId]);
   if(r.rowCount)return r.rows[0];
