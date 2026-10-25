@@ -1526,6 +1526,171 @@ body.dark .auth-card{background:#201f55!important;border-color:#7774c9!important
 @media(max-width:480px){.brand{font-size:22px}.top{padding-left:12px;padding-right:12px}.card{border-radius:16px}.auth-card{padding:22px}}
 
 
+
+/* STEAMED SCREENSHOT PALETTE REFINEMENT */
+:root{--cream:#e9e6ff;--cream2:#fffdf6;--white:#fffdf6;--ink:#1d1b4a;--orange:#ffd84d;--orange2:#f4ca38;--blue:#48458f;--aqua:#b9f4dd;--mist:#6b68a8;--line:#c9c7ff;--ghost:#ff4f7b;--green:#258a70;--red:#e34c72;--pink:#ff4f7b;--shadow:0 7px 0 rgba(29,27,74,.12);--otti-purple:#1d1b4a;--otti-purple2:#48458f;--otti-hot:#ff4f7b;--otti-mint:#b9f4dd;--otti-yellow:#ffd84d}
+html,body,.app,.content,#chat{background-color:#e9e6ff;color:#1d1b4a}
+html,body{background-image:radial-gradient(#d5ceff 1.5px,transparent 1.5px);background-size:27px 27px}
+body{color:#1d1b4a}
+.top,.chat-top{background:#e9e6ff;color:#1d1b4a;border-bottom:3px solid #ff4f7b}
+.brand,.chat-title{color:#1d1b4a}
+.brand .mini{background:#ff4f7b!important;color:#fff!important;border-color:#ff4f7b!important;box-shadow:none!important;border-radius:12px!important}
+.title,.auth-title,.contact-name{color:#1d1b4a}
+.card:nth-child(odd),.search-result,.option,.status-card{background:#fffdf6}
+.card:nth-child(even){background:#ffd84d}
+.card:nth-child(3n){background:#ff4f7b;color:#fff}
+.card:nth-child(3n) *{color:#fff}
+.primary,.nav-add{background:#ff4f7b!important;color:#fff!important;border-color:#1d1b4a!important;box-shadow:0 4px 0 #1d1b4a}
+.secondary,.icon,.refresh,.chat-actions button,.otti-notify-btn,.mom-corner-btn{background:#e9e6ff;color:#1d1b4a;border-color:#48458f;box-shadow:3px 3px 0 rgba(29,27,74,.15)}
+.bottom-nav{background:#fffdf6;border-top:3px solid #ff4f7b}
+.nav-btn{color:#48458f}.nav-btn.active{color:#1d1b4a;background:#ffd84d}
+.nav-btn.active span:first-child{background:#ff4f7b;color:#fff}
+.auth-wrap{background-color:#e9e6ff;background-image:radial-gradient(#d5ceff 1.5px,transparent 1.5px);background-size:27px 27px}
+.auth-card{background:#fffdf6;border-color:#1d1b4a;box-shadow:7px 7px 0 #ff4f7b}
+.auth-sub,.sub,.contact-email,.contact-state,.status-text,.message-name{color:#6b68a8}
+.input,.auth-card .input,.composer input{background:#fffdf6!important;color:#1d1b4a!important;border-color:#c9c7ff!important}
+.chat-top .chat-actions button{background:#fffdf6;color:#1d1b4a}
+.otti-stage{background:#fffdf6;border-color:#ff4f7b}
+.messages{background-color:#e9e6ff;background-image:radial-gradient(rgba(72,69,143,.12) 1px,transparent 1px);background-size:20px 20px}
+.bubble{background:#fffdf6;color:#1d1b4a;border-color:#c9c7ff}
+.bubble.mine{background:#ffd84d;color:#1d1b4a;border-color:#1d1b4a}
+.codex-trigger{background:#ffd84d!important;color:#1d1b4a!important;border-color:#1d1b4a!important;box-shadow:3px 3px 0 #ff4f7b}
+body.dark .app,body.dark .content,body.dark #chat{background:#201f55!important;color:#fffdf6!important}
+body.dark .top,body.dark .chat-top{background:#201f55!important;color:#fffdf6!important}
+body.dark .brand,body.dark .chat-title{color:#fffdf6!important}
+body.dark .brand .mini{background:#ff4f7b!important;color:#fff!important}
+body.dark .card:nth-child(odd){background:#302f78!important;color:#fffdf6!important}
+body.dark .card:nth-child(even){background:#514a96!important;color:#fffdf6!important}
+body.dark .card:nth-child(3n){background:#ff4f7b!important;color:#fff!important}
+body.dark .bottom-nav{background:#171644!important}
 </style>
+
+<style id="steamed-fidelity-pass">
+/* Steamed fidelity pass: layout, typography, palette, cards and controls. App logic untouched. */
+:root{
+ --steam-bg:#2b2a6b;--steam-bg2:#3a3990;--steam-paper:#fff7e6;--steam-ink:#1d1b4a;
+ --steam-note:#ffd84d;--steam-hot:#ff4f7b;--steam-mint:#5be0b3;--steam-muted:#c9c7ff;
+ --cream:var(--steam-paper);--cream2:#fffdf6;--white:#fffdf6;--ink:var(--steam-ink);
+ --orange:var(--steam-note);--orange2:#f2c936;--blue:var(--steam-bg2);--aqua:var(--steam-mint);
+ --mist:#6b68a8;--line:#c9c7ff;--pink:var(--steam-hot);--shadow:4px 5px 0 rgba(29,27,74,.16);
+}
+html,body{font-family:'DM Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif!important}
+body{background-color:var(--steam-bg)!important;background-image:radial-gradient(var(--steam-bg2) 1.5px,transparent 1.5px)!important;background-size:22px 22px!important;color:var(--steam-paper)!important}
+.app{width:min(520px,100vw)!important;background:var(--steam-paper)!important;color:var(--steam-ink)!important;box-shadow:0 0 0 3px rgba(255,247,230,.13)!important}
+.top{min-height:72px!important;height:72px!important;padding:10px 16px!important;background:var(--steam-bg)!important;color:var(--steam-paper)!important;border-bottom:4px solid var(--steam-hot)!important}
+.brand{font-family:'Bowlby One',Impact,sans-serif!important;font-weight:400!important;font-size:26px!important;letter-spacing:.1px!important;color:var(--steam-paper)!important;transform:rotate(-1deg)}
+.brand .mini{background:var(--steam-mint)!important;border:2px solid var(--steam-ink)!important;border-radius:13px!important;box-shadow:3px 3px 0 var(--steam-hot)!important}
+.top-actions{gap:9px!important}
+.top-actions button,.icon,.refresh,.otti-notify-btn{border:2px solid var(--steam-muted)!important;border-radius:13px!important;box-shadow:2px 3px 0 rgba(255,79,123,.75)!important;background:var(--steam-paper)!important;color:var(--steam-ink)!important}
+.content{padding:20px 16px 100px!important;background:var(--steam-paper)!important}
+.section-head{display:flex!important;align-items:center!important;gap:10px!important;margin-bottom:13px!important}
+.section-head[style*="margin-top"]{margin-top:23px!important}
+.title{font-family:'Bowlby One',Impact,sans-serif!important;font-size:22px!important;font-weight:400!important;line-height:1.15!important;letter-spacing:0!important;color:var(--steam-ink)!important}
+.sub{font-size:13px!important;line-height:1.4!important;color:#6b68a8!important}
+.card,.search-result,.option,.status-card{background:var(--cream2)!important;color:var(--steam-ink)!important;border:2px solid var(--steam-ink)!important;border-radius:18px!important;box-shadow:4px 5px 0 rgba(58,57,144,.2)!important;margin-bottom:14px!important}
+.card:nth-of-type(even){background:#f1efff!important}
+#contacts,#rafts{padding:12px!important}
+.contact{padding:13px 5px!important;border-bottom:2px dotted #c9c7ff!important}
+.contact-name{font-weight:900!important;color:var(--steam-ink)!important}
+.contact-email,.contact-state,.status-text,.message-name{color:#6b68a8!important}
+.avatar{border:2px solid var(--steam-ink)!important;box-shadow:3px 3px 0 var(--steam-note)!important}
+button{font-family:'DM Sans',system-ui,sans-serif!important;font-weight:800}
+.primary,.nav-add{background:var(--steam-hot)!important;color:#fff!important;border:2px solid var(--steam-ink)!important;border-radius:12px!important;box-shadow:0 4px 0 var(--steam-ink)!important;font-weight:900!important;transition:transform .12s,box-shadow .12s}
+.primary:active,.nav-add:active,.send:active{transform:translateY(3px)!important;box-shadow:0 1px 0 var(--steam-ink)!important}
+.secondary,.refresh,.chat-actions button:not(.otti-dive-button){background:#e8e6ff!important;color:var(--steam-ink)!important;border:2px solid var(--steam-ink)!important;border-radius:12px!important;box-shadow:3px 3px 0 rgba(58,57,144,.2)!important}
+.input,.auth-card .input,.composer input{background:#fff!important;color:var(--steam-ink)!important;border:2px solid #c9c7ff!important;border-radius:11px!important;box-shadow:none!important}
+.input:focus,.composer input:focus{outline:3px solid rgba(255,79,123,.25)!important;border-color:var(--steam-hot)!important}
+.bottom-nav{height:76px!important;background:var(--steam-bg)!important;border-top:4px solid var(--steam-hot)!important;padding-bottom:env(safe-area-inset-bottom)!important}
+.nav-btn{color:var(--steam-muted)!important;font-weight:800!important;gap:3px!important}
+.nav-btn.active{color:var(--steam-note)!important;background:rgba(255,255,255,.08)!important}
+.nav-btn.active span:first-child{background:var(--steam-hot)!important;color:#fff!important;border-radius:10px!important;padding:3px 9px!important}
+.nav-btn .nav-add{background:var(--steam-mint)!important;color:var(--steam-ink)!important;border:2px solid var(--steam-ink)!important;box-shadow:0 3px 0 var(--steam-hot)!important}
+.auth-wrap{background-color:var(--steam-bg)!important;background-image:radial-gradient(var(--steam-bg2) 1.5px,transparent 1.5px)!important;background-size:22px 22px!important}
+.auth-card{background:var(--steam-paper)!important;color:var(--steam-ink)!important;border:3px solid var(--steam-ink)!important;border-radius:22px!important;box-shadow:7px 7px 0 var(--steam-hot)!important}
+.auth-title{font-family:'Bowlby One',Impact,sans-serif!important;font-size:34px!important;font-weight:400!important;color:var(--steam-ink)!important;letter-spacing:.3px!important}
+.auth-sub{color:#6b68a8!important}
+.auth-logo{border:2px solid var(--steam-ink)!important;box-shadow:3px 3px 0 var(--steam-note)!important;border-radius:16px!important}
+#chat{background:var(--steam-paper)!important}
+.chat-top{background:var(--steam-bg)!important;color:var(--steam-paper)!important;border-bottom:4px solid var(--steam-hot)!important}
+.chat-title{font-family:'Bowlby One',Impact,sans-serif!important;font-weight:400!important;color:var(--steam-paper)!important}
+.codex-trigger{background:var(--steam-note)!important;color:var(--steam-ink)!important;border:2px solid var(--steam-ink)!important;border-radius:11px!important;box-shadow:3px 3px 0 var(--steam-hot)!important}
+.otti-stage{background:var(--steam-bg)!important;border:2px solid var(--steam-hot)!important;border-radius:18px!important;box-shadow:4px 4px 0 rgba(58,57,144,.22)!important}
+.wave{color:var(--steam-mint)!important}.state{color:var(--steam-note)!important;font-weight:900!important}
+.messages{background-color:var(--steam-paper)!important;background-image:radial-gradient(rgba(58,57,144,.10) 1px,transparent 1px)!important;background-size:18px 18px!important}
+.bubble:not(.ghost){background:#fffdf6!important;border:2px solid #d6d3ff!important;border-radius:16px 16px 16px 4px!important;box-shadow:3px 3px 0 rgba(58,57,144,.13)!important;color:var(--steam-ink)!important}
+.bubble.mine:not(.ghost){background:#dff9ef!important;border-color:var(--steam-ink)!important;border-radius:16px 16px 4px 16px!important;box-shadow:3px 3px 0 rgba(91,224,179,.55)!important}
+.composer{background:#fffdf6!important;border-top:2px solid #c9c7ff!important}
+.send{background:var(--steam-hot)!important;color:#fff!important;border:2px solid var(--steam-ink)!important;border-radius:12px!important;box-shadow:3px 3px 0 var(--steam-ink)!important}
+.chat-actions{background:#fffdf6!important;border-top:2px dotted #c9c7ff!important}
+.chat-actions button{font-weight:900!important}
+.chat-actions .return{background:var(--steam-mint)!important;color:var(--steam-ink)!important}
+.otti-codex-sheet{background:var(--steam-paper)!important;border:3px solid var(--steam-ink)!important;border-bottom:0!important;border-radius:22px 22px 0 0!important;box-shadow:0 -6px 0 rgba(255,79,123,.4)!important}
+.otti-codex-head b{font-family:'Bowlby One',Impact,sans-serif!important;font-weight:400!important;color:var(--steam-ink)!important}
+.otti-codex-live,.otti-codex-preview,.otti-glyph-grid button{border:2px solid #c9c7ff!important;border-radius:13px!important;background:#fffdf6!important}
+.toast{background:var(--steam-bg)!important;border:2px solid var(--steam-note)!important;border-radius:12px!important;box-shadow:4px 4px 0 var(--steam-hot)!important}
+.empty{color:var(--steam-ink)!important}.empty-symbol{color:var(--steam-hot)!important}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--steam-mint)!important;outline-offset:2px!important}
+/* Dark mode keeps the same Steamed purple identity rather than switching to the old teal palette. */
+body.dark{background:#171644!important;background-image:radial-gradient(#302f78 1.5px,transparent 1.5px)!important;color:#fff7e6!important}
+body.dark .app,body.dark .content,body.dark #chat,body.dark .messages{background-color:#201f55!important;color:#fff7e6!important}
+body.dark .top,body.dark .bottom-nav,body.dark .chat-top{background:#211f58!important;color:#fff7e6!important;border-color:var(--steam-hot)!important}
+body.dark .card,body.dark .search-result,body.dark .option,body.dark .status-card{background:#2b2a6b!important;color:#fff7e6!important;border-color:#7774c9!important}
+body.dark .title,body.dark .contact-name,body.dark .auth-title,body.dark .empty,body.dark .otti-codex-head b{color:#fff7e6!important}
+body.dark .sub,body.dark .contact-email,body.dark .contact-state,body.dark .status-text,body.dark .message-name{color:#c9c7ff!important}
+body.dark .contact{border-color:#514f9c!important}
+body.dark .bubble:not(.ghost){background:#302f78!important;color:#fff7e6!important;border-color:#7774c9!important}
+body.dark .bubble.mine:not(.ghost){background:#214f55!important;border-color:var(--steam-mint)!important}
+body.dark .composer,body.dark .chat-actions{background:#211f58!important;border-color:#514f9c!important}
+body.dark .composer input,body.dark .input{background:#29285f!important;color:#fff7e6!important;border-color:#7774c9!important}
+body.dark .secondary,body.dark .refresh,body.dark .icon,body.dark .top-actions button,body.dark .chat-actions button:not(.otti-dive-button){background:#302f78!important;color:#fff7e6!important;border-color:#7774c9!important}
+@media(max-width:360px){.content{padding:16px 12px 96px!important}.title{font-size:20px!important}.brand{font-size:23px!important}.top{padding:9px 12px!important}}
+@media(prefers-reduced-motion:reduce){.primary,.secondary,.card{transition:none!important}}
+</style>
+
+
+<style id="otti-warm-cream-palette-final">
+/* Otti warm-cream palette: final colour overrides only; existing markup and behaviour preserved. */
+:root{--steam-bg:#fff8ec!important;--steam-bg2:#f4eadb!important;--steam-paper:#fffdf7!important;--steam-ink:#1d1b4a!important;--steam-hot:#ff4f7b!important;--steam-note:#ffd84d!important;--steam-mint:#b9f4dd!important;--steam-muted:#69658f!important;--cream:#fff8ec!important;--cream2:#fffdf7!important;--ink:#1d1b4a!important;--pink:#ff4f7b!important;--orange:#ffd84d!important;--otti-hot:#ff4f7b!important;--otti-yellow:#ffd84d!important;--otti-purple:#1d1b4a!important;--line:#e8d9c9!important}
+html,body,.app,.content,#chat{background-color:#fff8ec!important;color:#1d1b4a!important}
+html,body{background-image:radial-gradient(#f0e2d2 1.4px,transparent 1.4px)!important;background-size:26px 26px!important}
+body{color:#1d1b4a!important}
+.top,.chat-top{background:#fff8ec!important;color:#1d1b4a!important;border-bottom:3px solid #ff4f7b!important}
+.brand,.chat-title{color:#1d1b4a!important}
+.brand .mini{background:#ff4f7b!important;color:#fff!important;border-color:#1d1b4a!important;box-shadow:3px 3px 0 #ffd84d!important}
+.title,.auth-title,.contact-name,.empty,.otti-codex-head b{color:#1d1b4a!important}
+.card,.search-result,.option,.status-card{background:#fffdf7!important;color:#1d1b4a!important;border:2px solid #1d1b4a!important;box-shadow:4px 4px 0 rgba(29,27,74,.14)!important}
+.card:nth-child(even){background:#ffd84d!important}.card:nth-child(odd){background:#ff4f7b!important;color:#fff!important}.card:nth-child(odd) *{color:#fff!important}
+.primary,.nav-add,.send{background:#ff4f7b!important;color:#fff!important;border:2px solid #1d1b4a!important;border-radius:15px!important;box-shadow:0 4px 0 #1d1b4a!important;font-weight:900!important}
+.secondary,.icon,.refresh,.chat-actions button,.top-actions button{background:#fffdf7!important;color:#1d1b4a!important;border:2px solid #1d1b4a!important;border-radius:14px!important;box-shadow:3px 3px 0 rgba(29,27,74,.14)!important}
+.input,.auth-card .input,.composer input{background:#fffdf7!important;color:#1d1b4a!important;border:2px solid #e8d9c9!important;border-radius:14px!important}
+.input:focus,.composer input:focus{outline:3px solid rgba(255,79,123,.25)!important;border-color:#ff4f7b!important}
+.bottom-nav{background:#fffdf7!important;border-top:3px solid #ff4f7b!important}
+.nav-btn{color:#69658f!important;font-weight:800!important}.nav-btn.active{color:#1d1b4a!important;background:#fff0c2!important}.nav-btn.active span:first-child{background:#ff4f7b!important;color:#fff!important;border-radius:10px!important;padding:3px 9px!important}
+.contact{border-bottom:2px dotted #e8d9c9!important}.contact-name{font-weight:900!important}
+.avatar{border:2px solid #1d1b4a!important;box-shadow:3px 3px 0 #ffd84d!important}
+.auth-wrap{background-color:#fff8ec!important;background-image:radial-gradient(#f0e2d2 1.4px,transparent 1.4px)!important;background-size:26px 26px!important}
+.auth-card{background:#fffdf7!important;border:3px solid #1d1b4a!important;box-shadow:7px 7px 0 #ff4f7b!important}
+.auth-sub,.sub,.contact-email,.contact-state,.status-text,.message-name{color:#69658f!important}
+.auth-logo{border:2px solid #1d1b4a!important;box-shadow:3px 3px 0 #ffd84d!important}
+#chat,.messages{background-color:#fffdf7!important}.messages{background-image:radial-gradient(rgba(29,27,74,.07) 1px,transparent 1px)!important;background-size:18px 18px!important}
+.chat-title{color:#1d1b4a!important}.codex-trigger{background:#ffd84d!important;color:#1d1b4a!important;border:2px solid #1d1b4a!important;box-shadow:3px 3px 0 #ff4f7b!important}
+.otti-stage{background:#fff8ec!important;border:2px solid #ff4f7b!important;box-shadow:4px 4px 0 rgba(29,27,74,.14)!important}.wave{color:#ff4f7b!important}.state{color:#1d1b4a!important}
+.bubble:not(.ghost){background:#fff8ec!important;border:2px solid #e8d9c9!important;color:#1d1b4a!important;box-shadow:3px 3px 0 rgba(29,27,74,.1)!important}.bubble.mine:not(.ghost){background:#fff0c2!important;border-color:#1d1b4a!important}
+.composer,.chat-actions{background:#fffdf7!important;border-color:#e8d9c9!important}.chat-actions .dive{background:#ff4f7b!important;color:#fff!important;border:2px solid #1d1b4a!important}.chat-actions .return{background:#ffd84d!important;color:#1d1b4a!important}
+.otti-codex-sheet{background:#fff8ec!important;border-color:#1d1b4a!important}.otti-codex-live,.otti-codex-preview,.otti-glyph-grid button{background:#fffdf7!important;border-color:#e8d9c9!important}.otti-glyph-grid button:active{background:#ffd84d!important}
+.toast{background:#1d1b4a!important;border:2px solid #ffd84d!important;box-shadow:4px 4px 0 #ff4f7b!important}.empty-symbol{color:#ff4f7b!important}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #ff4f7b!important;outline-offset:2px!important}
+/* Preserve a separate dark appearance option and Otti's Ghost Mode effects. */
+body.dark{background:#171644!important;background-image:radial-gradient(#302f78 1.4px,transparent 1.4px)!important;color:#fff8ec!important}
+body.dark .app,body.dark .content,body.dark #chat,body.dark .messages{background-color:#201f55!important;color:#fff8ec!important}
+body.dark .top,body.dark .bottom-nav,body.dark .chat-top{background:#211f58!important;color:#fff8ec!important;border-color:#ff4f7b!important}
+body.dark .card,body.dark .search-result,body.dark .option,body.dark .status-card{background:#2b2a6b!important;color:#fff8ec!important;border-color:#7774c9!important}
+body.dark .card:nth-child(odd) *{color:inherit!important}body.dark .title,body.dark .contact-name,body.dark .auth-title,body.dark .empty,body.dark .otti-codex-head b{color:#fff8ec!important}
+body.dark .sub,body.dark .contact-email,body.dark .contact-state,body.dark .status-text,body.dark .message-name{color:#c9c7ff!important}
+body.dark .bubble:not(.ghost){background:#302f78!important;color:#fff8ec!important;border-color:#7774c9!important}body.dark .bubble.mine:not(.ghost){background:#214f55!important;border-color:#b9f4dd!important}
+body.dark .composer,body.dark .chat-actions{background:#211f58!important;border-color:#514f9c!important}body.dark .composer input,body.dark .input{background:#29285f!important;color:#fff8ec!important;border-color:#7774c9!important}
+body.dark .auth-wrap{background-color:#171644!important;background-image:radial-gradient(#302f78 1.4px,transparent 1.4px)!important}body.dark .auth-card{background:#201f55!important;border-color:#7774c9!important}
+</style>
+
 </body>
 </html>
