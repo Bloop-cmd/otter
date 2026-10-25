@@ -94,15 +94,6 @@ app.post('/api/auth/email',async(req,res)=>{
 
 app.post('/api/auth/logout',(req,res)=>req.session.destroy(()=>{res.clearCookie('connect.sid');res.json({ok:true})}));
 
-app.get('/auth/google',(req,res)=>{
-  if(!process.env.GOOGLE_CLIENT_ID||!process.env.GOOGLE_CLIENT_SECRET)return res.status(503).send('Google OAuth is not configured.');
-  req.session.oauthState=randomState();
-  const redirect=encodeURIComponent(`${baseUrl(req)}/auth/google/callback`);
-  const scope=encodeURIComponent('openid email profile');
-  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(process.env.GOOGLE_CLIENT_ID)}&redirect_uri=${redirect}&response_type=code&scope=${scope}&state=${req.session.oauthState}&access_type=online&prompt=select_account`);
-});
-
-
 app.get('/auth/google', (req, res) => {
   if (
     !process.env.GOOGLE_CLIENT_ID ||
