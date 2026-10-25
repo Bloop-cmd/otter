@@ -393,6 +393,7 @@ body:not(.dark) .bubble.ghost .message-body .ghost-symbol, body.dark .bubble.gho
 body.dark .raft-sheet{background:#0d2940;color:#fff0d0;border-color:#245a78}body.dark .raft-member-results{border-color:#245a78}body.dark .raft-member-option:hover{background:rgba(99,215,255,.1)}
 @media(min-width:500px){.raft-modal{align-items:center}.raft-sheet{max-height:82dvh}}
 </style>
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=DM+Sans:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body>
 <div id="authScreen" class="auth-wrap">
@@ -476,7 +477,7 @@ body.dark .raft-sheet{background:#0d2940;color:#fff0d0;border-color:#245a78}body
     <div class="content">
       <div class="card profile-hero"><div class="profile-otti"><img class="mascot-img"></div><h2 id="profileName" style="margin:8px 0 2px">Your Otti</h2><div id="profileEmail" class="sub"></div></div>
       <div class="card"><b>Privacy</b><div class="option"><b>〰 DIVE</b><span>Instantly transform visible conversation into Otti symbols.</span></div><div class="option" onclick="toggleTheme()"><b>☾ Dark Otti</b><span>Switch between sandy beach light and Otti's deep ocean night world.</span></div><div class="option" onclick="toggleCameraPrivacy()"><b>◉ Camera privacy</b><span id="cameraPrivacyText">Off · Tap to enable on-device face detection.</span></div><label class="option" style="display:flex;align-items:center;gap:10px"><input id="autoDiveToggle" type="checkbox" checked onchange="setAutoDive(this.checked)" style="width:20px;height:20px"><span><b>〰 Camera auto-DIVE</b><span>Automatically DIVE if the camera detects 2+ faces. Detection can miss real shoulder-surfing.</span></span></label><video id="cameraPreview" class="hidden" playsinline muted></video></div>
-      <div class="theme-toggle-card"><div><b>✦ Appearance</b><small>Beach day ↔ Otti sea night</small></div><button id="themeSwitch" class="big-theme-switch" onclick="toggleTheme()" aria-label="Toggle light and dark mode"><span class="theme-switch-knob">☀</span></button></div><button class="theme-toggle" onclick="enableNotifications()"><span>♡ Notifications<small id="notificationText">Message alerts are off</small></span><span id="notificationPill" class="theme-pill">Off</span></button>
+      <div class="theme-toggle-card"><div><b>✦ Appearance</b><small>Steamed Pop ↔ Steamed Night</small></div><button id="themeSwitch" class="big-theme-switch" onclick="toggleTheme()" aria-label="Toggle light and dark mode"><span class="theme-switch-knob">☀</span></button></div><button class="theme-toggle" onclick="enableNotifications()"><span>♡ Notifications<small id="notificationText">Message alerts are off</small></span><span id="notificationPill" class="theme-pill">Off</span></button>
 <button class="secondary" onclick="logout()">Log out</button>
     </div>
   </section>
@@ -1438,5 +1439,93 @@ checkSession();
 @media(prefers-reduced-motion:reduce){.otti-dive-button *,#chat.ghost-active .otti-stage:after{animation:none!important;transition:none!important}}
 </style>
 
+
+<style id="steamed-inspired-otti-interface">
+/* STEAMED-INSPIRED OTTI INTERFACE — visual layer only; existing app structure and handlers remain intact. */
+:root{
+  --cream:#fff7e6;--cream2:#fffdf6;--white:#fffdf6;--ink:#1d1b4a;
+  --orange:#ffd84d;--orange2:#f2c936;--blue:#3a3990;--aqua:#5be0b3;
+  --mist:#6b68a8;--line:#c9c7ff;--ghost:#ff4f7b;--green:#258a70;
+  --red:#e34c72;--pink:#ff4f7b;--shadow:0 7px 0 rgba(29,27,74,.12);
+  --otti-purple:#2b2a6b;--otti-purple2:#3a3990;--otti-hot:#ff4f7b;--otti-mint:#5be0b3;--otti-yellow:#ffd84d;
+}
+html,body{font-family:'DM Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background-color:#2b2a6b;background-image:radial-gradient(#3a3990 1.5px,transparent 1.5px);background-size:22px 22px;color:#fff7e6}
+body{background-color:#2b2a6b;color:#fff7e6}
+.app{background:var(--cream);color:var(--ink);box-shadow:0 0 0 3px rgba(255,255,255,.12);}
+.top{background:var(--otti-purple);color:var(--cream);border-bottom:3px solid var(--otti-hot);padding:10px 15px;}
+.brand{font-family:'Bowlby One',Impact,sans-serif;font-size:24px;letter-spacing:.2px;font-weight:400;color:var(--cream);transform:rotate(-1deg)}
+.brand .mini{border:2px solid var(--otti-yellow);box-shadow:3px 3px 0 var(--otti-hot);border-radius:13px;background:var(--otti-mint);}
+.icon,.top-actions button,.otti-notify-btn,.mom-corner-btn{border-radius:13px!important;border:2px solid rgba(201,199,255,.75)!important;box-shadow:2px 2px 0 rgba(255,79,123,.8);}
+.content{background:var(--cream);}
+.title{font-family:'Bowlby One',Impact,sans-serif;font-weight:400;letter-spacing:.1px;color:var(--otti-purple);}
+.sub,.contact-email,.contact-state,.status-text,.message-name{color:#6b68a8}
+.card,.search-result,.option,.status-card{background:var(--cream2);border:2px solid var(--otti-purple);border-radius:18px;box-shadow:4px 4px 0 rgba(58,57,144,.18);}
+.card:nth-child(odd){background:#fffdf6}.card:nth-child(even){background:#f1efff}
+.primary,.nav-add{background:var(--otti-hot)!important;color:#fff!important;border:2px solid var(--otti-purple)!important;border-radius:15px!important;box-shadow:0 4px 0 var(--otti-purple);font-weight:900}
+.primary:active,.nav-add:active,.send:active,.chat-actions button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--otti-purple)}
+.secondary,.icon,.refresh,.chat-actions button{background:#e8e6ff;color:var(--otti-purple);border:2px solid var(--otti-purple);border-radius:14px;box-shadow:3px 3px 0 rgba(58,57,144,.2)}
+.input,.auth-card .input,.composer input{background:#fffdf6!important;color:var(--otti-purple)!important;border:2px solid #c9c7ff!important;border-radius:14px!important;box-shadow:inset 0 2px 0 rgba(29,27,74,.04)}
+.input:focus,.composer input:focus{outline:3px solid rgba(255,79,123,.24);border-color:var(--otti-hot)!important}
+.bottom-nav{background:var(--otti-purple);border-top:3px solid var(--otti-hot);}
+.nav-btn{color:#c9c7ff;font-weight:800}.nav-btn.active{color:var(--otti-yellow);background:rgba(255,255,255,.08)}.nav-btn.active span:first-child{background:var(--otti-hot);color:#fff;border-radius:10px;padding:3px 9px}
+.nav-add{border-radius:14px!important}
+.section-head{align-items:center}
+.contact{border-bottom:2px dotted #c9c7ff;padding:13px 5px}
+.contact-name{font-weight:900;color:var(--otti-purple)}
+.avatar{border:2px solid var(--otti-purple);box-shadow:3px 3px 0 var(--otti-yellow);}
+.auth-wrap{background-color:#2b2a6b;background-image:radial-gradient(#3a3990 1.5px,transparent 1.5px);background-size:22px 22px;}
+.auth-card{background:var(--cream);border:3px solid var(--otti-purple);border-radius:25px;box-shadow:7px 7px 0 var(--otti-hot);}
+.auth-title{font-family:'Bowlby One',Impact,sans-serif;font-weight:400;color:var(--otti-purple);letter-spacing:.5px}
+.auth-sub{color:#6b68a8}
+.auth-logo{border:2px solid var(--otti-purple);box-shadow:3px 3px 0 var(--otti-yellow);border-radius:18px}
+#chat{background:var(--cream)}
+.chat-top{background:var(--otti-purple);color:var(--cream);border-bottom:3px solid var(--otti-hot)}
+.chat-title{color:var(--cream);font-family:'Bowlby One',Impact,sans-serif;font-weight:400}
+.codex-trigger{background:var(--otti-yellow)!important;color:var(--otti-purple)!important;border:2px solid var(--otti-purple)!important;border-radius:13px!important;box-shadow:3px 3px 0 var(--otti-hot)}
+.connection{border:1px solid currentColor}
+.otti-stage{background:var(--otti-purple);border:2px solid var(--otti-hot);border-radius:18px;margin:8px 10px;box-shadow:4px 4px 0 rgba(58,57,144,.2)}
+.wave{color:var(--otti-mint)}
+.state{color:var(--otti-yellow);font-weight:900}
+.messages{background-color:var(--cream);background-image:radial-gradient(rgba(58,57,144,.10) 1px,transparent 1px);background-size:18px 18px;}
+.messages:before{opacity:.22}
+.bubble{background:#fffdf6;border:2px solid #d6d3ff;border-radius:17px 17px 17px 5px;box-shadow:3px 3px 0 rgba(58,57,144,.13);color:var(--otti-purple)}
+.bubble.mine{background:#dff9ef;border-color:var(--otti-purple);border-radius:17px 17px 5px 17px;box-shadow:3px 3px 0 rgba(91,224,179,.65)}
+.composer{background:#fffdf6;border-top:2px solid #c9c7ff;}
+.send{background:var(--otti-hot)!important;border:2px solid var(--otti-purple)!important;border-radius:14px!important;box-shadow:3px 3px 0 var(--otti-purple);}
+.chat-actions{background:var(--cream2);border-top:2px dotted #c9c7ff}
+.chat-actions button{font-weight:900}
+.chat-actions .dive{background:var(--otti-hot)!important;color:#fff!important;border:2px solid var(--otti-purple)!important;box-shadow:3px 3px 0 var(--otti-purple)}
+.chat-actions .return{background:var(--otti-mint)!important;color:var(--otti-purple)!important}
+.otti-codex-sheet{background:var(--cream);border:3px solid var(--otti-purple);border-bottom:0;border-radius:25px 25px 0 0;box-shadow:0 -8px 0 rgba(255,79,123,.5)}
+.otti-codex-head b{font-family:'Bowlby One',Impact,sans-serif;font-weight:400;color:var(--otti-purple)}
+.otti-codex-live,.otti-codex-preview,.otti-glyph-grid button{border:2px solid #c9c7ff!important;border-radius:15px!important;background:#fffdf6!important;}
+.otti-glyph-grid button:active{background:var(--otti-yellow)!important}
+.toast{background:var(--otti-purple)!important;border:2px solid var(--otti-yellow);border-radius:14px;box-shadow:4px 4px 0 var(--otti-hot)}
+.empty{color:var(--otti-purple)}
+.empty-symbol{color:var(--otti-hot)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--otti-hot);outline-offset:2px}
+/* Preserve Otti's existing dark theme, recoloured to the Steamed palette. */
+body.dark{background:#171644!important;color:#fff7e6!important;background-image:radial-gradient(#302f78 1.5px,transparent 1.5px)!important;background-size:22px 22px!important}
+body.dark .app{background:#201f55!important;color:#fff7e6!important}
+body.dark .top,body.dark .bottom-nav,body.dark .chat-top{background:#211f58!important;color:#fff7e6!important;border-color:var(--otti-hot)!important}
+body.dark .content,body.dark .messages{background-color:#201f55!important;background-image:radial-gradient(rgba(201,199,255,.10) 1px,transparent 1px)!important;background-size:18px 18px!important}
+body.dark .card,body.dark .search-result,body.dark .option,body.dark .status-card{background:#2b2a6b!important;color:#fff7e6!important;border-color:#7774c9!important}
+body.dark .title,body.dark .contact-name,body.dark .auth-title,body.dark .empty,body.dark .otti-codex-head b{color:#fff7e6!important}
+body.dark .sub,body.dark .contact-email,body.dark .contact-state,body.dark .status-text,body.dark .message-name{color:#c9c7ff!important}
+body.dark .contact{border-color:#514f9c!important}
+body.dark .messages:before{opacity:.12}
+body.dark .bubble:not(.ghost){background:#302f78!important;color:#fff7e6!important;border-color:#7774c9!important}
+body.dark .bubble.mine{background:#214f55!important;border-color:var(--otti-mint)!important}
+body.dark .composer,body.dark .chat-actions{background:#211f58!important;border-color:#514f9c!important}
+body.dark .composer input,body.dark .input,body.dark .auth-card .input{background:#171644!important;color:#fff7e6!important;border-color:#7774c9!important}
+body.dark .secondary,body.dark .icon,body.dark .refresh,body.dark .chat-actions button{background:#302f78!important;color:#fff7e6!important;border-color:#7774c9!important}
+body.dark .otti-codex-sheet{background:#201f55!important;border-color:#7774c9!important}
+body.dark .otti-codex-live,body.dark .otti-codex-preview,body.dark .otti-glyph-grid button{background:#2b2a6b!important;color:#fff7e6!important;border-color:#7774c9!important}
+body.dark .auth-wrap{background-color:#171644!important;background-image:radial-gradient(#302f78 1.5px,transparent 1.5px)!important;background-size:22px 22px!important}
+body.dark .auth-card{background:#201f55!important;border-color:#7774c9!important}
+@media(max-width:480px){.brand{font-size:22px}.top{padding-left:12px;padding-right:12px}.card{border-radius:16px}.auth-card{padding:22px}}
+
+
+</style>
 </body>
 </html>
