@@ -102,17 +102,118 @@ app.get('/auth/google',(req,res)=>{
   res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(process.env.GOOGLE_CLIENT_ID)}&redirect_uri=${redirect}&response_type=code&scope=${scope}&state=${req.session.oauthState}&access_type=online&prompt=select_account`);
 });
 
-app.get('/auth/google/callback',async(req,res)=>{
-  try{
-    if(!req.query.code||req.query.state!==req.session.oauthState)return res.status(400).send('Invalid OAuth state.');
+
+app.get('/auth/google', (req, res) => {
+  if (
+    !process.env.GOOGLE_CLIENT_ID ||
+    !process.env.GOOGLE_CLIENT_SECRET
+  ) {
+    return res.status(503).send('Google OAuth is not configured.');
+  }
+
+  const state = randomState();
+  req.session.oauthState = state;
+
+  const redirectUri =
+    `${baseUrl(req)}/auth/google/callback`;
+
+  const params = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    redirect_uri: redirectUri,
+    response_type: 'code',
+    scope: 'openid email profile',
+    state,
+    access_type: 'online',
+    prompt: 'select_account'
+  });
+
+  req.session.save((err) => {
+    if (err) {
+      console.error('Google OAuth session save failed:', err);
+      return res.status(500).send('Could not start Google sign-in.');
+    }
+
+    res.redirect(
+      `https://accounts.google.com/o/oauth2/v2/auth?${params}`
+    );
+  });
+});
+
+app.get('/auth/google/callback', async (req, res) => {
+  try {
+    const returnedState = req.query.state;
+    const savedState = req.session?.oauthState;
+
+    if (
+      !req.query.code ||
+      typeof returnedState !== 'string' ||
+      typeof savedState !== 'string' ||
+      returnedState !== savedState
+    ) {
+      return res.status(400).send(
+        'Invalid OAuth state. Please return to Otti and try signing in again.'
+      );
+    }
+
     delete req.session.oauthState;
-    const redirect=`${baseUrl(req)}/auth/google/callback`;
-    const token=await fetch('https://oauth2.googleapis.com/token',{method:'POST',headers:{'content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({code:req.query.code,client_id:process.env.GOOGLE_CLIENT_ID,client_secret:process.env.GOOGLE_CLIENT_SECRET,redirect_uri:redirect,grant_type:'authorization_code'})}).then(r=>r.json());
-    if(!token.access_token)return res.status(401).send('Google authorization failed.');
-    const info=await fetch('https://openidconnect.googleapis.com/v1/userinfo',{headers:{authorization:`Bearer ${token.access_token}`}}).then(r=>r.json());
-    const user=await upsertOAuth('google',info.sub,info.email,info.name||info.email?.split('@')[0]||'Otti User',info.picture);
-    await loginSession(req,user.id);res.redirect('/');
-  }catch(e){console.error(e);res.status(500).send('Google sign-in failed.')}
+
+    const redirectUri =
+      `${baseUrl(req)}/auth/google/callback`;
+
+    const tokenResponse = await fetch(
+      'https://oauth2.googleapis.com/token',
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          code: req.query.code,
+          client_id: process.env.GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          redirect_uri: redirectUri,
+          grant_type: 'authorization_code'
+        })
+      }
+    );
+
+    const token = await tokenResponse.json();
+
+    if (!tokenResponse.ok || !token.access_token) {
+      console.error('Google token exchange failed:', token.error || tokenResponse.status);
+      return res.status(401).send('Google authorization failed.');
+    }
+
+    const infoResponse = await fetch(
+      'https://openidconnect.googleapis.com/v1/userinfo',
+      {
+        headers: {
+          authorization: `Bearer ${token.access_token}`
+        }
+      }
+    );
+
+    const info = await infoResponse.json();
+
+    if (!infoResponse.ok || !info.sub || !info.email) {
+      return res.status(401).send('Could not verify your Google account.');
+    }
+
+    const user = await upsertOAuth(
+      'google',
+      info.sub,
+      info.email,
+      info.name || info.email.split('@')[0] || 'Otti User',
+      info.picture
+    );
+
+    await loginSession(req, user.id);
+
+    return res.redirect('/');
+  } catch (err) {
+    console.error('Google sign-in failed:', err);
+    return res.status(500).send('Google sign-in failed.');
+  }
 });
 
 app.get('/auth/github',(req,res)=>{
